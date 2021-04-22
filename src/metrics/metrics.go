@@ -19,6 +19,11 @@ func StartPrometheusHttpServer(metrics_port string, network_name string) {
 		Help:        "amount of requests",
 		ConstLabels: prometheus.Labels{"network_name": network_name},
 	})
+	Metrics["kafka_messages_consumed"] = promauto.NewCounter(prometheus.CounterOpts{
+		Name:        "kafka_messages_consumed",
+		Help:        "amount of messageds from kafka consumed",
+		ConstLabels: prometheus.Labels{"network_name": network_name},
+	})
 
 	// Start server
 	http.Handle("/metrics", promhttp.Handler())

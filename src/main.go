@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/geometry-labs/api/config"
+	"github.com/geometry-labs/api/healthcheck"
 	"github.com/geometry-labs/api/metrics"
 	"github.com/geometry-labs/api/server"
 )
@@ -19,6 +20,9 @@ func main() {
 
 	// Start API server
 	go server.Start()
+
+	// Start Health server
+	go healthcheck.Start()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)
