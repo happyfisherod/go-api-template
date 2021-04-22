@@ -18,6 +18,9 @@ func main() {
 	// Start Prometheus client
 	go metrics.StartPrometheusHttpServer(config.Vars.MetricsPort, config.Vars.NetworkName)
 
+	// Start kafka consumer and broadcaster
+	go kafka.StartConsumer()
+
 	// Start API server
 	go server.Start()
 

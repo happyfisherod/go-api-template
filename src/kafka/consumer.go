@@ -6,6 +6,10 @@ import (
 	"github.com/geometry-labs/api/metrics"
 )
 
+func StartConsumer() {
+	// TODO
+}
+
 type KafkaTopicConsumer struct {
 	TopicName string
 	TopicChan chan *kafka.Message
@@ -13,7 +17,7 @@ type KafkaTopicConsumer struct {
 	BrokerURL string
 }
 
-func (k *KafkaTopicConsumer) ConsumeAndBroadcastTopics() {
+func (k *KafkaTopicConsumer) consumeAndBroadcastTopics() {
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": k.BrokerURL,
@@ -27,6 +31,8 @@ func (k *KafkaTopicConsumer) ConsumeAndBroadcastTopics() {
 	defer consumer.Close()
 
 	consumer.SubscribeTopics([]string{k.TopicName}, nil)
+
+	newBroadcaster(k.TopicName, k.TopicChan)
 
 	for {
 		msg, err := consumer.ReadMessage(-1)

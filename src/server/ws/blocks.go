@@ -1,12 +1,12 @@
 package ws
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 
 	"github.com/geometry-labs/api/config"
+	"github.com/geometry-labs/api/kafka"
+	"github.com/geometry-labs/api/metrics"
 )
 
 func BlocksAddHandlers(app *fiber.App) {
@@ -23,25 +23,49 @@ func BlocksAddHandlers(app *fiber.App) {
 		return fiber.ErrUpgradeRequired
 	})
 
-	app.Get(prefix+"/", websocket.New(handlerGetBlock))
+	app.Get(prefix+"/", websocket.New(handlerGetBlocks))
 }
 
-func handlerGetBlock(c *websocket.Conn) {
-	var (
-		mt  int
-		msg []byte
-		err error
-	)
+func handlerGetBlocks(c *websocket.Conn) {
+	metrics.Metrics["websockets_connected"].Inc()
+
+	// Add broadcaster
+	topic_chan := make(chan *kafka.Message)
+	id := kafka.Broadcasters["blocks"].AddOutputChannel(topic_chan)
+	defer func() {
+		// Remove broadcaster
+		kafka.Broadcasters["blocks"].RemoveOutputChannel(id)
+	}()
+
+	// Read for close
+	client_close_sig := make(chan bool)
+	go func() {
+		for {
+			_, _, err := c.ReadMessage()
+			if err != nil {
+				client_close_sig <- true
+				break
+			}
+		}
+	}()
+
 	for {
-		if mt, msg, err = c.ReadMessage(); err != nil {
-			log.Println("read:", err)
+		// Read
+		msg := <-topic_chan
+
+		// Broadcast
+		err = c.WriteMessage(websocket.TextMessage, msg.Value)
+		metrics.Metrics["websockets_bytes_written"].Add(float64(len(msg.Value)))
+		if err != nil {
 			break
 		}
-		log.Printf("recv: %s", msg)
 
-		if err = c.WriteMessage(mt, msg); err != nil {
-			log.Println("write:", err)
+		// check for client close
+		select {
+		case _ = <-client_close_sig:
 			break
+		default:
+			continue
 		}
 	}
 }
