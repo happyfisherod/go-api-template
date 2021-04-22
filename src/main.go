@@ -8,7 +8,7 @@ import (
 
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/metrics"
-	"github.com/geometry-labs/api/rest"
+	"github.com/geometry-labs/api/server"
 )
 
 func main() {
@@ -17,8 +17,8 @@ func main() {
 	// Start Prometheus client
 	go metrics.StartPrometheusHttpServer(config.Vars.MetricsPort, config.Vars.NetworkName)
 
-	// Start REST Api server
-	go rest.StartHttpServer()
+	// Start API server
+	go server.Start()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)

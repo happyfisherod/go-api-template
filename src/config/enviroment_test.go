@@ -10,10 +10,11 @@ func TestEnvironment(t *testing.T) {
 
 	// Set env
 	env_map := map[string]string{
-		"PORT":         "port",
-		"PREFIX":       "prefix",
-		"METRICS_PORT": "metrics_port",
-		"NETWORK_NAME": "network_name",
+		"PORT":              "port",
+		"REST_PREFIX":       "rest_prefix",
+		"WEBSOCKETS_PREFIX": "websockets_prefix",
+		"METRICS_PORT":      "metrics_port",
+		"NETWORK_NAME":      "network_name",
 	}
 
 	for k, v := range env_map {
@@ -27,8 +28,11 @@ func TestEnvironment(t *testing.T) {
 	if Vars.Port != env_map["PORT"] {
 		t.Errorf("Invalid value for env variable: PORT")
 	}
-	if Vars.Prefix != env_map["PREFIX"] {
-		t.Errorf("Invalid value for env variable: PREFIX")
+	if Vars.RestPrefix != env_map["REST_PREFIX"] {
+		t.Errorf("Invalid value for env variable: REST_PREFIX")
+	}
+	if Vars.WebsocketPrefix != env_map["WEBSOCKET_PREFIX"] {
+		t.Errorf("Invalid value for env variable: WEBSOCKET_PREFIX")
 	}
 	if Vars.MetricsPort != env_map["METRICS_PORT"] {
 		t.Errorf("Invalid value for env variable: METRICS_PORT")

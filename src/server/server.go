@@ -1,16 +1,15 @@
-package rest
+package server
 
 import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/api/config"
-	"github.com/geometry-labs/api/rest/endpoints"
+	"github.com/geometry-labs/api/server/rest"
+	"github.com/geometry-labs/api/server/ws"
 )
 
-type Router map[string]func(c *fiber.Ctx)
-
-func StartHttpServer() {
+func Start() {
 
 	app := fiber.New()
 
@@ -20,15 +19,15 @@ func StartHttpServer() {
 			"hostname": c.Hostname(),
 			"IP":       c.IP(),
 			"Method":   c.Method(),
-			"Path":     c.Path(),
-		}).Info("")
+		}).Info(c.Path())
 
 		// Go to next middleware:
 		return c.Next()
 	})
 
 	// Add handlers
-	endpoints.BlocksAddHandlers(app)
+	rest.BlocksAddHandlers(app)
+	ws.BlocksAddHandlers(app)
 
 	app.Listen(":" + config.Vars.Port)
 }

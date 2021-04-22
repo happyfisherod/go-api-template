@@ -8,10 +8,11 @@ import (
 )
 
 type Environment struct {
-	Port        string `envconfig:"PORT" required:"false" default:"8080"`
-	Prefix      string `envconfig:"PREFIX" required:"false" default:""`
-	MetricsPort string `envconfig:"METRICS_PORT" required:"false" default:"9400"`
-	NetworkName string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
+	Port            string `envconfig:"PORT" required:"false" default:"8888"`
+	RestPrefix      string `envconfig:"REST_PREFIX" required:"false" default:"/rest"`
+	WebsocketPrefix string `envconfig:"WEBSOCKET_PREFIX" required:"false" default:"/ws"`
+	MetricsPort     string `envconfig:"METRICS_PORT" required:"false" default:"9400"`
+	NetworkName     string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
 }
 
 var Vars Environment

@@ -1,4 +1,4 @@
-package endpoints
+package rest
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -8,11 +8,11 @@ import (
 
 func BlocksAddHandlers(app *fiber.App) {
 
-	prefix := config.Vars.Prefix + "/blocks"
+	prefix := config.Vars.RestPrefix + "/blocks"
 
 	app.Get(prefix+"/", handlerGetBlock)
 }
 
 func handlerGetBlock(c *fiber.Ctx) error {
-	return c.SendString(`{"block": "mock"}`)
+	return c.SendString(`{"block": "rest"}`)
 }
