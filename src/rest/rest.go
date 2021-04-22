@@ -3,9 +3,14 @@ package rest
 import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geometry-labs/api/config"
+	"github.com/geometry-labs/api/rest/endpoints"
 )
 
-func StartHttpServer(port string, prefix string) {
+type Router map[string]func(c *fiber.Ctx)
+
+func StartHttpServer() {
 
 	app := fiber.New()
 
@@ -22,9 +27,8 @@ func StartHttpServer(port string, prefix string) {
 		return c.Next()
 	})
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
+	// Add handlers
+	endpoints.BlocksAddHandlers(app)
 
-	app.Listen(":" + port)
+	app.Listen(":" + config.Vars.Port)
 }

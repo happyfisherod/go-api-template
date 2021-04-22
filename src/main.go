@@ -6,25 +6,33 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/rest-api/metrics"
-	"github.com/geometry-labs/rest-api/rest"
+	"github.com/geometry-labs/api/config"
+	"github.com/geometry-labs/api/metrics"
+	"github.com/geometry-labs/api/rest"
 )
 
 func main() {
-	env := getEnvironment()
+	config.GetEnvironment()
 
 	// Start Prometheus client
-	go metrics.StartPrometheusHttpServer(env.MetricsPort, env.NetworkName)
+	go metrics.StartPrometheusHttpServer(config.Vars.MetricsPort, config.Vars.NetworkName)
 
 	// Start REST Api server
-	go rest.StartHttpServer(env.Port, env.Prefix)
+	go rest.StartHttpServer()
 
 	// Listen for close sig
-	sigCh := make(chan os.Signal)
-	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
+	// Register for interupt (Ctrl+C) and SIGTERM (docker)
+	shutdown := make(chan int)
 
-	// Keep main thread alive
-	for sig := range sigCh {
-		log.Printf("Stopping websocket server...%s", sig.String())
-	}
+	//create a notification channel to shutdown
+	sigChan := make(chan os.Signal, 1)
+
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-sigChan
+		log.Println("Shutting down...")
+		shutdown <- 1
+	}()
+
+	<-shutdown
 }

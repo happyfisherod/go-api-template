@@ -1,4 +1,4 @@
-module github.com/geometry-labs/rest-api
+module github.com/geometry-labs/api
 
 go 1.15
 

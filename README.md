@@ -1,3 +1,3 @@
 <p align="center">
-  <h3 align="center">Go REST API Template</h3>
+  <h3 align="center">Go API Template</h3>
 </p>
