@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -20,7 +21,14 @@ var Vars Environment
 
 // Run once on main.go
 func GetEnvironment() {
-	_ = godotenv.Load()
+	//Get environment variable file
+	env_file := os.Getenv("ENV_FILE")
+	if env_file != "" {
+		_ = godotenv.Load(env_file)
+	} else {
+		_ = godotenv.Load()
+	}
+
 	err := envconfig.Process("", &Vars)
 	if err != nil {
 		log.Fatalf("ERROR: envconfig - %s\n", err.Error())

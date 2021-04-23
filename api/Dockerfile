@@ -8,7 +8,7 @@ ENV GO111MODULE=on \
 
 # COPY SRC
 WORKDIR /build
-COPY ./src .
+COPY ../api/src .
 
 # BUILD
 RUN go build -o main .
