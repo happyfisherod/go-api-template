@@ -1,4 +1,4 @@
-package main
+package serdes
 
 import (
 	"encoding/json"
@@ -8,8 +8,7 @@ import (
 	"reflect"
 )
 
-func main() {
-	fmt.Println("starting...")
+func JsonToProto() {
 	// 1. create jsonstr
 	jsonstr := mocker.GetSampleNewContractTxJsonString()
 	fmt.Printf("1. jsonstr:%s\n", jsonstr)
@@ -24,7 +23,7 @@ func main() {
 	fmt.Printf("3. %v\n", data) // but accessing fields is a headache
 	typeOfData := reflect.TypeOf(data)
 	fmt.Println(typeOfData)
-	fmt.Println("printLeafValues::")
+	fmt.Println("printLeafValues golang struct::")
 	printLeafValues(newContractTxDynamic)
 	//// 4. convert json to map
 	//var newContractTxDynamic1 interface{}
@@ -34,10 +33,9 @@ func main() {
 	// 5. convert map to proto
 	newContractTxProto, _ := structpb.NewStruct(newContractTxDynamic)
 	fmt.Printf("5. %v\n", newContractTxProto.GetFields()["data"]) // but accessing fields is a headache
-
+	fmt.Println("printLeafValues proto ::")
+	printLeafValues(newContractTxDynamic)
 	// so finally: we get a json, 1st we convert it to map[string]interface{}, 2nd we convert it to proto to communicate
-	//in1 := jsonstr
-	//wk1 :=
 
 }
 
