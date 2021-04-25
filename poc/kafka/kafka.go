@@ -1,9 +1,14 @@
 package kafka
 
 import (
+	"encoding/json"
 	"fmt"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
+
+type Ok struct {
+	Value int
+}
 
 func ProducerPoc() {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
@@ -30,10 +35,18 @@ func ProducerPoc() {
 
 	// Produce messages to topic (asynchronously)
 	topic := "myTopic"
-	for _, word := range []string{"Welcome", "to", "the", "Confluent", "Kafka", "Golang", "client"} {
+	//for _, word := range []string{"Welcome", "to", "the", "Confluent", "Kafka", "Golang", "client"} {
+	//	p.Produce(&kafka.Message{
+	//		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+	//		Value:          []byte(word),
+	//	}, nil)
+	//}
+
+	for _, word := range []Ok{Ok{20215}, Ok{20216}, Ok{20217}, Ok{20218}, Ok{20219}} {
+		val, _ := json.Marshal(word)
 		p.Produce(&kafka.Message{
 			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-			Value:          []byte(word),
+			Value:          val,
 		}, nil)
 	}
 
@@ -67,3 +80,20 @@ func ConsumerPoc() {
 
 	c.Close()
 }
+
+/* Noting api for schema registry
+1. register json schema for myTopic-Key
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data '{"schema": "{\"type\": \"string\"}"}' \
+  http://localhost:8081/subjects/myTopic-key/versions
+2. curl -X GET http://localhost:8081/subjects
+3. curl -X GET http://localhost:8081/subjects/myTopic-key/versions
+4. Get schema for  subject myTopic-key version 1
+curl -X GET http://localhost:8081/subjects/myTopic-key/versions/1
+5. Register a protobuf schema
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data '{"schemaType": "PROTOBUF", "schema": "syntax = \"proto3\";\npackage com.acme;\n\nmessage value_myTopic {\n  string myField1 = 1;\n}\n"}' \
+  http://localhost:8081/subjects/myTopic-value/versions
+
+
+*/

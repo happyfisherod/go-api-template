@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/geometry-labs/protoserdes/kafka"
 )
 
 func main() {
@@ -9,6 +10,6 @@ func main() {
 	//serdes.JsonToProto() // json to proto poc
 	//mongo.MongoPoc()
 	//postgres.PostgresPoc()
-	//kafka.ProducerPoc()
-	//kafka.ConsumerPoc()
+	kafka.ProducerPoc()
+	kafka.ConsumerPoc()
 }
