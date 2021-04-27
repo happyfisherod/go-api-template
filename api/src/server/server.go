@@ -15,7 +15,7 @@ func Start() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		// logging
-		log.Info(c.Method, c.Path())
+		log.Info(c.Method(), " ", c.Path())
 
 		// Go to next middleware:
 		return c.Next()

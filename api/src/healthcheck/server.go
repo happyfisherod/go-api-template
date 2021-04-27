@@ -1,7 +1,6 @@
 package healthcheck
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/InVisionApp/go-health/v2"
 	"github.com/InVisionApp/go-health/v2/checkers"
 	"github.com/InVisionApp/go-health/v2/handlers"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/api/config"
 )
@@ -16,18 +16,18 @@ import (
 func Start() {
 	// Create a new health instance
 	h := health.New()
-	goodTestURL, _ := url.Parse("https://google.com")
 
 	// Create a couple of checks
-	goodHTTPCheck, _ := checkers.NewHTTP(&checkers.HTTPConfig{
-		URL: goodTestURL,
+	blocksCheckerURL, _ := url.Parse("http://localhost:" + config.Vars.Port + config.Vars.RestPrefix + "/blocks")
+	blocksChecker, _ := checkers.NewHTTP(&checkers.HTTPConfig{
+		URL: blocksCheckerURL,
 	})
 
 	// Add the checks to the health instance
 	h.AddChecks([]*health.Config{
 		{
-			Name:     "good-check",
-			Checker:  goodHTTPCheck,
+			Name:     "blocks-rest-check",
+			Checker:  blocksChecker,
 			Interval: time.Duration(2) * time.Second,
 			Fatal:    true,
 		},
@@ -39,6 +39,6 @@ func Start() {
 	}
 
 	// Define a healthcheck endpoint and use the built-in JSON handler
-	http.HandleFunc("/healthcheck", handlers.NewJSONHandlerFunc(h, nil))
+	http.HandleFunc(config.Vars.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
 	http.ListenAndServe(":"+config.Vars.HealthPort, nil)
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/healthcheck"
+	"github.com/geometry-labs/api/kafka"
 	"github.com/geometry-labs/api/logging"
 	"github.com/geometry-labs/api/metrics"
 	"github.com/geometry-labs/api/server"
