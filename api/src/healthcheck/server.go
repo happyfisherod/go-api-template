@@ -28,7 +28,7 @@ func Start() {
 		{
 			Name:     "blocks-rest-check",
 			Checker:  blocksChecker,
-			Interval: time.Duration(2) * time.Second,
+			Interval: time.Duration(config.Vars.HealthPollingInterval) * time.Second,
 			Fatal:    true,
 		},
 	})
