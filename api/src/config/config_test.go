@@ -15,6 +15,8 @@ func TestEnvironment(t *testing.T) {
 		"REST_PREFIX":      "rest_prefix",
 		"WEBSOCKET_PREFIX": "websocket_prefix",
 		"METRICS_PORT":     "metrics_port",
+		"LOG_LEVEL":        "log_level",
+		"LOG_TO_FILE":      "true",
 		"NETWORK_NAME":     "network_name",
 	}
 
@@ -40,6 +42,12 @@ func TestEnvironment(t *testing.T) {
 	}
 	if Vars.MetricsPort != env_map["METRICS_PORT"] {
 		t.Errorf("Invalid value for env variable: METRICS_PORT")
+	}
+	if Vars.LogLevel != env_map["LOG_LEVEL"] {
+		t.Errorf("Invalid value for env variable: LOG_LEVEL")
+	}
+	if Vars.LogToFile != true {
+		t.Errorf("Invalid value for env variable: LOG_TO_FILE")
 	}
 	if Vars.NetworkName != env_map["NETWORK_NAME"] {
 		t.Errorf("Invalid value for env variable: NETWORK_NAME")

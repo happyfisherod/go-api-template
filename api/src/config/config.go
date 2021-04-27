@@ -14,6 +14,8 @@ type Environment struct {
 	MetricsPort     string `envconfig:"METRICS_PORT" required:"false" default:"9400"`
 	RestPrefix      string `envconfig:"REST_PREFIX" required:"false" default:"/rest"`
 	WebsocketPrefix string `envconfig:"WEBSOCKET_PREFIX" required:"false" default:"/ws"`
+	LogLevel        string `envconfig:"LOG_LEVEL" required:"false" default:"INFO"`
+	LogToFile       bool   `envconfig:"LOG_TO_FILE" required:"false" default:"false"`
 	NetworkName     string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
 }
 

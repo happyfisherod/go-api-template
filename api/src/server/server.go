@@ -15,11 +15,7 @@ func Start() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		// logging
-		log.WithFields(log.Fields{
-			"hostname": c.Hostname(),
-			"IP":       c.IP(),
-			"Method":   c.Method(),
-		}).Info(c.Path())
+		log.Info(c.Method, c.Path())
 
 		// Go to next middleware:
 		return c.Next()
