@@ -10,7 +10,7 @@ import (
 	"github.com/InVisionApp/go-health/v2/checkers"
 	"github.com/InVisionApp/go-health/v2/handlers"
 
-	"github.com/geometry-labs/api/config"
+	"github.com/geometry-labs/worker/config"
 )
 
 func Start() {

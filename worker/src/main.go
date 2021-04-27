@@ -6,23 +6,23 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/api/config"
-	"github.com/geometry-labs/api/healthcheck"
-	"github.com/geometry-labs/api/metrics"
-	"github.com/geometry-labs/api/server"
+	"github.com/geometry-labs/worker/config"
+	"github.com/geometry-labs/worker/healthcheck"
+	"github.com/geometry-labs/worker/kafka"
+	"github.com/geometry-labs/worker/logging"
+	"github.com/geometry-labs/worker/metrics"
 )
 
 func main() {
 	config.GetEnvironment()
+
+	logging.Init()
 
 	// Start Prometheus client
 	go metrics.StartPrometheusHttpServer(config.Vars.MetricsPort, config.Vars.NetworkName)
 
 	// Start kafka consumer and broadcaster
 	go kafka.StartConsumer()
-
-	// Start API server
-	go server.Start()
 
 	// Start Health server
 	go healthcheck.Start()

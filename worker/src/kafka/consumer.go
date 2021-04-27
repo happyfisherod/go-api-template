@@ -3,7 +3,7 @@ package kafka
 import (
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 
-	"github.com/geometry-labs/api/metrics"
+	"github.com/geometry-labs/worker/metrics"
 )
 
 func StartConsumer() {
