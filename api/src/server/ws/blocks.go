@@ -3,6 +3,7 @@ package ws
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
+	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/kafka"
@@ -30,7 +31,7 @@ func handlerGetBlocks(c *websocket.Conn) {
 	metrics.Metrics["websockets_connected"].Inc()
 
 	// Add broadcaster
-	topic_chan := make(chan *kafka.Message)
+	topic_chan := make(chan *confluent.Message)
 	id := kafka.Broadcasters["blocks"].AddOutputChannel(topic_chan)
 	defer func() {
 		// Remove broadcaster
@@ -54,7 +55,7 @@ func handlerGetBlocks(c *websocket.Conn) {
 		msg := <-topic_chan
 
 		// Broadcast
-		err = c.WriteMessage(websocket.TextMessage, msg.Value)
+		err := c.WriteMessage(websocket.TextMessage, msg.Value)
 		metrics.Metrics["websockets_bytes_written"].Add(float64(len(msg.Value)))
 		if err != nil {
 			break
