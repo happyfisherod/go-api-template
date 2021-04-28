@@ -21,6 +21,8 @@ type Environment struct {
 	LogLevel              string `envconfig:"LOG_LEVEL" required:"false" default:"INFO"`
 	LogToFile             bool   `envconfig:"LOG_TO_FILE" required:"false" default:"false"`
 	NetworkName           string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
+	KafkaBrokerURL        string `envconfig:"KAFKA_BROKER_URL" required:"false" default:""`
+	TopicNames            string `envconfig:"TOPIC_NAMES" required:"false" default:"blocks"`
 }
 
 var Vars Environment

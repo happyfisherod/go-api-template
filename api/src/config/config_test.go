@@ -21,6 +21,8 @@ func TestEnvironment(t *testing.T) {
 		"LOG_LEVEL":               "log_level",
 		"LOG_TO_FILE":             "true",
 		"NETWORK_NAME":            "network_name",
+		"KAFKA_BROKER_URL":        "kafka_broker_url",
+		"TOPIC_NAMES":             "topic_names",
 	}
 
 	for k, v := range env_map {
@@ -63,5 +65,11 @@ func TestEnvironment(t *testing.T) {
 	}
 	if Vars.NetworkName != env_map["NETWORK_NAME"] {
 		t.Errorf("Invalid value for env variable: NETWORK_NAME")
+	}
+	if Vars.KafkaBrokerURL != env_map["KAFKA_BROKER_URL"] {
+		t.Errorf("Invalid value for env variable: TOPIC_NAMES")
+	}
+	if Vars.TopicNames != env_map["TOPIC_NAMES"] {
+		t.Errorf("Invalid value for env variable: TOPIC_NAMES")
 	}
 }

@@ -24,49 +24,52 @@ func BlocksAddHandlers(app *fiber.App) {
 		return fiber.ErrUpgradeRequired
 	})
 
-	app.Get(prefix+"/", websocket.New(handlerGetBlocks))
+	app.Get(prefix+"/", websocket.New(handlerGetBlocks(kafka.Broadcasters["blocks"])))
 }
 
-func handlerGetBlocks(c *websocket.Conn) {
-	metrics.Metrics["websockets_connected"].Inc()
+func handlerGetBlocks(broadcaster *kafka.TopicBroadcaster) func(c *websocket.Conn) {
 
-	// Add broadcaster
-	topic_chan := make(chan *confluent.Message)
-	id := kafka.Broadcasters["blocks"].AddOutputChannel(topic_chan)
-	defer func() {
-		// Remove broadcaster
-		kafka.Broadcasters["blocks"].RemoveOutputChannel(id)
-	}()
+	return func(c *websocket.Conn) {
+		metrics.Metrics["websockets_connected"].Inc()
 
-	// Read for close
-	client_close_sig := make(chan bool)
-	go func() {
+		// Add broadcaster
+		topic_chan := make(chan *confluent.Message)
+		id := broadcaster.AddOutputChannel(topic_chan)
+		defer func() {
+			// Remove broadcaster
+			broadcaster.RemoveOutputChannel(id)
+		}()
+
+		// Read for close
+		client_close_sig := make(chan bool)
+		go func() {
+			for {
+				_, _, err := c.ReadMessage()
+				if err != nil {
+					client_close_sig <- true
+					break
+				}
+			}
+		}()
+
 		for {
-			_, _, err := c.ReadMessage()
+			// Read
+			msg := <-topic_chan
+
+			// Broadcast
+			err := c.WriteMessage(websocket.TextMessage, msg.Value)
+			metrics.Metrics["websockets_bytes_written"].Add(float64(len(msg.Value)))
 			if err != nil {
-				client_close_sig <- true
 				break
 			}
-		}
-	}()
 
-	for {
-		// Read
-		msg := <-topic_chan
-
-		// Broadcast
-		err := c.WriteMessage(websocket.TextMessage, msg.Value)
-		metrics.Metrics["websockets_bytes_written"].Add(float64(len(msg.Value)))
-		if err != nil {
-			break
-		}
-
-		// check for client close
-		select {
-		case _ = <-client_close_sig:
-			break
-		default:
-			continue
+			// check for client close
+			select {
+			case _ = <-client_close_sig:
+				break
+			default:
+				continue
+			}
 		}
 	}
 }

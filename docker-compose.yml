@@ -1,31 +1,62 @@
 version: "3.7"
 
 services:
-#  api:
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+      target: prod
+    ports:
+      - "8000:8000" # API
+      - "8080:8080" # Health
+      - "9400:9400" # Prometheus
+    env_file:
+      - ./api/.env.local
+
+#  worker:
 #    build:
 #      context: .
-#      dockerfile: Dockerfile.api
+#      dockerfile: worker/Dockerfile
 #      target: prod
 #    ports:
 #      - "8000:8000"
 #      - "8080:8080"
 #    env_file:
-#      - .env.local
-
-  worker:
-    build:
-      context: .
-      dockerfile: worker/Dockerfile
-      target: prod
-    ports:
-      - "8000:8000"
-      - "8080:8080"
-#    env_file:
-#      - .env.local
+#      - ./worker/.env.local
 
   # DB
 
   # etl
 
   # Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:${ZOOKEEPER_TAG:-latest}
+    ports:
+      - "2181:2181"
+    environment:
+      zk_id: "1"
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - default
 
+  kafka:
+    image: confluentinc/cp-enterprise-kafka:${KAFKA_TAG:-latest}
+    depends_on:
+      - zookeeper
+    ports:
+      # Exposes 29092 for external connections to the broker
+      # Use kafka:9092 for connections internal on the docker network
+      # See https://rmoff.net/2018/08/02/kafka-listeners-explained/ for details
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_RACK: "r1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_JMX_PORT: 9991

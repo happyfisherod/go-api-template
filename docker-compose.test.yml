@@ -5,5 +5,12 @@ services:
     build:
       target: test
     env_file:
-      - .env.test
+      - ./api/.env.test
+
+  worker:
+    build:
+      target: test
+    env_file:
+      - ./worker/.env.test
+
  
