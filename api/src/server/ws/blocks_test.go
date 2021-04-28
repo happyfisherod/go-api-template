@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -22,7 +21,7 @@ func init() {
 }
 
 func TestHandlerGetBlocks(t *testing.T) {
-	_ = assert.New(t)
+	assert := assert.New(t)
 
 	// Create topic broadcaster
 	input_chan := make(chan *confluent.Message)
@@ -30,6 +29,7 @@ func TestHandlerGetBlocks(t *testing.T) {
 		input_chan,
 		make(map[kafka.BroadcasterID]chan *confluent.Message),
 	}
+	go broadcaster.Broadcast()
 
 	app := fiber.New()
 
@@ -58,7 +58,6 @@ func TestHandlerGetBlocks(t *testing.T) {
 		}
 	}()
 
-	fmt.Printf("here")
 	// Validate message
 	websocket_client, _, err := gorilla.DefaultDialer.Dial("ws://localhost:9999/", nil)
 	if err != nil {
@@ -67,17 +66,8 @@ func TestHandlerGetBlocks(t *testing.T) {
 	}
 	defer websocket_client.Close()
 
-	fmt.Printf("here")
 	_, message, err := websocket_client.ReadMessage()
-	if err != nil {
-		t.Logf("Failed to read websocket")
-		t.Fail()
-	}
-
-	fmt.Printf("here")
-	if string(message) != test_data {
-		t.Logf("Failed to validate data")
-		t.Fail()
-	}
+	assert.Equal(nil, err)
+	assert.Equal(test_data, string(message))
 
 }

@@ -31,6 +31,11 @@ func Start() {
 		Help:        "amount of websockets that have connected to the server",
 		ConstLabels: prometheus.Labels{"network_name": config.Vars.NetworkName},
 	})
+	Metrics["websockets_bytes_written"] = promauto.NewCounter(prometheus.CounterOpts{
+		Name:        "websockets_bytes_written",
+		Help:        "amount of bytes written through websockets",
+		ConstLabels: prometheus.Labels{"network_name": config.Vars.NetworkName},
+	})
 
 	// Start server
 	http.Handle("/metrics", promhttp.Handler())
