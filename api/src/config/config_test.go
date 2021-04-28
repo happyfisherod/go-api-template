@@ -4,9 +4,12 @@ import (
 	"os"
 
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEnvironment(t *testing.T) {
+	assert := assert.New(t)
 
 	// Set env
 	env_map := map[string]string{
@@ -33,43 +36,17 @@ func TestEnvironment(t *testing.T) {
 	GetEnvironment()
 
 	// Check env
-	if Vars.Version != env_map["VERSION"] {
-		t.Errorf("Invalid value for env variable: VERSION")
-	}
-	if Vars.Port != env_map["PORT"] {
-		t.Errorf("Invalid value for env variable: PORT")
-	}
-	if Vars.HealthPort != env_map["HEALTH_PORT"] {
-		t.Errorf("Invalid value for env variable: HEALTH_PORT")
-	}
-	if Vars.MetricsPort != env_map["METRICS_PORT"] {
-		t.Errorf("Invalid value for env variable: METRICS_PORT")
-	}
-	if Vars.RestPrefix != env_map["REST_PREFIX"] {
-		t.Errorf("Invalid value for env variable: REST_PREFIX")
-	}
-	if Vars.WebsocketPrefix != env_map["WEBSOCKET_PREFIX"] {
-		t.Errorf("Invalid value for env variable: WEBSOCKET_PREFIX")
-	}
-	if Vars.HealthPrefix != env_map["HEALTH_PREFIX"] {
-		t.Errorf("Invalid value for env variable: HEALTH_PREFIX")
-	}
-	if Vars.HealthPollingInterval != 5 {
-		t.Errorf("Invalid value for env variable: HEALTH_POLLING_INTERVAL")
-	}
-	if Vars.LogLevel != env_map["LOG_LEVEL"] {
-		t.Errorf("Invalid value for env variable: LOG_LEVEL")
-	}
-	if Vars.LogToFile != true {
-		t.Errorf("Invalid value for env variable: LOG_TO_FILE")
-	}
-	if Vars.NetworkName != env_map["NETWORK_NAME"] {
-		t.Errorf("Invalid value for env variable: NETWORK_NAME")
-	}
-	if Vars.KafkaBrokerURL != env_map["KAFKA_BROKER_URL"] {
-		t.Errorf("Invalid value for env variable: TOPIC_NAMES")
-	}
-	if Vars.TopicNames != env_map["TOPIC_NAMES"] {
-		t.Errorf("Invalid value for env variable: TOPIC_NAMES")
-	}
+	assert.Equal(Vars.Version, env_map["VERSION"])
+	assert.Equal(Vars.Port, env_map["PORT"])
+	assert.Equal(Vars.HealthPort, env_map["HEALTH_PORT"])
+	assert.Equal(Vars.MetricsPort, env_map["METRICS_PORT"])
+	assert.Equal(Vars.RestPrefix, env_map["REST_PREFIX"])
+	assert.Equal(Vars.WebsocketPrefix, env_map["WEBSOCKET_PREFIX"])
+	assert.Equal(Vars.HealthPrefix, env_map["HEALTH_PREFIX"])
+	assert.Equal(Vars.HealthPollingInterval, 5)
+	assert.Equal(Vars.LogLevel, env_map["LOG_LEVEL"])
+	assert.Equal(Vars.LogToFile, true)
+	assert.Equal(Vars.NetworkName, env_map["NETWORK_NAME"])
+	assert.Equal(Vars.KafkaBrokerURL, env_map["KAFKA_BROKER_URL"])
+	assert.Equal(Vars.TopicNames, env_map["TOPIC_NAMES"])
 }
