@@ -38,6 +38,6 @@ func Start() {
 	})
 
 	// Start server
-	http.Handle("/metrics", promhttp.Handler())
+	http.Handle(config.Vars.MetricsPrefix, promhttp.Handler())
 	go http.ListenAndServe(":"+config.Vars.MetricsPort, nil)
 }

@@ -16,11 +16,12 @@ func TestEnvironment(t *testing.T) {
 		"VERSION":                 "version",
 		"PORT":                    "port",
 		"HEALTH_PORT":             "health_port",
+		"METRICS_PORT":            "metrics_port",
 		"REST_PREFIX":             "rest_prefix",
 		"WEBSOCKET_PREFIX":        "websocket_prefix",
 		"HEALTH_PREFIX":           "health_prefix",
+		"METRICS_PREFIX":          "metrics_prefix",
 		"HEALTH_POLLING_INTERVAL": "5",
-		"METRICS_PORT":            "metrics_port",
 		"LOG_LEVEL":               "log_level",
 		"LOG_TO_FILE":             "true",
 		"NETWORK_NAME":            "network_name",
@@ -43,6 +44,7 @@ func TestEnvironment(t *testing.T) {
 	assert.Equal(Vars.RestPrefix, env_map["REST_PREFIX"])
 	assert.Equal(Vars.WebsocketPrefix, env_map["WEBSOCKET_PREFIX"])
 	assert.Equal(Vars.HealthPrefix, env_map["HEALTH_PREFIX"])
+	assert.Equal(Vars.MetricsPrefix, env_map["METRICS_PREFIX"])
 	assert.Equal(Vars.HealthPollingInterval, 5)
 	assert.Equal(Vars.LogLevel, env_map["LOG_LEVEL"])
 	assert.Equal(Vars.LogToFile, true)

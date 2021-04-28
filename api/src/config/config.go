@@ -17,6 +17,7 @@ type Environment struct {
 	RestPrefix            string `envconfig:"REST_PREFIX" required:"false" default:"/rest"`
 	WebsocketPrefix       string `envconfig:"WEBSOCKET_PREFIX" required:"false" default:"/ws"`
 	HealthPrefix          string `envconfig:"HEALTH_PREFIX" required:"false" default:"/healthcheck"`
+	MetricsPrefix         string `envconfig:"METRICS_PREFIX" required:"false" default:"/metrics"`
 	HealthPollingInterval int    `envconfig:"HEALTH_POLLING_INTERVAL" required:"false" default:"10"`
 	LogLevel              string `envconfig:"LOG_LEVEL" required:"false" default:"INFO"`
 	LogToFile             bool   `envconfig:"LOG_TO_FILE" required:"false" default:"false"`
