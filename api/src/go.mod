@@ -5,8 +5,10 @@ go 1.15
 require (
 	github.com/InVisionApp/go-health/v2 v2.1.2
 	github.com/confluentinc/confluent-kafka-go v1.6.1 // indirect
+	github.com/davecgh/go-spew v1.1.1
 	github.com/gofiber/fiber/v2 v2.8.0
 	github.com/gofiber/websocket/v2 v2.0.3
+	github.com/gorilla/websocket v0.0.0-20170926233335-4201258b820c
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/prometheus/client_golang v1.10.0

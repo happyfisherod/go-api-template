@@ -19,17 +19,21 @@ func main() {
 
 	logging.Init()
 
-	// Start Prometheus client
-	go metrics.StartPrometheusHttpServer(config.Vars.MetricsPort, config.Vars.NetworkName)
+	// Start kafka consumers
+	// Go routines start in function
+	kafka.Start()
 
-	// Start kafka consumer and broadcaster
-	go kafka.StartConsumer()
+	// Start Prometheus client
+	// Go routine starts in function
+	metrics.Start()
 
 	// Start API server
-	go server.Start()
+	// Go routine starts in function
+	server.Start()
 
 	// Start Health server
-	go healthcheck.Start()
+	// Go routine starts in function
+	healthcheck.Start()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)

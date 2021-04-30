@@ -31,7 +31,7 @@ func Start() {
 	rest.BlocksAddHandlers(app)
 	ws.BlocksAddHandlers(app)
 
-	app.Listen(":" + config.Vars.Port)
+	go app.Listen(":" + config.Vars.Port)
 }
 
 func handlerVersion(c *fiber.Ctx) error {

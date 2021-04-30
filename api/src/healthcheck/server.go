@@ -14,6 +14,10 @@ import (
 )
 
 func Start() {
+	go startHealthServer()
+}
+
+func startHealthServer() {
 	// Create a new health instance
 	h := health.New()
 

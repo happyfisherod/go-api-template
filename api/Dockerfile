@@ -8,15 +8,15 @@ ENV GO111MODULE=on \
 
 # COPY SRC
 WORKDIR /build
-COPY ../api/src .
+COPY ./api/src .
 
 # BUILD
 RUN go build -o main .
 
 FROM ubuntu as prod
 COPY --from=builder /build/main /
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+#COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 CMD ["/main"]
 
 FROM builder as test
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+#COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
