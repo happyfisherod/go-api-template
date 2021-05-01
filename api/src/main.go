@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/healthcheck"
@@ -45,7 +46,7 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-sigChan
-		log.Println("Shutting down...")
+		log.Info("Shutting down...")
 		shutdown <- 1
 	}()
 
