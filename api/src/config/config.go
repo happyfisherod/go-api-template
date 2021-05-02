@@ -24,6 +24,7 @@ type Environment struct {
 	NetworkName           string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
 	KafkaBrokerURL        string `envconfig:"KAFKA_BROKER_URL" required:"false" default:""`
 	TopicNames            string `envconfig:"TOPIC_NAMES" required:"false" default:"blocks"`
+	SchemaNames           string `envconfig:"SCHEMA_NAMES" required:"false" default:"block:block_raw"` // each pair is <topic name>:<topic file in models dir>
 }
 
 var Vars Environment

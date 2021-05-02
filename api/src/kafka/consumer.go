@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
@@ -13,9 +14,16 @@ import (
 func Start() {
 	kafka_broker := config.Vars.KafkaBrokerURL
 	topics := strings.Split(config.Vars.TopicNames, ",")
+	schemas := strings.Split(config.Vars.SchemaNames, ",")
 
 	if kafka_broker == "" {
 		log.Panic("No kafka broker url provided")
+	}
+
+	time.Sleep(time.Minute)
+	for _, schemaNameAndFilePairs := range schemas {
+		schemaNameAndFile := strings.Split(schemaNameAndFilePairs, ":")
+		_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
 	}
 
 	for _, t := range topics {
