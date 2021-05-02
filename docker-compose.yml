@@ -7,9 +7,12 @@ services:
       dockerfile: ./api/Dockerfile
       target: prod
     ports:
-      - "9000:9000" # API
+      - "8000:8000" # API
       - "8180:8180" # Health
       - "9400:9400" # Prometheus
+    depends_on:
+      - kafka
+      - schemaregistry
     env_file:
       - ./api/.env.test
 

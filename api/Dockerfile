@@ -14,6 +14,7 @@ COPY ./api/src .
 RUN go build -o main .
 
 FROM ubuntu as prod
+COPY ./models ./models
 COPY --from=builder /build/main /
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 CMD ["/main"]
