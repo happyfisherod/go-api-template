@@ -3,12 +3,13 @@ package kafka
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/geometry-labs/api/config"
 	"github.com/riferrei/srclient"
 	"io/ioutil"
 )
 
 func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
-	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://schemaregistry:8081")
+	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + config.Vars.SchemaRegistryURL)
 	schema, err := schemaRegistryClient.GetLatestSchema(topic, false)
 	if schema == nil {
 		schema, err = registerSchema(schemaRegistryClient, topic, isKey, srcSchemaFile)
