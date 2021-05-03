@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile.debug
+      target: prod
+    ports:
+      - "8000:8000" # API
+      - "8180:8180" # Health
+      - "9400:9400" # Prometheus
+      - "40000:40000" # Debug
+    security_opt:
+      - "seccomp:unconfined"
+    cap_add:
+      - SYS_PTRACE
+#    command: /main
+    command: /dlv --headless --listen=:40000 --api-version=2 exec /main
+    depends_on:
+      - kafka
+      - schemaregistry
+    env_file:
+      - ./api/.env.test
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+      target: prod
+    ports:
+      - "9001:9001"
+      - "8181:8181"
+
+  mongo:
+    image: mongo
+
+  etl:
+    image: geometrylabs/iconetl:${ICON_ETL_TAG:-latest}
+    command: [
+      "stream",
+      "-o", "kafka:9092",
+      "--period-seconds", "1",
+      "--provider-uri", "http://134.122.40.114:9000/api/v3",
+      "-b", "100",
+    ]
+    depends_on:
+      - kafka
+    restart: on-failure
+    volumes:
+      - "./last_synced_block.txt:/icon-etl/last_synced_block.txt"
+
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+
