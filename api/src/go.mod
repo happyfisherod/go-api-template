@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	github.com/InVisionApp/go-health/v2 v2.1.2
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/arsmn/fiber-swagger/v2 v2.6.0
 	github.com/confluentinc/confluent-kafka-go v1.6.1 // indirect
 	github.com/gofiber/fiber/v2 v2.8.0
@@ -16,6 +15,5 @@ require (
 	github.com/riferrei/srclient v0.2.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
-	github.com/swaggo/swag v1.7.0
 	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.6.1
 )

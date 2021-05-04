@@ -10,6 +10,10 @@ ENV GO111MODULE=on \
 WORKDIR /build
 COPY ./api/src .
 
+# DOWNLOAND DEPS
+RUN go mod tidy
+RUN go mod download
+
 # CREATE SWAGGER DOCS
 RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN swag init -g server/server.go
