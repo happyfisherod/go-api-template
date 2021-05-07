@@ -1,12 +1,12 @@
 package kafka
 
 import (
+	log "github.com/sirupsen/logrus"
+	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
-
+	backoff "github.com/cenkalti/backoff/v4"
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/metrics"
 )
@@ -20,10 +20,26 @@ func Start() {
 		log.Panic("No kafka broker url provided")
 	}
 
-	time.Sleep(time.Minute)
+	//time.Sleep(time.Minute)
 	for _, schemaNameAndFilePairs := range schemas {
 		schemaNameAndFile := strings.Split(schemaNameAndFilePairs, ":")
-		_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+		//_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+
+		operation := func() error {
+			_, err := RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+			if err != nil {
+				log.Info("RegisterSchema unsuccessful")
+			}
+			return err
+		}
+		neb := backoff.NewExponentialBackOff()
+		neb.MaxElapsedTime = time.Minute
+		err := backoff.Retry(operation, neb)
+		if err != nil {
+			log.Info("Finally also RegisterSchema Unsuccessful")
+		} else {
+			log.Info("Finally RegisterSchema Successful")
+		}
 	}
 
 	for _, t := range topics {
