@@ -1,14 +1,12 @@
 package kafka
 
 import (
+	"fmt"
+	"github.com/geometry-labs/api/config"
+	"github.com/geometry-labs/api/metrics"
 	log "github.com/sirupsen/logrus"
 	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 	"strings"
-	"time"
-
-	backoff "github.com/cenkalti/backoff/v4"
-	"github.com/geometry-labs/api/config"
-	"github.com/geometry-labs/api/metrics"
 )
 
 func Start() {
@@ -24,23 +22,8 @@ func Start() {
 	for _, schemaNameAndFilePairs := range schemas {
 		schemaNameAndFile := strings.Split(schemaNameAndFilePairs, ":")
 		//_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
-
-		operation := func() error {
-			//_, err := RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
-			_, err := RetriableRegisterSchema(RegisterSchema, schemaNameAndFile[0], false, schemaNameAndFile[1], true)
-			if err != nil {
-				log.Info("RegisterSchema unsuccessful")
-			}
-			return err
-		}
-		neb := backoff.NewExponentialBackOff()
-		neb.MaxElapsedTime = time.Minute
-		err := backoff.Retry(operation, neb)
-		if err != nil {
-			log.Info("Finally also RegisterSchema Unsuccessful")
-		} else {
-			log.Info("Finally RegisterSchema Successful")
-		}
+		id, _ := RetriableRegisterSchema(RegisterSchema, schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+		fmt.Printf("Schema id for %s is %d", schemaNameAndFile[0], id)
 	}
 
 	for _, t := range topics {

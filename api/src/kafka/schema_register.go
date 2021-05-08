@@ -3,9 +3,11 @@ package kafka
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/geometry-labs/api/config"
 	"github.com/riferrei/srclient"
 	"io/ioutil"
+	"time"
 )
 
 type RetriableFunc func(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error)
@@ -42,5 +44,23 @@ func registerSchema(schemaRegistryClient *srclient.SchemaRegistryClient, topic s
 }
 
 func RetriableRegisterSchema(fn RetriableFunc, topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
-	return fn(topic, isKey, srcSchemaFile, forceUpdate)
+	x := 0
+	operation := func() error {
+		val, err := fn(topic, isKey, srcSchemaFile, forceUpdate)
+		if err != nil {
+			fmt.Println("RegisterSchema unsuccessful")
+		} else {
+			x = val
+		}
+		return err
+	}
+	neb := backoff.NewExponentialBackOff()
+	neb.MaxElapsedTime = time.Minute
+	err := backoff.Retry(operation, neb)
+	if err != nil {
+		fmt.Println("Finally also RegisterSchema Unsuccessful")
+	} else {
+		fmt.Println("Finally RegisterSchema Successful")
+	}
+	return x, err
 }
