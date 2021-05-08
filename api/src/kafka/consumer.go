@@ -26,7 +26,8 @@ func Start() {
 		//_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
 
 		operation := func() error {
-			_, err := RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+			//_, err := RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+			_, err := RetriableRegisterSchema(RegisterSchema, schemaNameAndFile[0], false, schemaNameAndFile[1], true)
 			if err != nil {
 				log.Info("RegisterSchema unsuccessful")
 			}

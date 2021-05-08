@@ -8,7 +8,10 @@ import (
 	"io/ioutil"
 )
 
+type RetriableFunc func(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error)
+
 func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
+	fmt.Printf("RegisterSchema() \n")
 	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + config.Vars.SchemaRegistryURL)
 	schema, err := schemaRegistryClient.GetLatestSchema(topic, false)
 	if schema == nil {
@@ -36,4 +39,8 @@ func registerSchema(schemaRegistryClient *srclient.SchemaRegistryClient, topic s
 		return nil, err
 	}
 	return schema, nil
+}
+
+func RetriableRegisterSchema(fn RetriableFunc, topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
+	return fn(topic, isKey, srcSchemaFile, forceUpdate)
 }
