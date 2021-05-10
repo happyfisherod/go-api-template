@@ -1,14 +1,12 @@
 package kafka
 
 import (
-	"strings"
-	"time"
-
-	log "github.com/sirupsen/logrus"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
-
+	"fmt"
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/metrics"
+	log "github.com/sirupsen/logrus"
+	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	"strings"
 )
 
 func Start() {
@@ -20,10 +18,12 @@ func Start() {
 		log.Panic("No kafka broker url provided")
 	}
 
-	time.Sleep(time.Minute)
+	//time.Sleep(time.Minute)
 	for _, schemaNameAndFilePairs := range schemas {
 		schemaNameAndFile := strings.Split(schemaNameAndFilePairs, ":")
-		_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+		//_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+		id, _ := RetriableRegisterSchema(RegisterSchema, schemaNameAndFile[0], false, schemaNameAndFile[1], true)
+		fmt.Printf("Schema id for %s is %d", schemaNameAndFile[0], id)
 	}
 
 	for _, t := range topics {

@@ -3,12 +3,17 @@ package kafka
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/geometry-labs/api/config"
 	"github.com/riferrei/srclient"
 	"io/ioutil"
+	"time"
 )
 
+type RegisterSchemaFunc func(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error)
+
 func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
+	fmt.Printf("RegisterSchema() \n")
 	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + config.Vars.SchemaRegistryURL)
 	schema, err := schemaRegistryClient.GetLatestSchema(topic, false)
 	if schema == nil {
@@ -26,7 +31,7 @@ func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate 
 }
 
 func registerSchema(schemaRegistryClient *srclient.SchemaRegistryClient, topic string, isKey bool, srcSchemaFile string) (*srclient.Schema, error) {
-	filePath := "models/" + srcSchemaFile + ".proto"
+	filePath := "schemas/" + srcSchemaFile + ".proto"
 	fmt.Printf("Adding/Updating Schema from: %s\n", filePath)
 	schemaBytes, _ := ioutil.ReadFile(filePath)
 	schema, err := schemaRegistryClient.CreateSchema(topic, string(schemaBytes), srclient.Protobuf, isKey)
@@ -36,4 +41,26 @@ func registerSchema(schemaRegistryClient *srclient.SchemaRegistryClient, topic s
 		return nil, err
 	}
 	return schema, nil
+}
+
+func RetriableRegisterSchema(fn RegisterSchemaFunc, topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
+	x := 0
+	operation := func() error {
+		val, err := fn(topic, isKey, srcSchemaFile, forceUpdate)
+		if err != nil {
+			fmt.Println("RegisterSchema unsuccessful")
+		} else {
+			x = val
+		}
+		return err
+	}
+	neb := backoff.NewExponentialBackOff()
+	neb.MaxElapsedTime = time.Minute
+	err := backoff.Retry(operation, neb)
+	if err != nil {
+		fmt.Println("Finally also RegisterSchema Unsuccessful")
+	} else {
+		fmt.Println("Finally RegisterSchema Successful")
+	}
+	return x, err
 }
