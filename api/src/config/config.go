@@ -25,7 +25,7 @@ type Environment struct {
 	KafkaBrokerURL        string `envconfig:"KAFKA_BROKER_URL" required:"false" default:"localhost:9092"`
 	SchemaRegistryURL     string `envconfig:"SCHEMA_REGISTRY_URL" required:"false" default:"localhost:8081"`
 	TopicNames            string `envconfig:"TOPIC_NAMES" required:"false" default:"blocks"`
-	SchemaNames           string `envconfig:"SCHEMA_NAMES" required:"false" default:"block:block_raw"` // each pair is <topic name>:<topic file in models dir>
+	SchemaNames           string `envconfig:"SCHEMA_NAMES" required:"false" default:"block:block_raw"` // each pair is <topic name>:<topic file in schemas dir>
 }
 
 var Vars Environment

@@ -20,15 +20,31 @@ services:
       - schemaregistry
     env_file:
       - ./api/.env.test
+    volumes:
+      - ./api/src:/api
+      - ./schemas:/api/schemas
 
   worker:
     build:
       context: .
       dockerfile: worker/Dockerfile
-      target: prod
+      target: test
     ports:
       - "9001:9001"
       - "8181:8181"
+      - "40001:40001" # Remote Debug
+    security_opt:
+      - "seccomp:unconfined"
+    cap_add:
+      - SYS_PTRACE
+    depends_on:
+      - kafka
+      - schemaregistry
+    env_file:
+      - ./worker/.env.test
+    volumes:
+      - ./worker/src:/worker
+      - ./schemas:/worker/schemas
 
   mongo:
     image: mongo
