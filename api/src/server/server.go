@@ -3,14 +3,19 @@ package server
 import (
 	"encoding/json"
 
+	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/api/config"
+	_ "github.com/geometry-labs/api/docs"
 	"github.com/geometry-labs/api/server/rest"
 	"github.com/geometry-labs/api/server/ws"
 )
 
+// @title Go api template docs
+// @version 2.0
+// @description This is a sample server server.
 func Start() {
 
 	app := fiber.New()
@@ -23,6 +28,9 @@ func Start() {
 		return c.Next()
 	})
 
+	// Swagger docs
+	app.Get("/docs/*", swagger.Handler)
+
 	// Add version handlers
 	app.Get("/version", handlerVersion)
 	app.Get("/metadata", handlerMetadata)
@@ -34,6 +42,14 @@ func Start() {
 	go app.Listen(":" + config.Vars.Port)
 }
 
+// Version
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /version [get]
 func handlerVersion(c *fiber.Ctx) error {
 	message := map[string]string{
 		"version": config.Vars.Version,
@@ -44,6 +60,14 @@ func handlerVersion(c *fiber.Ctx) error {
 	return c.SendString(string(json_message))
 }
 
+// Metadata
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /metadata [get]
 func handlerMetadata(c *fiber.Ctx) error {
 	message := map[string]string{
 		"version":     config.Vars.Version,

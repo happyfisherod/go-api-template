@@ -3,6 +3,7 @@
 ## Schema
 - protobuf
   - be like google 
+  - Create a doc that defines the process to create models
 - avro
   - nativist 
 - json schema
