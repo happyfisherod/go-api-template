@@ -23,7 +23,10 @@ func main() {
 	// Start kafka consumers
 	// Go routines start in function
 	//kafka.Start()
-	service.StartConsumeBlocks()
+	returnConsumedBlockChan := make(chan string)
+	defer close(returnConsumedBlockChan)
+	go service.StartConsumeBlocks(returnConsumedBlockChan)
+	go service.StartTransformBlocks(returnConsumedBlockChan)
 
 	// Start Prometheus client
 	// Go routine starts in function

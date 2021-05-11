@@ -8,10 +8,9 @@ import (
 )
 
 type KafkaConsumer struct {
-	consumer     *kafka.Consumer
-	blockChannel chan kafka.Event
-	isReading    bool
-	isClose      bool
+	consumer  *kafka.Consumer
+	isReading bool
+	isClose   bool
 }
 
 func NewKafkaConsumer(broker string, group string, offset string) (*KafkaConsumer, error) {
@@ -36,32 +35,37 @@ func (kafkaConsumer *KafkaConsumer) Subscribe(topics []string, rebalanceCb kafka
 	return err
 }
 
-func (kafkaConsumer *KafkaConsumer) StartRead() {
+func (kafkaConsumer *KafkaConsumer) StartRead(returnChan chan string) {
 	kafkaConsumer.isReading = true
-	kafkaConsumer.read()
+	kafkaConsumer.read(returnChan)
 	defer kafkaConsumer.StopRead()
 }
 
-func (kafkaConsumer *KafkaConsumer) read() {
+func (kafkaConsumer *KafkaConsumer) read(returnChan chan string) {
 	for kafkaConsumer.isReading {
 		ev, err := kafkaConsumer.consumer.ReadMessage(-1)
 		if err != nil {
 			fmt.Printf("Block message read error: %v\n", err)
 		} else {
 			fmt.Printf("Consuming Block message\n")
-			kafkaConsumer.handleEventRead(ev)
+			kafkaConsumer.handleEventRead(ev, returnChan)
 		}
 	}
 }
 
-func (kafkaConsumer *KafkaConsumer) handleEventRead(ev *kafka.Message) {
-	//ev := <- kafkaConsumer.events
+func (kafkaConsumer *KafkaConsumer) handleEventRead(ev *kafka.Message, returnChan chan string) {
 	block := models.BlockRaw{}
 	err := protojson.Unmarshal(ev.Value, &block)
 	if err != nil {
 		fmt.Printf("Error in Unmarshall of Block comming from IconEtl: %v", err)
 	}
 	fmt.Printf("%s %v \n", "Block consumed from iconetl:", block.String())
+	go sendToReturnChan(returnChan, block.String())
+}
+
+func sendToReturnChan(returnChan chan string, block string) {
+	fmt.Println("sendToReturnChan()")
+	returnChan <- block
 }
 
 func (kafkaConsumer *KafkaConsumer) StopRead() {

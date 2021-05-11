@@ -5,7 +5,7 @@ import (
 	"github.com/geometry-labs/api/kafka"
 )
 
-func StartConsumeBlocks() {
+func StartConsumeBlocks(returnChan chan string) {
 	consumer, err := kafka.NewKafkaConsumer(config.Vars.KafkaBrokerURL, config.Vars.Name+"-group", "latest")
 	if err != nil {
 		panic(err)
@@ -17,5 +17,5 @@ func StartConsumeBlocks() {
 		panic(err)
 	}
 
-	consumer.StartRead()
+	consumer.StartRead(returnChan)
 }

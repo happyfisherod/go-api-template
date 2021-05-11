@@ -54,7 +54,7 @@ services:
     command: [
       "stream",
       "-o", "kafka:9092",
-      "--period-seconds", "10",
+      "--period-seconds", "1",
       "--provider-uri", "http://134.122.40.114:9000/api/v3",
       "-b", "100",
     ]
