@@ -16,18 +16,20 @@ type KafkaTopicProducer struct {
 	TopicChan chan *confluent.Message
 }
 
-var KafkaTopicProducers map[string]KafkaTopicProducer
+// map[Topic_Name] -> Producer
+var KafkaTopicProducers map[string]*KafkaTopicProducer
 
 func StartProducer() {
-	KafkaTopicProducers = make(map[string]KafkaTopicProducer)
+	KafkaTopicProducers = make(map[string]*KafkaTopicProducer)
 
 	kafka_broker := config.Vars.KafkaBrokerURL
-	output_topics := strings.Split(config.Vars.OuputTopics, ",")
+	output_topics := strings.Split(config.Vars.OutputTopics, ",")
 
 	for _, t := range output_topics {
 		KafkaTopicProducers[t] = &KafkaTopicProducer{
 			kafka_broker,
 			t,
+			make(chan *confluent.Message),
 		}
 
 		go KafkaTopicProducers[t].produceTopic()

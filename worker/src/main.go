@@ -24,8 +24,11 @@ func main() {
 	// Start Health server
 	healthcheck.Start()
 
-	// Start kafka consumer and broadcaster
+	// Start kafka consumer
 	kafka.StartConsumer()
+
+	// Start kafka consumer
+	kafka.StartProducer()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)

@@ -15,7 +15,9 @@ RUN go mod tidy
 RUN go mod download
 
 # CREATE SWAGGER DOCS
-RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN go get github.com/swaggo/swag/cmd/swag
+RUN go get github.com/alecthomas/template
+RUN go get github.com/riferrei/srclient@v0.3.0
 RUN swag init -g server/server.go
 
 # BUILD
