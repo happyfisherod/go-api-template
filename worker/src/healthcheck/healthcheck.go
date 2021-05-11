@@ -40,5 +40,5 @@ func Start() {
 
 	// Define a healthcheck endpoint and use the built-in JSON handler
 	http.HandleFunc("/healthcheck", handlers.NewJSONHandlerFunc(h, nil))
-	http.ListenAndServe(":"+config.Vars.HealthPort, nil)
+	go http.ListenAndServe(":"+config.Vars.HealthPort, nil)
 }
