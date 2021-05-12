@@ -3,6 +3,8 @@ package metrics
 import (
 	"net/http"
 
+	"github.com/geometry-labs/worker/config"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -10,22 +12,22 @@ import (
 
 var Metrics map[string]prometheus.Counter
 
-func StartPrometheusHttpServer(metrics_port string, network_name string) {
+func Start() {
 	Metrics = make(map[string]prometheus.Counter)
 
 	// Create gauges
-	Metrics["requests_amount"] = promauto.NewCounter(prometheus.CounterOpts{
-		Name:        "requests_amount",
-		Help:        "amount of requests",
-		ConstLabels: prometheus.Labels{"network_name": network_name},
+	Metrics["kafka_messages_produced"] = promauto.NewCounter(prometheus.CounterOpts{
+		Name:        "kafka_messages_produced",
+		Help:        "amount of messages from kafka produced",
+		ConstLabels: prometheus.Labels{"network_name": config.Vars.NetworkName},
 	})
 	Metrics["kafka_messages_consumed"] = promauto.NewCounter(prometheus.CounterOpts{
 		Name:        "kafka_messages_consumed",
-		Help:        "amount of messageds from kafka consumed",
-		ConstLabels: prometheus.Labels{"network_name": network_name},
+		Help:        "amount of messages from kafka consumed",
+		ConstLabels: prometheus.Labels{"network_name": config.Vars.NetworkName},
 	})
 
 	// Start server
-	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":"+metrics_port, nil)
+	http.Handle(config.Vars.MetricsPrefix, promhttp.Handler())
+	go http.ListenAndServe(":"+config.Vars.MetricsPort, nil)
 }

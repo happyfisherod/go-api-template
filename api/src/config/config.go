@@ -24,6 +24,7 @@ type Environment struct {
 	NetworkName           string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
 	KafkaBrokerURL        string `envconfig:"KAFKA_BROKER_URL" required:"false" default:"localhost:9092"`
 	SchemaRegistryURL     string `envconfig:"SCHEMA_REGISTRY_URL" required:"false" default:"localhost:8081"`
+	KafkaGroupID          string `envconfig:"KAFKA_GROUP_ID" required:"false" default:"websocket-group"`
 	TopicNames            string `envconfig:"TOPIC_NAMES" required:"false" default:"blocks"`
 	SchemaNames           string `envconfig:"SCHEMA_NAMES" required:"false" default:"block:block_raw"` // each pair is <topic name>:<topic file in schemas dir>
 }

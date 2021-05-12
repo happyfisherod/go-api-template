@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 // TODO use uuid for larger ID range
@@ -12,22 +12,24 @@ var LAST_BROADCASTER_ID BroadcasterID = 0
 type TopicBroadcaster struct {
 
 	// Input
-	InputChan chan *kafka.Message
+	InputChan chan *confluent.Message
 
 	// Output
-	OutputChans map[BroadcasterID]chan *kafka.Message
+	OutputChans map[BroadcasterID]chan *confluent.Message
 }
 
-var Broadcasters map[string]*TopicBroadcaster
+var Broadcasters = map[string]*TopicBroadcaster{}
 
-func newBroadcaster(topic_name string, input_chan chan *kafka.Message) {
+func newBroadcaster(topic_name string, input_chan chan *confluent.Message) {
 	Broadcasters[topic_name] = &TopicBroadcaster{
 		input_chan,
-		make(map[BroadcasterID]chan *kafka.Message),
+		make(map[BroadcasterID]chan *confluent.Message),
 	}
+
+	go Broadcasters[topic_name].Start()
 }
 
-func (tb *TopicBroadcaster) AddOutputChannel(topic_chan chan *kafka.Message) BroadcasterID {
+func (tb *TopicBroadcaster) AddOutputChannel(topic_chan chan *confluent.Message) BroadcasterID {
 	id := LAST_BROADCASTER_ID
 	LAST_BROADCASTER_ID++
 
@@ -43,7 +45,7 @@ func (tb *TopicBroadcaster) RemoveOutputChannel(id BroadcasterID) {
 	}
 }
 
-func (tb *TopicBroadcaster) Broadcast() {
+func (tb *TopicBroadcaster) Start() {
 	for {
 		msg := <-tb.InputChan
 

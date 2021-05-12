@@ -1,12 +1,13 @@
 package kafka
 
 import (
-	"fmt"
+	"strings"
+
 	"github.com/geometry-labs/api/config"
 	"github.com/geometry-labs/api/metrics"
+
 	log "github.com/sirupsen/logrus"
 	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
-	"strings"
 )
 
 func Start() {
@@ -23,7 +24,7 @@ func Start() {
 		schemaNameAndFile := strings.Split(schemaNameAndFilePairs, ":")
 		//_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
 		id, _ := RetriableRegisterSchema(RegisterSchema, schemaNameAndFile[0], false, schemaNameAndFile[1], true)
-		fmt.Printf("Schema id for %s is %d", schemaNameAndFile[0], id)
+		log.Info("Schema id for ", schemaNameAndFile[0], " is ", id)
 	}
 
 	for _, t := range topics {
@@ -50,7 +51,7 @@ func (k *KafkaTopicConsumer) consumeAndBroadcastTopics() {
 
 	consumer, err := confluent.NewConsumer(&confluent.ConfigMap{
 		"bootstrap.servers": k.BrokerURL,
-		"group.id":          "websocket-api-group",
+		"group.id":          config.Vars.KafkaGroupID,
 		"auto.offset.reset": "latest",
 	})
 

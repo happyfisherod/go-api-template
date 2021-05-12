@@ -14,10 +14,6 @@ import (
 )
 
 func Start() {
-	go startHealthServer()
-}
-
-func startHealthServer() {
 	// Create a new health instance
 	h := health.New()
 
@@ -44,5 +40,5 @@ func startHealthServer() {
 
 	// Define a healthcheck endpoint and use the built-in JSON handler
 	http.HandleFunc(config.Vars.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
-	http.ListenAndServe(":"+config.Vars.HealthPort, nil)
+	go http.ListenAndServe(":"+config.Vars.HealthPort, nil)
 }

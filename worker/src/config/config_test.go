@@ -4,18 +4,28 @@ import (
 	"os"
 
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEnvironment(t *testing.T) {
+	assert := assert.New(t)
 
 	// Set env
 	env_map := map[string]string{
-		"PORT":         "port",
-		"HEALTH_PORT":  "health_port",
-		"METRICS_PORT": "metrics_port",
-		"LOG_LEVEL":    "log_level",
-		"LOG_TO_FILE":  "true",
-		"NETWORK_NAME": "network_name",
+		"HEALTH_PORT":                  "health_port",
+		"METRICS_PORT":                 "metrics_port",
+		"HEALTH_PREFIX":                "health_prefix",
+		"METRICS_PREFIX":               "metrics_prefix",
+		"LOG_LEVEL":                    "log_level",
+		"LOG_TO_FILE":                  "true",
+		"NETWORK_NAME":                 "network_name",
+		"KAFKA_BROKER_URL":             "kafka_broker_url",
+		"KAFKA_GROUP_ID":               "kafka_group_id",
+		"INPUT_TOPICS":                 "input_topics",
+		"OUTPUT_TOPICS":                "output_topics",
+		"BLOCKS_WORKER_CONSUMER_TOPIC": "blocks_worker_consumer_topic",
+		"BLOCKS_WORKER_PRODUCER_TOPIC": "blocks_worker_producer_topic",
 	}
 
 	for k, v := range env_map {
@@ -26,22 +36,17 @@ func TestEnvironment(t *testing.T) {
 	GetEnvironment()
 
 	// Check env
-	if Vars.Port != env_map["PORT"] {
-		t.Errorf("Invalid value for env variable: PORT")
-	}
-	if Vars.HealthPort != env_map["HEALTH_PORT"] {
-		t.Errorf("Invalid value for env variable: HEALTH_PORT")
-	}
-	if Vars.MetricsPort != env_map["METRICS_PORT"] {
-		t.Errorf("Invalid value for env variable: METRICS_PORT")
-	}
-	if Vars.LogLevel != env_map["LOG_LEVEL"] {
-		t.Errorf("Invalid value for env variable: LOG_LEVEL")
-	}
-	if Vars.LogToFile != true {
-		t.Errorf("Invalid value for env variable: LOG_TO_FILE")
-	}
-	if Vars.NetworkName != env_map["NETWORK_NAME"] {
-		t.Errorf("Invalid value for env variable: NETWORK_NAME")
-	}
+	assert.Equal(env_map["HEALTH_PORT"], Vars.HealthPort)
+	assert.Equal(env_map["METRICS_PORT"], Vars.MetricsPort)
+	assert.Equal(env_map["HEALTH_PREFIX"], Vars.HealthPrefix)
+	assert.Equal(env_map["METRICS_PREFIX"], Vars.MetricsPrefix)
+	assert.Equal(env_map["LOG_LEVEL"], Vars.LogLevel)
+	assert.Equal(true, Vars.LogToFile)
+	assert.Equal(env_map["NETWORK_NAME"], Vars.NetworkName)
+	assert.Equal(env_map["KAFKA_BROKER_URL"], Vars.KafkaBrokerURL)
+	assert.Equal(env_map["KAFKA_GROUP_ID"], Vars.KafkaGroupID)
+	assert.Equal(env_map["INPUT_TOPICS"], Vars.InputTopics)
+	assert.Equal(env_map["OUTPUT_TOPICS"], Vars.OutputTopics)
+	assert.Equal(env_map["BLOCKS_WORKER_CONSUMER_TOPIC"], Vars.BlocksWorkerConsumerTopic)
+	assert.Equal(env_map["BLOCKS_WORKER_PRODUCER_TOPIC"], Vars.BlocksWorkerProducerTopic)
 }
