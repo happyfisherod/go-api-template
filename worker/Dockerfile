@@ -11,6 +11,7 @@ WORKDIR /build
 COPY worker/src .
 
 # BUILD
+RUN go mod tidy
 RUN go build -o main .
 
 FROM ubuntu as prod

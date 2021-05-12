@@ -6,8 +6,8 @@ import (
 	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/metrics"
 
+	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 func StartConsumers() {
@@ -19,7 +19,7 @@ func StartConsumers() {
 	for _, t := range consumer_topics {
 		// Broadcaster indexed in Broadcasters map
 		// Starts go routine
-		newBroadcaster(t, make(chan *confluent.Message))
+		newBroadcaster(t, make(chan *sarama.ConsumerMessage))
 
 		topic_consumer := &KafkaTopicConsumer{
 			kafka_broker,
@@ -27,6 +27,7 @@ func StartConsumers() {
 			Broadcasters[t],
 		}
 
+		// One routine per topic
 		log.Debug("Start Consumers: starting ", t, " consumer...")
 		go topic_consumer.consumeTopic()
 	}
@@ -40,28 +41,31 @@ type KafkaTopicConsumer struct {
 
 func (k *KafkaTopicConsumer) consumeTopic() {
 
-	consumer, err := confluent.NewConsumer(&confluent.ConfigMap{
-		"bootstrap.servers": k.BrokerURL,
-		"group.id":          "websocket-api-group",
-		"auto.offset.reset": "latest",
-	})
-
+	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, nil)
 	if err != nil {
 		log.Panic("KAFKA CONSUMER PANIC: ", err.Error())
 	}
 	defer consumer.Close()
 
-	consumer.SubscribeTopics([]string{k.TopicName}, nil)
+	offset := sarama.OffsetOldest
+	partitions, err := consumer.Partitions(k.TopicName)
+	if err != nil {
+		log.Panic("KAFKA CONSUMER PANIC: ", err.Error())
+	}
 
 	log.Debug(k.TopicName, " Consumer: started consuming")
+	for _, p := range partitions {
+		pc, _ := consumer.ConsumePartition(k.TopicName, p, offset)
 
-	for {
-		topic_msg, err := consumer.ReadMessage(-1)
-		metrics.Metrics["kafka_messages_consumed"].Inc()
+		// One routine per partition
+		go func(pc sarama.PartitionConsumer) {
+			for {
+				topic_msg := <-pc.Messages()
 
-		if err == nil {
-			log.Debug(k.TopicName, " Consumer: consuming message - ", string(topic_msg.Key))
-			k.Broadcaster.InputChan <- topic_msg
-		}
+				log.Debug(k.TopicName, " Consumer: consuming message - ", string(topic_msg.Key))
+				metrics.Metrics["kafka_messages_consumed"].Inc()
+				k.Broadcaster.ConsumerChan <- topic_msg
+			}
+		}(pc)
 	}
 }

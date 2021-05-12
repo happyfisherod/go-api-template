@@ -6,14 +6,14 @@ import (
 	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/metrics"
 
+	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 type KafkaTopicProducer struct {
 	BrokerURL string
 	TopicName string
-	TopicChan chan *confluent.Message
+	TopicChan chan *sarama.ProducerMessage
 }
 
 // map[Topic_Name] -> Producer
@@ -29,7 +29,7 @@ func StartProducers() {
 		KafkaTopicProducers[t] = &KafkaTopicProducer{
 			kafka_broker,
 			t,
-			make(chan *confluent.Message),
+			make(chan *sarama.ProducerMessage),
 		}
 
 		go KafkaTopicProducers[t].produceTopic()
@@ -38,27 +38,27 @@ func StartProducers() {
 
 func (k *KafkaTopicProducer) produceTopic() {
 
-	producer, err := confluent.NewProducer(&confluent.ConfigMap{
-		"bootstrap.servers": k.BrokerURL,
-	})
+	config := sarama.NewConfig()
+	config.Producer.Partitioner = sarama.NewRandomPartitioner
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Return.Successes = true
 
+	producer, err := sarama.NewSyncProducer([]string{k.BrokerURL}, config)
 	if err != nil {
 		log.Panic("KAFKA PRODUCER PANIC: ", err.Error())
 	}
 	defer producer.Close()
 
 	log.Debug(k.TopicName, " Producer: started producing")
-
 	for {
 		topic_msg := <-k.TopicChan
 
-		producer.Produce(&confluent.Message{
-			TopicPartition: confluent.TopicPartition{Topic: &k.TopicName, Partition: confluent.PartitionAny},
-			Key:            topic_msg.Key,
-			Value:          topic_msg.Value,
-		}, nil)
+		partition, offset, err := producer.SendMessage(topic_msg)
+		if err != nil {
+			log.Warn(k.TopicName, " Producer: err sending message=", err.Error())
+		}
 
-		log.Debug(k.TopicName, " Producer: producing message - ", string(topic_msg.Key))
+		log.Debug(k.TopicName, " Producer: producing message partition=", partition, " offset=", offset)
 		metrics.Metrics["kafka_messages_produced"].Inc()
 	}
 }
