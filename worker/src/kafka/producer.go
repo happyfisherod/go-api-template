@@ -37,7 +37,6 @@ func StartProducers() {
 }
 
 func (k *KafkaTopicProducer) produceTopic() {
-
 	config := sarama.NewConfig()
 	config.Producer.Partitioner = sarama.NewRandomPartitioner
 	config.Producer.RequiredAcks = sarama.WaitForAll
