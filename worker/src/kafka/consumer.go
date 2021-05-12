@@ -1,50 +1,67 @@
 package kafka
 
 import (
-	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	"strings"
 
+	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/metrics"
+
+	log "github.com/sirupsen/logrus"
+	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func StartConsumer() {
-	// TODO
+func StartConsumers() {
+	kafka_broker := config.Vars.KafkaBrokerURL
+	consumer_topics := strings.Split(config.Vars.ConsumerTopics, ",")
+
+	log.Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
+
+	for _, t := range consumer_topics {
+		// Broadcaster indexed in Broadcasters map
+		// Starts go routine
+		newBroadcaster(t, make(chan *confluent.Message))
+
+		topic_consumer := &KafkaTopicConsumer{
+			kafka_broker,
+			t,
+			Broadcasters[t],
+		}
+
+		log.Debug("Start Consumers: starting ", t, " consumer...")
+		go topic_consumer.consumeTopic()
+	}
 }
 
 type KafkaTopicConsumer struct {
-	TopicName string
-	TopicChan chan *kafka.Message
-
-	BrokerURL string
+	BrokerURL   string
+	TopicName   string
+	Broadcaster *TopicBroadcaster
 }
 
-func (k *KafkaTopicConsumer) consumeAndBroadcastTopics() {
+func (k *KafkaTopicConsumer) consumeTopic() {
 
-	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+	consumer, err := confluent.NewConsumer(&confluent.ConfigMap{
 		"bootstrap.servers": k.BrokerURL,
 		"group.id":          "websocket-api-group",
 		"auto.offset.reset": "latest",
 	})
 
 	if err != nil {
-		panic(err)
+		log.Panic("KAFKA CONSUMER PANIC: ", err.Error())
 	}
 	defer consumer.Close()
 
 	consumer.SubscribeTopics([]string{k.TopicName}, nil)
 
-	newBroadcaster(k.TopicName, k.TopicChan)
+	log.Debug(k.TopicName, " Consumer: started consuming")
 
 	for {
-		msg, err := consumer.ReadMessage(-1)
+		topic_msg, err := consumer.ReadMessage(-1)
 		metrics.Metrics["kafka_messages_consumed"].Inc()
 
 		if err == nil {
-
-			// NOTE: use select statement for non-blocking channels
-			select {
-			case k.TopicChan <- msg:
-			default:
-			}
+			log.Debug(k.TopicName, " Consumer: consuming message - ", string(topic_msg.Key))
+			k.Broadcaster.InputChan <- topic_msg
 		}
 	}
 }

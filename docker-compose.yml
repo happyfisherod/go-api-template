@@ -14,16 +14,21 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./api/.env.test
+      - ./api/.env.local
 
   worker:
     build:
       context: .
-      dockerfile: worker/Dockerfile
+      dockerfile: ./worker/Dockerfile
       target: prod
     ports:
-      - "9001:9001"
-      - "8181:8181"
+      - "9001:9001" # Prometheus
+      - "8181:8181" # Health
+    depends_on:
+      - kafka
+      - schemaregistry
+    env_file:
+      - ./worker/.env.local
 
   mongo:
     image: mongo

@@ -26,6 +26,7 @@ func TestEnvironment(t *testing.T) {
 		"LOG_TO_FILE":             "true",
 		"NETWORK_NAME":            "network_name",
 		"KAFKA_BROKER_URL":        "kafka_broker_url",
+		"KAFKA_GROUP_ID":          "kafka_group_id",
 		"TOPIC_NAMES":             "topic_names",
 	}
 
@@ -50,5 +51,6 @@ func TestEnvironment(t *testing.T) {
 	assert.Equal(Vars.LogToFile, true)
 	assert.Equal(Vars.NetworkName, env_map["NETWORK_NAME"])
 	assert.Equal(Vars.KafkaBrokerURL, env_map["KAFKA_BROKER_URL"])
+	assert.Equal(Vars.KafkaGroupID, env_map["KAFKA_GROUP_ID"])
 	assert.Equal(Vars.TopicNames, env_map["TOPIC_NAMES"])
 }
