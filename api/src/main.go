@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/geometry-labs/api/kafka"
 	"github.com/geometry-labs/api/logging"
-	"github.com/geometry-labs/api/service"
 	"os"
 	"os/signal"
 	"syscall"
@@ -22,11 +22,11 @@ func main() {
 
 	// Start kafka consumers
 	// Go routines start in function
-	//kafka.Start()
-	returnConsumedBlockChan := make(chan string)
-	defer close(returnConsumedBlockChan)
-	go service.StartConsumeBlocks(returnConsumedBlockChan)
-	go service.StartTransformBlocks(returnConsumedBlockChan)
+	kafka.Start()
+	//returnConsumedBlockChan := make(chan string)
+	//defer close(returnConsumedBlockChan)
+	//go service.StartConsumeBlocks(returnConsumedBlockChan)
+	//go service.StartTransformBlocks(returnConsumedBlockChan)
 
 	// Start Prometheus client
 	// Go routine starts in function
