@@ -49,16 +49,16 @@ func (k *KafkaTopicProducer) produceTopic() {
 	}
 	defer producer.Close()
 
-	log.Debug(k.TopicName, " Producer: started producing")
+	log.Debug("Producer ", k.TopicName, ": started producing")
 	for {
 		topic_msg := <-k.TopicChan
 
 		partition, offset, err := producer.SendMessage(topic_msg)
 		if err != nil {
-			log.Warn(k.TopicName, " Producer: err sending message=", err.Error())
+			log.Warn("Producer ", k.TopicName, ": err sending message=", err.Error())
 		}
 
-		log.Debug(k.TopicName, " Producer: producing message partition=", partition, " offset=", offset)
+		log.Debug("Producer ", k.TopicName, ": producing message partition=", partition, " offset=", offset)
 		metrics.Metrics["kafka_messages_produced"].Inc()
 	}
 }

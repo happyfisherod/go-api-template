@@ -53,7 +53,7 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 		log.Panic("KAFKA CONSUMER PANIC: ", err.Error())
 	}
 
-	log.Debug(k.TopicName, " Consumer: started consuming")
+	log.Debug("Consumer ", k.TopicName, ": started consuming")
 	for _, p := range partitions {
 		pc, _ := consumer.ConsumePartition(k.TopicName, p, offset)
 
@@ -62,9 +62,10 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 			for {
 				topic_msg := <-pc.Messages()
 
-				log.Debug(k.TopicName, " Consumer: consuming message - ", string(topic_msg.Key))
+				log.Debug("Consumer ", k.TopicName, ": consumed message key=", string(topic_msg.Key))
 				metrics.Metrics["kafka_messages_consumed"].Inc()
 				k.Broadcaster.ConsumerChan <- topic_msg
+				log.Debug("Consumer ", k.TopicName, ": broadcasted message key=", string(topic_msg.Key))
 			}
 		}(pc)
 	}
