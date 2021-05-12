@@ -45,20 +45,24 @@ func (k *KafkaTopicProducer) produceTopic() {
 
 	producer, err := sarama.NewSyncProducer([]string{k.BrokerURL}, config)
 	if err != nil {
-		log.Panic("KAFKA PRODUCER PANIC: ", err.Error())
+		log.Panic("KAFKA PRODUCER NEWSYNCPRODUCER PANIC: ", err.Error())
 	}
-	defer producer.Close()
+	defer func() {
+		if err := producer.Close(); err != nil {
+			log.Panic("KAFKA PRODUCER CLOSE PANIC: ", err.Error())
+		}
+	}()
 
-	log.Debug("Producer ", k.TopicName, ": started producing")
+	log.Debug("Producer ", k.TopicName, ": Started producing")
 	for {
 		topic_msg := <-k.TopicChan
 
 		partition, offset, err := producer.SendMessage(topic_msg)
 		if err != nil {
-			log.Warn("Producer ", k.TopicName, ": err sending message=", err.Error())
+			log.Warn("Producer ", k.TopicName, ": Err sending message=", err.Error())
 		}
 
-		log.Debug("Producer ", k.TopicName, ": producing message partition=", partition, " offset=", offset)
+		log.Debug("Producer ", k.TopicName, ": Producing message partition=", partition, " offset=", offset)
 		metrics.Metrics["kafka_messages_produced"].Inc()
 	}
 }

@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"strings"
+	"time"
 
 	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/metrics"
@@ -28,7 +29,7 @@ func StartConsumers() {
 		}
 
 		// One routine per topic
-		log.Debug("Start Consumers: starting ", t, " consumer...")
+		log.Debug("Start Consumers: Starting ", t, " consumer...")
 		go topic_consumer.consumeTopic()
 	}
 }
@@ -43,29 +44,47 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 
 	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, nil)
 	if err != nil {
-		log.Panic("KAFKA CONSUMER PANIC: ", err.Error())
+		log.Panic("KAFKA CONSUMER NEWCONSUMER PANIC: ", err.Error())
 	}
-	defer consumer.Close()
+	defer func() {
+		if err := consumer.Close(); err != nil {
+			log.Panic("KAFKA CONSUMER CLOSE PANIC: ", err.Error())
+		}
+	}()
 
-	offset := sarama.OffsetOldest
+	// offset := sarama.OffsetOldest
 	partitions, err := consumer.Partitions(k.TopicName)
 	if err != nil {
-		log.Panic("KAFKA CONSUMER PANIC: ", err.Error())
+		log.Panic("KAFKA CONSUMER PARTITIONS PANIC: ", err.Error())
 	}
 
-	log.Debug("Consumer ", k.TopicName, ": started consuming")
+	log.Debug("Consumer ", k.TopicName, ": Started consuming")
 	for _, p := range partitions {
-		pc, _ := consumer.ConsumePartition(k.TopicName, p, offset)
+		pc, _ := consumer.ConsumePartition(k.TopicName, p, 0)
+
+		// Watch errors
+		go func() {
+			for err := range pc.Errors() {
+				log.Warn("KAFKA CONSUMER WARN: ", err.Error())
+			}
+		}()
 
 		// One routine per partition
 		go func(pc sarama.PartitionConsumer) {
 			for {
-				topic_msg := <-pc.Messages()
+				select {
+				case topic_msg := <-pc.Messages():
+					log.Debug("Consumer ", k.TopicName, ": Consumed message key=", string(topic_msg.Key))
+					metrics.Metrics["kafka_messages_consumed"].Inc()
 
-				log.Debug("Consumer ", k.TopicName, ": consumed message key=", string(topic_msg.Key))
-				metrics.Metrics["kafka_messages_consumed"].Inc()
-				k.Broadcaster.ConsumerChan <- topic_msg
-				log.Debug("Consumer ", k.TopicName, ": broadcasted message key=", string(topic_msg.Key))
+					// Broadcast
+					k.Broadcaster.ConsumerChan <- topic_msg
+
+					log.Debug("Consumer ", k.TopicName, ": Broadcasted message key=", string(topic_msg.Key))
+				case <-time.After(3 * time.Second):
+					log.Debug("Consumer ", k.TopicName, ": No new messages...sleeping 3 seconds")
+					continue
+				}
 			}
 		}(pc)
 	}
