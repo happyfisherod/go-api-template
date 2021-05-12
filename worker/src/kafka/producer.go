@@ -17,15 +17,15 @@ type KafkaTopicProducer struct {
 }
 
 // map[Topic_Name] -> Producer
-var KafkaTopicProducers map[string]*KafkaTopicProducer
+var KafkaTopicProducers = map[string]*KafkaTopicProducer{}
 
-func StartProducer() {
-	KafkaTopicProducers = make(map[string]*KafkaTopicProducer)
-
+func StartProducers() {
 	kafka_broker := config.Vars.KafkaBrokerURL
-	output_topics := strings.Split(config.Vars.OutputTopics, ",")
+	producer_topics := strings.Split(config.Vars.ProducerTopics, ",")
 
-	for _, t := range output_topics {
+	log.Debug("Start Producer: kafka_broker=", kafka_broker, " producer_topics=", producer_topics)
+
+	for _, t := range producer_topics {
 		KafkaTopicProducers[t] = &KafkaTopicProducer{
 			kafka_broker,
 			t,
@@ -40,13 +40,14 @@ func (k *KafkaTopicProducer) produceTopic() {
 
 	producer, err := confluent.NewProducer(&confluent.ConfigMap{
 		"bootstrap.servers": k.BrokerURL,
-		"group.id":          config.Vars.KafkaGroupID,
 	})
 
 	if err != nil {
 		log.Panic("KAFKA PRODUCER PANIC: ", err.Error())
 	}
 	defer producer.Close()
+
+	log.Debug(k.TopicName, " Producer: started producing")
 
 	for {
 		topic_msg := <-k.TopicChan
@@ -57,6 +58,7 @@ func (k *KafkaTopicProducer) produceTopic() {
 			Value:          topic_msg.Value,
 		}, nil)
 
+		log.Debug(k.TopicName, " Producer: producing message - ", string(topic_msg.Key))
 		metrics.Metrics["kafka_messages_produced"].Inc()
 	}
 }

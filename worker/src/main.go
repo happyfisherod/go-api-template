@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,12 +10,16 @@ import (
 	"github.com/geometry-labs/worker/kafka"
 	"github.com/geometry-labs/worker/logging"
 	"github.com/geometry-labs/worker/metrics"
+	"github.com/geometry-labs/worker/workers"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 	config.GetEnvironment()
 
 	logging.Init()
+	log.Debug("Main: Starting logging with level ", config.Vars.LogLevel)
 
 	// Start Prometheus client
 	metrics.Start()
@@ -25,10 +28,13 @@ func main() {
 	healthcheck.Start()
 
 	// Start kafka consumer
-	kafka.StartConsumer()
+	kafka.StartConsumers()
 
 	// Start kafka consumer
-	kafka.StartProducer()
+	kafka.StartProducers()
+
+	// Start workers
+	workers.StartBlocksWorker()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)
@@ -40,7 +46,7 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-sigChan
-		log.Println("Shutting down...")
+		log.Info("Shutting down...")
 		shutdown <- 1
 	}()
 

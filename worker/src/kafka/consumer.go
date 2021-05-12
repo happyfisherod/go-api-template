@@ -10,12 +10,15 @@ import (
 	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func StartConsumer() {
+func StartConsumers() {
 	kafka_broker := config.Vars.KafkaBrokerURL
-	input_topics := strings.Split(config.Vars.InputTopics, ",")
+	consumer_topics := strings.Split(config.Vars.ConsumerTopics, ",")
 
-	for _, t := range input_topics {
+	log.Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
+
+	for _, t := range consumer_topics {
 		// Broadcaster indexed in Broadcasters map
+		// Starts go routine
 		newBroadcaster(t, make(chan *confluent.Message))
 
 		topic_consumer := &KafkaTopicConsumer{
@@ -24,6 +27,7 @@ func StartConsumer() {
 			Broadcasters[t],
 		}
 
+		log.Debug("Start Consumers: starting ", t, " consumer...")
 		go topic_consumer.consumeTopic()
 	}
 }
@@ -49,11 +53,14 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 
 	consumer.SubscribeTopics([]string{k.TopicName}, nil)
 
+	log.Debug(k.TopicName, " Consumer: started consuming")
+
 	for {
 		topic_msg, err := consumer.ReadMessage(-1)
 		metrics.Metrics["kafka_messages_consumed"].Inc()
 
 		if err == nil {
+			log.Debug(k.TopicName, " Consumer: consuming message - ", string(topic_msg.Key))
 			k.Broadcaster.InputChan <- topic_msg
 		}
 	}

@@ -18,13 +18,15 @@ type TopicBroadcaster struct {
 	OutputChans map[BroadcasterID]chan *confluent.Message
 }
 
-var Broadcasters map[string]*TopicBroadcaster
+var Broadcasters = map[string]*TopicBroadcaster{}
 
 func newBroadcaster(topic_name string, input_chan chan *confluent.Message) {
 	Broadcasters[topic_name] = &TopicBroadcaster{
 		input_chan,
 		make(map[BroadcasterID]chan *confluent.Message),
 	}
+
+	go Broadcasters[topic_name].Start()
 }
 
 func (tb *TopicBroadcaster) AddOutputChannel(topic_chan chan *confluent.Message) BroadcasterID {
@@ -43,7 +45,7 @@ func (tb *TopicBroadcaster) RemoveOutputChannel(id BroadcasterID) {
 	}
 }
 
-func (tb *TopicBroadcaster) Broadcast() {
+func (tb *TopicBroadcaster) Start() {
 	for {
 		msg := <-tb.InputChan
 
