@@ -20,7 +20,7 @@ func StartConsumers() {
 	for _, t := range consumer_topics {
 		// Broadcaster indexed in Broadcasters map
 		// Starts go routine
-		newBroadcaster(t, make(chan *sarama.ConsumerMessage))
+		newBroadcaster(t)
 
 		topic_consumer := &KafkaTopicConsumer{
 			kafka_broker,
