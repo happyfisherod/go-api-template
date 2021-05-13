@@ -20,9 +20,9 @@ type TopicBroadcaster struct {
 
 var Broadcasters = map[string]*TopicBroadcaster{}
 
-func newBroadcaster(topic_name string, input_chan chan *confluent.Message) {
+func newBroadcaster(topic_name string) {
 	Broadcasters[topic_name] = &TopicBroadcaster{
-		input_chan,
+		make(chan *confluent.Message),
 		make(map[BroadcasterID]chan *confluent.Message),
 	}
 
