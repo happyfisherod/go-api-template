@@ -2,7 +2,6 @@ package kafka
 
 import (
 	"strings"
-	"time"
 
 	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/metrics"
@@ -41,7 +40,6 @@ type KafkaTopicConsumer struct {
 }
 
 func (k *KafkaTopicConsumer) consumeTopic() {
-
 	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, nil)
 	if err != nil {
 		log.Panic("KAFKA CONSUMER NEWCONSUMER PANIC: ", err.Error())
@@ -72,19 +70,14 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 		// One routine per partition
 		go func(pc sarama.PartitionConsumer) {
 			for {
-				select {
-				case topic_msg := <-pc.Messages():
-					log.Debug("Consumer ", k.TopicName, ": Consumed message key=", string(topic_msg.Key))
-					metrics.Metrics["kafka_messages_consumed"].Inc()
+				topic_msg := <-pc.Messages()
+				log.Debug("Consumer ", k.TopicName, ": Consumed message key=", string(topic_msg.Key))
+				metrics.Metrics["kafka_messages_consumed"].Inc()
 
-					// Broadcast
-					k.Broadcaster.ConsumerChan <- topic_msg
+				// Broadcast
+				k.Broadcaster.ConsumerChan <- topic_msg
 
-					log.Debug("Consumer ", k.TopicName, ": Broadcasted message key=", string(topic_msg.Key))
-				case <-time.After(3 * time.Second):
-					log.Debug("Consumer ", k.TopicName, ": No new messages...sleeping 3 seconds")
-					continue
-				}
+				log.Debug("Consumer ", k.TopicName, ": Broadcasted message key=", string(topic_msg.Key))
 			}
 		}(pc)
 	}

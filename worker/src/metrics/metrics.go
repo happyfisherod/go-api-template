@@ -10,9 +10,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var Metrics map[string]prometheus.Counter
+var Metrics map[string]prometheus.Counter = nil
 
 func Start() {
+	if Metrics != nil {
+		return
+	}
+
 	Metrics = make(map[string]prometheus.Counter)
 
 	// Create gauges
