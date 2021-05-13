@@ -4,7 +4,7 @@ services:
   app_api:
     build:
       context: .
-      dockerfile: ./app/Dockerfile
+      dockerfile: ./app/Dockerfile.api
       target: test
     ports:
       - "8000:8000" # API
@@ -19,7 +19,7 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./app/.env.test
+      - ./app/.env.api.test
     volumes:
       - ./app/src:/app
       - ./schemas:/app/schemas
@@ -33,7 +33,7 @@ services:
 #      - "8000:8000" # API
 #      - "8180:8180" # Health
 #      - "9400:9400" # Prometheus
-#      - "50000:50000" # Remote Debug
+#      - "40000:40000" # Remote Debug
 #    security_opt:
 #      - "seccomp:unconfined"
 #    cap_add:
@@ -47,27 +47,49 @@ services:
 #      - ./api/src:/api
 #      - ./schemas:/api/schemas
 
-  worker:
-    build:
-      context: .
-      dockerfile: worker/Dockerfile
-      target: test
-    ports:
-      - "9001:9001"
-      - "8181:8181"
-      - "40001:40001" # Remote Debug
-    security_opt:
-      - "seccomp:unconfined"
-    cap_add:
-      - SYS_PTRACE
-    depends_on:
-      - kafka
-      - schemaregistry
-    env_file:
-      - ./worker/.env.test
-    volumes:
-      - ./worker/src:/worker
-      - ./schemas:/worker/schemas
+#  worker:
+#    build:
+#      context: .
+#      dockerfile: worker/Dockerfile
+#      target: test
+#    ports:
+#      - "9001:9001"
+#      - "8181:8181"
+#      - "40001:40001" # Remote Debug
+#    security_opt:
+#      - "seccomp:unconfined"
+#    cap_add:
+#      - SYS_PTRACE
+#    depends_on:
+#      - kafka
+#      - schemaregistry
+#    env_file:
+#      - ./worker/.env.test
+#    volumes:
+#      - ./worker/src:/worker
+#      - ./schemas:/worker/schemas
+
+#  worker:
+#    build:
+#      context: .
+#      dockerfile: worker/Dockerfile
+#      target: test
+#    ports:
+#      - "9001:9001"
+#      - "8181:8181"
+#      - "40001:40001" # Remote Debug
+#    security_opt:
+#      - "seccomp:unconfined"
+#    cap_add:
+#      - SYS_PTRACE
+#    depends_on:
+#      - kafka
+#      - schemaregistry
+#    env_file:
+#      - ./worker/.env.test
+#    volumes:
+#      - ./worker/src:/worker
+#      - ./schemas:/worker/schemas
 
   mongo:
     image: mongo
