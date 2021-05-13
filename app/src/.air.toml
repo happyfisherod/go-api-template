@@ -10,7 +10,7 @@ cmd = "go build -o ./tmp/main ."
 bin = "tmp/main"
 # Customize binary.
 #full_bin = "APP_ENV=dev APP_USER=air ./tmp/main"
-full_bin = "dlv exec --continue --accept-multiclient --listen=:50000 --headless=true --api-version=2 --log ./tmp/main"
+full_bin = "dlv exec --continue --accept-multiclient --listen=:40000 --headless=true --api-version=2 --log ./tmp/main"
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html"]
 # Ignore these filename extensions or directories.

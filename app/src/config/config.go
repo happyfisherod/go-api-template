@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"os"
 
@@ -22,8 +23,8 @@ type Environment struct {
 	LogLevel              string `envconfig:"LOG_LEVEL" required:"false" default:"INFO"`
 	LogToFile             bool   `envconfig:"LOG_TO_FILE" required:"false" default:"false"`
 	NetworkName           string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
-	KafkaBrokerURL        string `envconfig:"KAFKA_BROKER_URL" required:"false" default:"localhost:9092"`
-	SchemaRegistryURL     string `envconfig:"SCHEMA_REGISTRY_URL" required:"false" default:"localhost:8081"`
+	KafkaBrokerURL        string `envconfig:"KAFKA_BROKER_URL" required:"false" default:""`
+	SchemaRegistryURL     string `envconfig:"SCHEMA_REGISTRY_URL" required:"false" default:""`
 	KafkaGroupID          string `envconfig:"KAFKA_GROUP_ID" required:"false" default:"websocket-group"`
 	TopicNames            string `envconfig:"TOPIC_NAMES" required:"false" default:"blocks"`
 	SchemaNames           string `envconfig:"SCHEMA_NAMES" required:"false" default:"block:block_raw"` // each pair is <topic name>:<topic file in schemas dir>
@@ -45,4 +46,7 @@ func GetEnvironment() {
 	if err != nil {
 		log.Fatalf("ERROR: envconfig - %s\n", err.Error())
 	}
+
+	vars, _ := json.Marshal(Vars)
+	log.Info("Config Vars: " + string(vars))
 }

@@ -1,10 +1,10 @@
 version: "3.7"
 
 services:
-  api:
+  app_api:
     build:
       context: .
-      dockerfile: ./api/Dockerfile
+      dockerfile: ./app/Dockerfile
       target: test
     ports:
       - "8000:8000" # API
@@ -19,10 +19,33 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./api/.env.test
+      - ./app/.env.test
     volumes:
-      - ./api/src:/api
-      - ./schemas:/api/schemas
+      - ./app/src:/app
+      - ./schemas:/app/schemas
+
+#  api:
+#    build:
+#      context: .
+#      dockerfile: ./api/Dockerfile
+#      target: test
+#    ports:
+#      - "8000:8000" # API
+#      - "8180:8180" # Health
+#      - "9400:9400" # Prometheus
+#      - "50000:50000" # Remote Debug
+#    security_opt:
+#      - "seccomp:unconfined"
+#    cap_add:
+#      - SYS_PTRACE
+#    depends_on:
+#      - kafka
+#      - schemaregistry
+#    env_file:
+#      - ./api/.env.test
+#    volumes:
+#      - ./api/src:/api
+#      - ./schemas:/api/schemas
 
   worker:
     build:
