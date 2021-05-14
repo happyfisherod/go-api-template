@@ -1,8 +1,6 @@
 package kafka
 
 import (
-	"strings"
-
 	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/metrics"
 
@@ -12,7 +10,7 @@ import (
 
 func StartConsumers() {
 	kafka_broker := config.Vars.KafkaBrokerURL
-	consumer_topics := strings.Split(config.Vars.ConsumerTopics, ",")
+	consumer_topics := config.Vars.ConsumerTopics
 
 	log.Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 

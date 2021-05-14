@@ -1,8 +1,6 @@
 package workers
 
 import (
-	"strings"
-
 	"github.com/geometry-labs/worker/config"
 	"github.com/geometry-labs/worker/kafka"
 	"github.com/geometry-labs/worker/utils"
@@ -20,10 +18,10 @@ func blocksWorker() {
 	producer_topic_name := config.Vars.BlocksWorkerProducerTopic
 
 	// Check topic names
-	if utils.StringInSlice(consumer_topic_name, strings.Split(config.Vars.ConsumerTopics, ",")) == false {
+	if utils.StringInSlice(consumer_topic_name, config.Vars.ConsumerTopics) == false {
 		log.Panic("Blocks Worker: invalid BLOCKS_WORKER_CONSUMER_TOPIC value. MUST be a topic in CONSUMER_TOPICS")
 	}
-	if utils.StringInSlice(producer_topic_name, strings.Split(config.Vars.ProducerTopics, ",")) == false {
+	if utils.StringInSlice(producer_topic_name, config.Vars.ProducerTopics) == false {
 		log.Panic("Blocks Worker: invalid BLOCKS_WORKER_PRODUCER_TOPIC value. MUST be a topic in PRODUCER_TOPICS")
 	}
 

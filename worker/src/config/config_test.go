@@ -22,8 +22,8 @@ func TestEnvironment(t *testing.T) {
 		"NETWORK_NAME":                 "network_name",
 		"KAFKA_BROKER_URL":             "kafka_broker_url",
 		"KAFKA_GROUP_ID":               "kafka_group_id",
-		"INPUT_TOPICS":                 "input_topics",
-		"OUTPUT_TOPICS":                "output_topics",
+		"CONSUMER_TOPICS":              "[consumer_topics,consumer_topics,consumer_topics]",
+		"PRODUCER_TOPICS":              "[producer_topics,producer_topics,producer_topics]",
 		"BLOCKS_WORKER_CONSUMER_TOPIC": "blocks_worker_consumer_topic",
 		"BLOCKS_WORKER_PRODUCER_TOPIC": "blocks_worker_producer_topic",
 	}
@@ -45,8 +45,8 @@ func TestEnvironment(t *testing.T) {
 	assert.Equal(env_map["NETWORK_NAME"], Vars.NetworkName)
 	assert.Equal(env_map["KAFKA_BROKER_URL"], Vars.KafkaBrokerURL)
 	assert.Equal(env_map["KAFKA_GROUP_ID"], Vars.KafkaGroupID)
-	assert.Equal(env_map["INPUT_TOPICS"], Vars.InputTopics)
-	assert.Equal(env_map["OUTPUT_TOPICS"], Vars.OutputTopics)
+	assert.Equal(3, len(Vars.ConsumerTopics))
+	assert.Equal(3, len(Vars.ProducerTopics))
 	assert.Equal(env_map["BLOCKS_WORKER_CONSUMER_TOPIC"], Vars.BlocksWorkerConsumerTopic)
 	assert.Equal(env_map["BLOCKS_WORKER_PRODUCER_TOPIC"], Vars.BlocksWorkerProducerTopic)
 }
