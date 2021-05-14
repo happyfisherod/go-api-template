@@ -12,8 +12,8 @@ import (
 
 func Start() {
 	kafka_broker := config.Vars.KafkaBrokerURL
-	topics := strings.Split(config.Vars.TopicNames, ",")
-	schemas := strings.Split(config.Vars.SchemaNames, ",")
+	topics := config.Vars.TopicNames
+	schemas := config.Vars.SchemaNames
 
 	if kafka_broker == "" {
 		log.Panic("No kafka broker url provided")

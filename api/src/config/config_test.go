@@ -27,7 +27,8 @@ func TestEnvironment(t *testing.T) {
 		"NETWORK_NAME":            "network_name",
 		"KAFKA_BROKER_URL":        "kafka_broker_url",
 		"KAFKA_GROUP_ID":          "kafka_group_id",
-		"TOPIC_NAMES":             "topic_names",
+		"TOPIC_NAMES":             "[topic_names,topic_names,topic_names]",
+		"SCHEMA_NAMES":            "[schema_names,schema_names,schema_names]",
 	}
 
 	for k, v := range env_map {
@@ -52,5 +53,6 @@ func TestEnvironment(t *testing.T) {
 	assert.Equal(Vars.NetworkName, env_map["NETWORK_NAME"])
 	assert.Equal(Vars.KafkaBrokerURL, env_map["KAFKA_BROKER_URL"])
 	assert.Equal(Vars.KafkaGroupID, env_map["KAFKA_GROUP_ID"])
-	assert.Equal(Vars.TopicNames, env_map["TOPIC_NAMES"])
+	assert.Equal(len(Vars.TopicNames), 3)
+	assert.Equal(len(Vars.SchemaNames), 3)
 }

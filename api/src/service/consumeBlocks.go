@@ -12,7 +12,7 @@ func StartConsumeBlocks(returnChan chan string) {
 	}
 	defer consumer.CloseConsumer()
 
-	err = consumer.Subscribe([]string{config.Vars.TopicNames}, nil)
+	err = consumer.Subscribe(config.Vars.TopicNames, nil)
 	if err != nil {
 		panic(err)
 	}

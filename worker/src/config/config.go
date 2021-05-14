@@ -10,7 +10,7 @@ import (
 
 type Environment struct {
 
-	// Monitoring
+	// Path Prefixes
 	HealthPort    string `envconfig:"HEALTH_PORT" required:"false" default:"8080"`
 	MetricsPort   string `envconfig:"METRICS_PORT" required:"false" default:"9400"`
 	HealthPrefix  string `envconfig:"HEALTH_PREFIX" required:"false" default:"/health"`
