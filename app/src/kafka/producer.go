@@ -1,8 +1,6 @@
 package kafka
 
 import (
-	"strings"
-
 	"github.com/geometry-labs/app/config"
 	"github.com/geometry-labs/app/metrics"
 
@@ -21,7 +19,7 @@ var KafkaTopicProducers = map[string]*KafkaTopicProducer{}
 
 func StartProducers() {
 	kafka_broker := config.Vars.KafkaBrokerURL
-	producer_topics := strings.Split(config.Vars.ProducerTopics, ",")
+	producer_topics := config.Vars.ProducerTopics
 
 	log.Debug("Start Producer: kafka_broker=", kafka_broker, " producer_topics=", producer_topics)
 

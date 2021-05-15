@@ -1,9 +1,9 @@
 package ws
 
 import (
+	"github.com/Shopify/sarama"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 
 	"github.com/geometry-labs/app/config"
 	"github.com/geometry-labs/app/kafka"
@@ -33,11 +33,11 @@ func handlerGetBlocks(broadcaster *kafka.TopicBroadcaster) func(c *websocket.Con
 		metrics.Metrics["websockets_connected"].Inc()
 
 		// Add broadcaster
-		topic_chan := make(chan *confluent.Message)
-		id := broadcaster.AddOutputChannel(topic_chan)
+		topic_chan := make(chan *sarama.ConsumerMessage)
+		id := broadcaster.AddWorkerChannel(topic_chan)
 		defer func() {
 			// Remove broadcaster
-			broadcaster.RemoveOutputChannel(id)
+			broadcaster.RemoveWorkerChannel(id)
 		}()
 
 		// Read for close
