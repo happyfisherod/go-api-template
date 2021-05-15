@@ -1,10 +1,10 @@
 version: "3.7"
 
 services:
-  api:
+  app_api:
     build:
       context: .
-      dockerfile: ./api/Dockerfile
+      dockerfile: ./app/Dockerfile.api
       target: test
     ports:
       - "8000:8000" # API
@@ -19,19 +19,20 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./api/.env.test
+      - ./app/.env.api.test
     volumes:
-      - ./api/src:/api
-      - ./schemas:/api/schemas
+      - ./app/src:/app
+      - ./schemas:/app/schemas
 
-  worker:
+  app_worker:
     build:
       context: .
-      dockerfile: worker/Dockerfile
+      dockerfile: ./app/Dockerfile.worker
       target: test
     ports:
-      - "9001:9001"
+      - "8001:8001"
       - "8181:8181"
+      - "9401:9401" # Prometheus
       - "40001:40001" # Remote Debug
     security_opt:
       - "seccomp:unconfined"
@@ -41,10 +42,55 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./worker/.env.test
+      - ./app/.env.worker.test
     volumes:
-      - ./worker/src:/worker
-      - ./schemas:/worker/schemas
+      - ./app/src:/app
+      - ./schemas:/app/schemas
+
+#  api:
+#    build:
+#      context: .
+#      dockerfile: ./api/Dockerfile
+#      target: test
+#    ports:
+#      - "8000:8000" # API
+#      - "8180:8180" # Health
+#      - "9400:9400" # Prometheus
+#      - "40000:40000" # Remote Debug
+#    security_opt:
+#      - "seccomp:unconfined"
+#    cap_add:
+#      - SYS_PTRACE
+#    depends_on:
+#      - kafka
+#      - schemaregistry
+#    env_file:
+#      - ./api/.env.test
+#    volumes:
+#      - ./api/src:/api
+#      - ./schemas:/api/schemas
+
+#  worker:
+#    build:
+#      context: .
+#      dockerfile: worker/Dockerfile
+#      target: test
+#    ports:
+#      - "9001:9001"
+#      - "8181:8181"
+#      - "40001:40001" # Remote Debug
+#    security_opt:
+#      - "seccomp:unconfined"
+#    cap_add:
+#      - SYS_PTRACE
+#    depends_on:
+#      - kafka
+#      - schemaregistry
+#    env_file:
+#      - ./worker/.env.test
+#    volumes:
+#      - ./worker/src:/worker
+#      - ./schemas:/worker/schemas
 
   mongo:
     image: mongo
