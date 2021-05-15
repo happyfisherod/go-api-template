@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/geometry-labs/app/server"
+	"github.com/geometry-labs/app/api"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,7 +27,7 @@ func main() {
 
 	// Start API server
 	// Go routine starts in function
-	server.Start()
+	api.Start()
 
 	// Start Health server
 	healthcheck.Start()

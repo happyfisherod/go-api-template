@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"encoding/json"
@@ -7,10 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geometry-labs/app/api/rest"
+	"github.com/geometry-labs/app/api/ws"
 	"github.com/geometry-labs/app/config"
 	_ "github.com/geometry-labs/app/docs"
-	"github.com/geometry-labs/app/server/rest"
-	"github.com/geometry-labs/app/server/ws"
 )
 
 // @title Go api template docs

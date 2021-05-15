@@ -14,5 +14,5 @@ func BlocksAddHandlers(app *fiber.App) {
 }
 
 func handlerGetBlock(c *fiber.Ctx) error {
-	return c.SendString(`{"block": "rest"}`)
+	return c.SendString(`{"block": "rests"}`)
 }
