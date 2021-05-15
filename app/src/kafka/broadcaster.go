@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	"github.com/Shopify/sarama"
 )
 
 // TODO use uuid for larger ID range
@@ -12,48 +12,45 @@ var LAST_BROADCASTER_ID BroadcasterID = 0
 type TopicBroadcaster struct {
 
 	// Input
-	InputChan chan *confluent.Message
+	ConsumerChan chan *sarama.ConsumerMessage
 
 	// Output
-	OutputChans map[BroadcasterID]chan *confluent.Message
+	WorkerChans map[BroadcasterID]chan *sarama.ConsumerMessage
 }
 
 var Broadcasters = map[string]*TopicBroadcaster{}
 
-func newBroadcaster(topic_name string, input_chan chan *confluent.Message) {
+func newBroadcaster(topic_name string) {
 	Broadcasters[topic_name] = &TopicBroadcaster{
-		input_chan,
-		make(map[BroadcasterID]chan *confluent.Message),
+		make(chan *sarama.ConsumerMessage),
+		make(map[BroadcasterID]chan *sarama.ConsumerMessage),
 	}
+
+	go Broadcasters[topic_name].Start()
 }
 
-func (tb *TopicBroadcaster) AddOutputChannel(topic_chan chan *confluent.Message) BroadcasterID {
+func (tb *TopicBroadcaster) AddWorkerChannel(topic_chan chan *sarama.ConsumerMessage) BroadcasterID {
 	id := LAST_BROADCASTER_ID
 	LAST_BROADCASTER_ID++
 
-	tb.OutputChans[id] = topic_chan
+	tb.WorkerChans[id] = topic_chan
 
 	return id
 }
 
-func (tb *TopicBroadcaster) RemoveOutputChannel(id BroadcasterID) {
-	_, ok := tb.OutputChans[id]
+func (tb *TopicBroadcaster) RemoveWorkerChannel(id BroadcasterID) {
+	_, ok := tb.WorkerChans[id]
 	if ok {
-		delete(tb.OutputChans, id)
+		delete(tb.WorkerChans, id)
 	}
 }
 
-func (tb *TopicBroadcaster) Broadcast() {
+func (tb *TopicBroadcaster) Start() {
 	for {
-		msg := <-tb.InputChan
+		msg := <-tb.ConsumerChan
 
-		for _, channel := range tb.OutputChans {
-			select {
-			case channel <- msg:
-				continue
-			default:
-				continue
-			}
+		for _, channel := range tb.WorkerChans {
+			channel <- msg
 		}
 	}
 }

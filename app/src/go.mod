@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/InVisionApp/go-health/v2 v2.1.2
+	github.com/Shopify/sarama v1.19.0
 	github.com/arsmn/fiber-swagger/v2 v2.6.0
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/confluentinc/confluent-kafka-go v1.7.0 // indirect

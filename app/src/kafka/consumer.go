@@ -6,30 +6,20 @@ import (
 	"github.com/geometry-labs/app/config"
 	"github.com/geometry-labs/app/metrics"
 
+	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func Start() {
+func StartConsumers() {
 	kafka_broker := config.Vars.KafkaBrokerURL
-	topics := strings.Split(config.Vars.TopicNames, ",")
-	schemas := strings.Split(config.Vars.SchemaNames, ",")
+	consumer_topics := strings.Split(config.Vars.ConsumerTopics, ",")
 
-	if kafka_broker == "" {
-		log.Panic("No kafka broker url provided")
-	}
+	log.Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 
-	//time.Sleep(time.Minute)
-	for _, schemaNameAndFilePairs := range schemas {
-		schemaNameAndFile := strings.Split(schemaNameAndFilePairs, ":")
-		//_, _ = RegisterSchema(schemaNameAndFile[0], false, schemaNameAndFile[1], true)
-		id, _ := RetriableRegisterSchema(RegisterSchema, schemaNameAndFile[0], false, schemaNameAndFile[1], true)
-		log.Info("Schema id for ", schemaNameAndFile[0], " is ", id)
-	}
-
-	for _, t := range topics {
+	for _, t := range consumer_topics {
 		// Broadcaster indexed in Broadcasters map
-		newBroadcaster(t, make(chan *confluent.Message))
+		// Starts go routine
+		newBroadcaster(t)
 
 		topic_consumer := &KafkaTopicConsumer{
 			kafka_broker,
@@ -37,7 +27,9 @@ func Start() {
 			Broadcasters[t],
 		}
 
-		go topic_consumer.consumeAndBroadcastTopics()
+		// One routine per topic
+		log.Debug("Start Consumers: Starting ", t, " consumer...")
+		go topic_consumer.consumeTopic()
 	}
 }
 
@@ -47,32 +39,46 @@ type KafkaTopicConsumer struct {
 	Broadcaster *TopicBroadcaster
 }
 
-func (k *KafkaTopicConsumer) consumeAndBroadcastTopics() {
-
-	consumer, err := confluent.NewConsumer(&confluent.ConfigMap{
-		"bootstrap.servers": k.BrokerURL,
-		"group.id":          config.Vars.KafkaGroupID,
-		"auto.offset.reset": "latest",
-	})
-
+func (k *KafkaTopicConsumer) consumeTopic() {
+	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, nil)
 	if err != nil {
-		panic(err)
+		log.Panic("KAFKA CONSUMER NEWCONSUMER PANIC: ", err.Error())
 	}
-	defer consumer.Close()
-
-	consumer.SubscribeTopics([]string{k.TopicName}, nil)
-
-	for {
-		msg, err := consumer.ReadMessage(-1)
-		metrics.Metrics["kafka_messages_consumed"].Inc()
-
-		if err == nil {
-
-			// NOTE: use select statement for non-blocking channels
-			select {
-			case k.Broadcaster.InputChan <- msg:
-			default:
-			}
+	defer func() {
+		if err := consumer.Close(); err != nil {
+			log.Panic("KAFKA CONSUMER CLOSE PANIC: ", err.Error())
 		}
+	}()
+
+	offset := sarama.OffsetOldest
+	partitions, err := consumer.Partitions(k.TopicName)
+	if err != nil {
+		log.Panic("KAFKA CONSUMER PARTITIONS PANIC: ", err.Error())
+	}
+
+	log.Debug("Consumer ", k.TopicName, ": Started consuming")
+	for _, p := range partitions {
+		pc, _ := consumer.ConsumePartition(k.TopicName, p, offset)
+
+		// Watch errors
+		go func() {
+			for err := range pc.Errors() {
+				log.Warn("KAFKA CONSUMER WARN: ", err.Error())
+			}
+		}()
+
+		// One routine per partition
+		go func(pc sarama.PartitionConsumer) {
+			for {
+				topic_msg := <-pc.Messages()
+				log.Debug("Consumer ", k.TopicName, ": Consumed message key=", string(topic_msg.Key))
+				metrics.Metrics["kafka_messages_consumed"].Inc()
+
+				// Broadcast
+				k.Broadcaster.ConsumerChan <- topic_msg
+
+				log.Debug("Consumer ", k.TopicName, ": Broadcasted message key=", string(topic_msg.Key))
+			}
+		}(pc)
 	}
 }

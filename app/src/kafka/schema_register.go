@@ -2,12 +2,14 @@ package kafka
 
 import (
 	"encoding/binary"
-	"github.com/cenkalti/backoff/v4"
-	"github.com/geometry-labs/app/config"
-	"github.com/riferrei/srclient"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"time"
+
+	"github.com/geometry-labs/app/config"
+
+	"github.com/cenkalti/backoff/v4"
+	"github.com/riferrei/srclient"
+	log "github.com/sirupsen/logrus"
 )
 
 type RegisterSchemaFunc func(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error)
