@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./app/Dockerfile.api
-      target: test
+      target: dev
     ports:
       - "8000:8000" # API
       - "8180:8180" # Health
@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: ./app/Dockerfile.worker
-      target: test
+      target: dev
     ports:
       - "8001:8001"
       - "8181:8181"

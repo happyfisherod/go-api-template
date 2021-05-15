@@ -24,7 +24,7 @@ COPY --from=builder /build/worker /
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 CMD ["/worker"]
 
-FROM golang:1.16-buster AS test
+FROM golang:1.16-buster AS dev
 
 # GO ENV VARS
 ENV GO111MODULE=on \
@@ -42,8 +42,8 @@ EXPOSE 8001 40001
 RUN mkdir /app
 WORKDIR /app
 
-#COPY /go/bin/dlv / TODO: correctly copy dlv to app folder
+RUN cp /go/bin/dlv /
 
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-#CMD ["/dlv", "--headless", "--listen=:40000", "--api-version=2", "exec", "/main"]
+#CMD ["/dlv", "--headless", "--listen=:40000", "--api-version=2", "exec", "/worker"]
 CMD ["air", "-c", ".air.worker.toml"]

@@ -30,7 +30,7 @@ COPY --from=builder /build/api /
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 CMD ["/api"]
 
-FROM golang:1.16-buster AS test
+FROM golang:1.16-buster AS dev
 
 # GO ENV VARS
 ENV GO111MODULE=on \
