@@ -5,12 +5,12 @@ tmp_dir = "tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./tmp/api api.go"
+cmd = "go build -o ./tmp/worker worker.go"
 # Binary file yields from `cmd`.
-bin = "tmp/api"
+bin = "tmp/worker"
 # Customize binary.
-#full_bin = "APP_ENV=dev APP_USER=air ./tmp/api"
-full_bin = "dlv exec --continue --accept-multiclient --listen=:40000 --headless=true --api-version=2 --log ./tmp/api"
+#full_bin = "APP_ENV=dev APP_USER=air ./tmp/worker"
+full_bin = "dlv exec --continue --accept-multiclient --listen=:40001 --headless=true --api-version=2 --log ./tmp/worker"
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html"]
 # Ignore these filename extensions or directories.
@@ -26,7 +26,7 @@ exclude_unchanged = true
 # Follow symlink for directories
 follow_symlink = true
 # This log file places in your tmp_dir.
-log = "air.api.log"
+log = "air.worker.log"
 # It's not necessary to trigger build each time file changes if it's too frequent.
 delay = 1000 # ms
 # Stop running old binary when build errors occur.

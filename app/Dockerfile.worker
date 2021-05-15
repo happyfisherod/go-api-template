@@ -14,21 +14,15 @@ COPY ./app/src .
 RUN go mod tidy
 RUN go mod download
 
-# CREATE SWAGGER DOCS
-RUN go get github.com/swaggo/swag/cmd/swag
-RUN go get github.com/alecthomas/template
-RUN go get github.com/riferrei/srclient@v0.3.0
-RUN swag init -g server/server.go
-
 # BUILD
-RUN go build -gcflags="all=-N -l" -o api api.go
+RUN go build -o worker worker.go
 
 FROM ubuntu as prod
 
 COPY ./schemas ./schemas
-COPY --from=builder /build/api /
+COPY --from=builder /build/worker /
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-CMD ["/api"]
+CMD ["/worker"]
 
 FROM golang:1.16-buster AS test
 
@@ -43,7 +37,7 @@ RUN go get github.com/go-delve/delve/cmd/dlv
 # Build Air
 RUN go get -u github.com/cosmtrek/air
 
-EXPOSE 8000 40000
+EXPOSE 8001 40001
 
 RUN mkdir /app
 WORKDIR /app
@@ -51,5 +45,5 @@ WORKDIR /app
 #COPY /go/bin/dlv / TODO: correctly copy dlv to app folder
 
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-#CMD ["/dlv", "--headless", "--listen=:40000", "--api-version=2", "exec", "/api"]
-CMD ["air", "-c", ".air.api.toml"]
+#CMD ["/dlv", "--headless", "--listen=:40000", "--api-version=2", "exec", "/main"]
+CMD ["air", "-c", ".air.worker.toml"]

@@ -24,6 +24,29 @@ services:
       - ./app/src:/app
       - ./schemas:/app/schemas
 
+  app_worker:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile.worker
+      target: test
+    ports:
+      - "8001:8001"
+      - "8181:8181"
+      - "9401:9401" # Prometheus
+      - "40001:40001" # Remote Debug
+    security_opt:
+      - "seccomp:unconfined"
+    cap_add:
+      - SYS_PTRACE
+    depends_on:
+      - kafka
+      - schemaregistry
+    env_file:
+      - ./app/.env.worker.test
+    volumes:
+      - ./app/src:/app
+      - ./schemas:/app/schemas
+
 #  api:
 #    build:
 #      context: .
@@ -46,28 +69,6 @@ services:
 #    volumes:
 #      - ./api/src:/api
 #      - ./schemas:/api/schemas
-
-#  worker:
-#    build:
-#      context: .
-#      dockerfile: worker/Dockerfile
-#      target: test
-#    ports:
-#      - "9001:9001"
-#      - "8181:8181"
-#      - "40001:40001" # Remote Debug
-#    security_opt:
-#      - "seccomp:unconfined"
-#    cap_add:
-#      - SYS_PTRACE
-#    depends_on:
-#      - kafka
-#      - schemaregistry
-#    env_file:
-#      - ./worker/.env.test
-#    volumes:
-#      - ./worker/src:/worker
-#      - ./schemas:/worker/schemas
 
 #  worker:
 #    build:
