@@ -24,11 +24,9 @@ var block = &models.BlockRaw{
 
 func TestBlockModel(t *testing.T) {
 	//_ = exec.Command("createdb", "-p", "5432", "-h", "localhost", "-U", "postgres", "-e", "test_db")
-	dsn := "host=localhost user=postgres password=changeme dbname=test_db port=5432 sslmode=disable TimeZone=UTC"
-	newDsn := NewDsn("localhost", "5432", "postgres", "changeme", "test_db", "disable", "UTC")
-	assert.Equal(t, newDsn, dsn)
+	dsn := NewDsn("localhost", "5432", "postgres", "changeme", "test_db", "disable", "UTC")
 
-	postgresConn, _ := NewPostgresConn(newDsn)
+	postgresConn, _ := NewPostgresConn(dsn)
 	blockRawModel := NewBlockRawModel(postgresConn.conn)
 
 	_ = blockRawModel.Migrate()
