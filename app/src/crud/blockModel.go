@@ -24,7 +24,7 @@ func GetBlockRawModel() *BlockRawModel {
 	return blockRawModelInstance
 }
 
-func NewBlockRawModel(conn *gorm.DB) *BlockRawModel {
+func NewBlockRawModel(conn *gorm.DB) *BlockRawModel { // Only for testing
 	blockRawModelInstance = &BlockRawModel{
 		db:    conn,
 		model: &models.BlockRaw{},
