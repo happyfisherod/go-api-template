@@ -28,9 +28,8 @@ func NewPostgresConn(dsn string) (*postgresConn, error) { // Only for testing
 
 func GetPostgresConn() *postgresConn {
 	postgresConnOnce.Do(func() {
-		//dsn := "host=postgres user=postgres password=changeme dbname=postgres port=5432 sslmode=disable TimeZone=UTC"
-		dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
 		// TODO: create dsn string from env variables
+		dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
 		session, err := createSession(dsn)
 		if err != nil {
 			log.Fatal("Cannot create a connection to postgres", err)
