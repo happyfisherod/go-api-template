@@ -10,7 +10,7 @@ import (
 var _ = Describe("BlockModel", func() {
 
 	var (
-		block         *models.BlockRaw // predefined block
+		//block         *models.BlockRaw // predefined block
 		dsn           string
 		postgresConn  *postgres_crud.PostgresConn
 		blockRawModel *postgres_crud.BlockRawModel
@@ -33,7 +33,7 @@ var _ = Describe("BlockModel", func() {
 		//	ParentHash:       "f42aa479ef0c7913d6f5b151d5431254d4196571e86f3adca89d7c0439144f9a",
 		//	Timestamp:        1522222475159807,
 		//}
-		block = &(*testCrudData.Blocks)[0]
+		//block = &(*testCrudData.Blocks)[0]
 
 		dsn = postgres_crud.NewDsn("localhost", "5432", "postgres", "changeme", "test_db", "disable", "UTC")
 		postgresConn, _ = postgres_crud.NewPostgresConn(dsn)
@@ -44,36 +44,42 @@ var _ = Describe("BlockModel", func() {
 
 	Describe("blockModel with postgres", func() {
 		Context("insert in block table", func() {
-			BeforeEach(func() {
-				blockRawModel.Delete("Signature = ?", block.Signature)
-			})
-			It("predefined block insert", func() {
-				blockRawModel.Create(block)
-				found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
-				Expect(found.Hash).To(Equal(block.Hash))
-			})
+			for _, block := range *testCrudData.Blocks {
+				BeforeEach(func() {
+					blockRawModel.Delete("Signature = ?", block.Signature)
+				})
+				It("predefined block insert", func() {
+					blockRawModel.Create(&block)
+					found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
+					Expect(found.Hash).To(Equal(block.Hash))
+				})
+			}
 		})
 		Context("update in block table", func() {
-			BeforeEach(func() {
-				blockRawModel.Delete("Signature = ?", block.Signature)
-				blockRawModel.Create(block)
-			})
-			It("predefined block update", func() {
-				blockRawModel.Update(found, &models.BlockRaw{Type: "blockRaw"}, "Signature = ?", block.Signature)
-				found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
-				Expect(found.Type).To(Equal("blockRaw"))
-			})
+			for _, block := range *testCrudData.Blocks {
+				BeforeEach(func() {
+					blockRawModel.Delete("Signature = ?", block.Signature)
+					blockRawModel.Create(&block)
+				})
+				It("predefined block update", func() {
+					blockRawModel.Update(found, &models.BlockRaw{Type: "blockRaw"}, "Signature = ?", block.Signature)
+					found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
+					Expect(found.Type).To(Equal("blockRaw"))
+				})
+			}
 		})
 		Context("delete in block table", func() {
-			BeforeEach(func() {
-				blockRawModel.Delete("Signature = ?", block.Signature)
-				blockRawModel.Create(block)
-			})
-			It("predefined block delete", func() {
-				blockRawModel.Delete("Signature = ?", block.Signature)
-				found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
-				Expect(found.Hash).To(Equal(""))
-			})
+			for _, block := range *testCrudData.Blocks {
+				BeforeEach(func() {
+					blockRawModel.Delete("Signature = ?", block.Signature)
+					blockRawModel.Create(&block)
+				})
+				It("predefined block delete", func() {
+					blockRawModel.Delete("Signature = ?", block.Signature)
+					found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
+					Expect(found.Hash).To(Equal(""))
+				})
+			}
 		})
 	})
 
