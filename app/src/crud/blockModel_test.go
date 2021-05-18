@@ -44,6 +44,6 @@ func TestBlockModel(t *testing.T) {
 
 	// test delete
 	blockRawModel.Delete("Signature = ?", block.Signature)
-	found, _ = blockRawModel.FindOne("Signature = ?", "")
-
+	found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
+	assert.Equal(t, "", found.Signature)
 }
