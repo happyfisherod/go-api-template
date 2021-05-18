@@ -40,19 +40,22 @@ var _ = Describe("BlockModel", func() {
 		blockRawModel = postgres_crud.NewBlockRawModel(postgresConn.GetConn())
 
 		_ = blockRawModel.Migrate()
-		blockRawModel.Delete("Signature = ?", block.Signature)
 	})
 
 	Describe("blockModel with postgres", func() {
 		Context("insert in block table", func() {
+			BeforeEach(func() {
+				blockRawModel.Delete("Signature = ?", block.Signature)
+			})
 			It("predefined block insert", func() {
 				blockRawModel.Create(block)
-				found, _ := blockRawModel.FindOne("Signature = ?", block.Signature)
+				found, _ = blockRawModel.FindOne("Signature = ?", block.Signature)
 				Expect(found.Hash).To(Equal(block.Hash))
 			})
 		})
 		Context("update in block table", func() {
 			BeforeEach(func() {
+				blockRawModel.Delete("Signature = ?", block.Signature)
 				blockRawModel.Create(block)
 			})
 			It("predefined block update", func() {
@@ -63,6 +66,7 @@ var _ = Describe("BlockModel", func() {
 		})
 		Context("delete in block table", func() {
 			BeforeEach(func() {
+				blockRawModel.Delete("Signature = ?", block.Signature)
 				blockRawModel.Create(block)
 			})
 			It("predefined block delete", func() {
