@@ -67,3 +67,5 @@ venv/
 ENV/
 >>>>>>> Stashed changes
 /.run/
+
+*.coverprofile
