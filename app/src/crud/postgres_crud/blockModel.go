@@ -1,4 +1,4 @@
-package crud
+package postgres_crud
 
 import (
 	"github.com/geometry-labs/app/models"

@@ -1,4 +1,4 @@
-package crud
+package postgres_crud
 
 import (
 	"fmt"
@@ -8,25 +8,25 @@ import (
 	"sync"
 )
 
-type postgresConn struct {
+type PostgresConn struct {
 	conn *gorm.DB
 }
 
-var postgresInstance *postgresConn
+var postgresInstance *PostgresConn
 var postgresConnOnce sync.Once
 
-func NewPostgresConn(dsn string) (*postgresConn, error) { // Only for testing
+func NewPostgresConn(dsn string) (*PostgresConn, error) { // Only for testing
 	session, err := createSession(dsn)
 	if err != nil {
 		log.Println("Cannot create a connection to postgres", err)
 	}
-	postgresInstance = &postgresConn{
+	postgresInstance = &PostgresConn{
 		conn: session,
 	}
 	return postgresInstance, err
 }
 
-func GetPostgresConn() *postgresConn {
+func GetPostgresConn() *PostgresConn {
 	postgresConnOnce.Do(func() {
 		// TODO: create dsn string from env variables
 		dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
@@ -34,11 +34,15 @@ func GetPostgresConn() *postgresConn {
 		if err != nil {
 			log.Fatal("Cannot create a connection to postgres", err)
 		}
-		postgresInstance = &postgresConn{
+		postgresInstance = &PostgresConn{
 			conn: session,
 		}
 	})
 	return postgresInstance
+}
+
+func (p *PostgresConn) GetConn() *gorm.DB {
+	return p.conn
 }
 
 func createSession(dsn string) (*gorm.DB, error) {
