@@ -108,7 +108,7 @@ services:
       - kafka
     restart: on-failure
     volumes:
-      - "./last_synced_block.txt:/icon-etl/last_synced_block.txt"
+      - "./etl/last_synced_block.txt:/icon-etl/last_synced_block.txt"
 
   mongo-express:
     image: mongo-express
