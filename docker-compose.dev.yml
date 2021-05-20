@@ -4,7 +4,7 @@ services:
   app_api:
     build:
       context: .
-      dockerfile: ./app/Dockerfile.api
+      dockerfile: Dockerfile.api
       target: dev
     ports:
       - "8000:8000" # API
@@ -19,15 +19,15 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./app/.env.api.test
+      - .env.api.test
     volumes:
-      - ./app/src:/app
+      - ./src:/app
       - ./schemas:/app/schemas
 
   app_worker:
     build:
       context: .
-      dockerfile: ./app/Dockerfile.worker
+      dockerfile: Dockerfile.worker
       target: dev
     ports:
       - "8001:8001"
@@ -42,9 +42,9 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./app/.env.worker.test
+      - .env.worker.test
     volumes:
-      - ./app/src:/app
+      - ./src:/app
       - ./schemas:/app/schemas
 
 #  api:

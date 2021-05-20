@@ -14,11 +14,14 @@ require (
 	github.com/gorilla/websocket v0.0.0-20170926233335-4201258b820c
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/mitchellh/mapstructure v1.1.2
+	github.com/onsi/ginkgo v1.16.2
+	github.com/onsi/gomega v1.12.0
 	github.com/prometheus/client_golang v1.10.0
 	github.com/riferrei/srclient v0.3.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
-	google.golang.org/protobuf v1.23.0
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.7.0
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.9
