@@ -1,3 +1,5 @@
+//+build integration
+
 package crud_test
 
 import (
@@ -6,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Postgres", func() {
+var _ = Describe("Postgres Integration test", func() {
 
 	var (
 		dsn string
