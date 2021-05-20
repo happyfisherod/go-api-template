@@ -42,7 +42,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-/app/src/bin/
+/src/bin/
 
 # Installer logs
 pip-log.txt

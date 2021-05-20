@@ -1,4 +1,4 @@
-package postgres_crud
+package crud
 
 import (
 	"fmt"

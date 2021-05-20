@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/websocket v0.0.0-20170926233335-4201258b820c
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/onsi/ginkgo v1.16.2
 	github.com/onsi/gomega v1.12.0
 	github.com/prometheus/client_golang v1.10.0

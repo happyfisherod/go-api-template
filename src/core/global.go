@@ -1,12 +1,12 @@
 package core
 
 import (
-	"github.com/geometry-labs/app/crud/postgres_crud"
+	"github.com/geometry-labs/app/crud"
 	"sync"
 )
 
 type Global struct {
-	Blocks *postgres_crud.BlockRawModel
+	Blocks *crud.BlockRawModel
 }
 
 var globalInstance *Global
@@ -15,7 +15,7 @@ var globalOnce sync.Once
 func GetGlobal() *Global {
 	globalOnce.Do(func() {
 		globalInstance = &Global{
-			Blocks: postgres_crud.GetBlockRawModel(),
+			Blocks: crud.GetBlockRawModel(),
 		}
 	})
 	return globalInstance
