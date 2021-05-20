@@ -7,15 +7,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
+	"strings"
 )
-
-func getWorkingDir() string {
-	// Todo: generalize
-	dir := "/Users/anuragjha/go/src/go-api-template/src/fixtures/"
-	return dir
-}
-
-var fixtureAbsDir = getWorkingDir()
 
 const (
 	Block_raws_fixture = "block_raws.json"
@@ -33,12 +26,29 @@ func check(e error) {
 	}
 }
 
-func LoadTestFixtures(file string) Fixtures {
+func LoadTestFixtures(file string) (Fixtures, error) {
 	var fs Fixtures
-	dat, err := ioutil.ReadFile(fixtureAbsDir + file)
+	dat, err := ioutil.ReadFile(getFixtureDir() + file)
 	check(err)
-	json.Unmarshal(dat, &fs)
-	return fs
+	err = json.Unmarshal(dat, &fs)
+	return fs, err
+}
+
+func getFixtureDir() string {
+	callDir, _ := os.Getwd()
+	callDirSplit := strings.Split(callDir, "/")
+	for i := len(callDirSplit) - 1; i >= 0; i-- {
+		if callDirSplit[i] != "src" {
+			callDirSplit = callDirSplit[:len(callDirSplit)-1]
+		} else {
+			break
+		}
+	}
+	callDirSplit = append(callDirSplit, "fixtures")
+	fixtureDir := strings.Join(callDirSplit, "/")
+	fixtureDir = fixtureDir + "/"
+	fmt.Println(fixtureDir)
+	return fixtureDir
 }
 
 func ReadCurrentDir() {
@@ -72,22 +82,3 @@ func (f *Fixture) GetBlock(data map[string]interface{}) *models.BlockRaw {
 	}
 	return &block
 }
-
-// todo
-///0. fixture file path map/enum => generalize to get correct fixture dir
-////1. fixtures  - load and return []{input, expected} / expected can be an error => DONE
-//2. create setup and teradon func here
-////3. make init of test suite eg. encapsulate postgress connection - so that it can be called for test in other packages => DONE
-///?4. param a test and loop over a array of fixtures
-//5. unit vs integration test convention
-//
-//
-//test:
-//1. unit
-//2. integration
-//3. production
-
-////////
-//to get up and running
-// 1. sarama
-// 2. test

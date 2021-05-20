@@ -23,7 +23,7 @@ func NewBlockModel() *crud.BlockRawModel {
 
 func Init(fixturesFile string) {
 	//fixtures.ReadCurrentDir()
-	testFixtures = fixtures.LoadTestFixtures(fixturesFile)
+	testFixtures, _ = fixtures.LoadTestFixtures(fixturesFile)
 	blockRawModel = NewBlockModel()
 }
 
