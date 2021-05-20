@@ -8,10 +8,10 @@ import (
 
 	"github.com/geometry-labs/app/config"
 	"github.com/geometry-labs/app/healthcheck"
-	//"github.com/geometry-labs/app/kafka"
+	"github.com/geometry-labs/app/kafka"
 	"github.com/geometry-labs/app/logging"
 	"github.com/geometry-labs/app/metrics"
-	//"github.com/geometry-labs/app/workers"
+	"github.com/geometry-labs/app/workers"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -25,21 +25,17 @@ func main() {
 	// Start Prometheus client
 	metrics.Start()
 
-	// Start API server
-	// Go routine starts in function
-	api.Start()
-
 	// Start Health server
 	healthcheck.Start()
 
 	//// Start kafka consumer
-	//kafka.StartConsumers()
-	//
+	kafka.StartConsumers()
+
 	//// Start kafka consumer
-	//kafka.StartProducers()
-	//
+	kafka.StartProducers()
+
 	//// Start workers
-	//workers.StartBlocksWorker()
+	workers.StartBlocksWorker()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)

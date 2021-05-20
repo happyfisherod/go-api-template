@@ -1,21 +1,18 @@
 package main
 
 import (
-	"github.com/geometry-labs/app/api"
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/healthcheck"
-	"github.com/geometry-labs/app/logging"
-	"github.com/geometry-labs/app/metrics"
 	"os"
 	"os/signal"
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
-	//"github.com/geometry-labs/api/healthcheck"
-	//"github.com/geometry-labs/api/kafka"
-	//"github.com/geometry-labs/api/logging"
-	//"github.com/geometry-labs/api/metrics"
-	//"github.com/geometry-labs/api/server"
+
+	"github.com/geometry-labs/app/api"
+	"github.com/geometry-labs/app/config"
+	"github.com/geometry-labs/app/healthcheck"
+	"github.com/geometry-labs/app/kafka"
+	"github.com/geometry-labs/app/logging"
+	"github.com/geometry-labs/app/metrics"
 )
 
 func main() {
@@ -25,7 +22,7 @@ func main() {
 
 	// Start kafka consumers
 	// Go routines start in function
-	//kafka.StartConsumers()
+	kafka.StartConsumers()
 
 	// Start Prometheus client
 	// Go routine starts in function

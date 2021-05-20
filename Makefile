@@ -1,19 +1,12 @@
 build:
-	docker-compose -f docker-compose.yml -f docker-compose.kafka.yml build
+	docker-compose build
 
 up:
-	docker-compose -f docker-compose.yml -f docker-compose.kafka.yml up -d
+	docker-compose up -d
 
 ps:
-	docker-compose -f docker-compose.yml -f docker-compose.kafka.yml ps
+	docker-compose ps
 
-build-debug:
-	docker-compose -f docker-compose.debug.yml -f docker-compose.kafka.yml build
-
-up-debug:
-	docker-compose -f docker-compose.debug.yml -f docker-compose.kafka.yml up -d
-
-ps-debug:
-	docker-compose -f docker-compose.debug.yml -f docker-compose.kafka.yml ps
-
-
+test:
+	# TODO
+	docker-compose ps
