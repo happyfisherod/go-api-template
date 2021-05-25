@@ -5,18 +5,18 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/geometry-labs/app/config"
-
 	"github.com/cenkalti/backoff/v4"
 	"github.com/riferrei/srclient"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geometry-labs/go-service-template/core"
 )
 
 type RegisterSchemaFunc func(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error)
 
 func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
 	log.Printf("RegisterSchema() \n")
-	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + config.Vars.SchemaRegistryURL)
+	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + core.Vars.SchemaRegistryURL)
 	schema, err := schemaRegistryClient.GetLatestSchema(topic, false)
 	if schema == nil {
 		schema, err = registerSchema(schemaRegistryClient, topic, isKey, srcSchemaFile)

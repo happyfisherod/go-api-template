@@ -1,23 +1,20 @@
 package kafka
 
 import (
-	"os"
 	"testing"
 	"time"
-
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/metrics"
 
 	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
-	os.Setenv("LOG_LEVEL", "DEBUG")
+	// os.Setenv("LOGGING_LEVEL", "DEBUG")
 
-	config.GetEnvironment()
-	metrics.Start()
+	core.GetEnvironment()
 }
 
 // ISSUE: only passes sometimes?

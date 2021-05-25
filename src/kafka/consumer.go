@@ -1,16 +1,15 @@
 package kafka
 
 import (
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/metrics"
-
 	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geometry-labs/go-service-template/core"
 )
 
 func StartConsumers() {
-	kafka_broker := config.Vars.KafkaBrokerURL
-	consumer_topics := config.Vars.ConsumerTopics
+	kafka_broker := core.Vars.KafkaBrokerURL
+	consumer_topics := core.Vars.ConsumerTopics
 
 	log.Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 
@@ -56,21 +55,27 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 
 	log.Debug("Consumer ", k.TopicName, ": Started consuming")
 	for _, p := range partitions {
-		pc, _ := consumer.ConsumePartition(k.TopicName, p, offset)
+		pc, err := consumer.ConsumePartition(k.TopicName, p, offset)
+
+		if err != nil {
+			log.Panic("KAFKA CONSUMER PARTITIONS PANIC: ", err.Error())
+		}
+		if pc == nil {
+			log.Panic("KAFKA CONSUMER PARTITIONS PANIC: Failed to create PartitionConsumer")
+		}
 
 		// Watch errors
-		go func() {
-			for err := range pc.Errors() {
-				log.Warn("KAFKA CONSUMER WARN: ", err.Error())
-			}
-		}()
+		// go func() {
+		// 		for err := range pc.Errors() {
+		// log.Warn("KAFKA CONSUMER WARN: ", err.Error())
+		// 	}
+		// }()
 
 		// One routine per partition
 		go func(pc sarama.PartitionConsumer) {
 			for {
 				topic_msg := <-pc.Messages()
 				log.Debug("Consumer ", k.TopicName, ": Consumed message key=", string(topic_msg.Key))
-				metrics.Metrics["kafka_messages_consumed"].Inc()
 
 				// Broadcast
 				k.Broadcaster.ConsumerChan <- topic_msg
