@@ -1,4 +1,4 @@
-package config
+package core
 
 import (
 	"os"
@@ -12,9 +12,9 @@ func TestEnvironment(t *testing.T) {
 	assert := assert.New(t)
 
 	// Set env
-	// TODO update this
 	env_map := map[string]string{
 		"VERSION":                 "version",
+		"NAME":                    "name",
 		"PORT":                    "port",
 		"HEALTH_PORT":             "health_port",
 		"METRICS_PORT":            "metrics_port",
@@ -27,8 +27,11 @@ func TestEnvironment(t *testing.T) {
 		"LOG_TO_FILE":             "true",
 		"NETWORK_NAME":            "network_name",
 		"KAFKA_BROKER_URL":        "kafka_broker_url",
+		"SCHEMA_REGISTRY_URL":     "schema_registry_url",
 		"KAFKA_GROUP_ID":          "kafka_group_id",
-		"TOPIC_NAMES":             "topic_names",
+		"CONSUMER_TOPICS":         "[topic_1,topic_2]",
+		"PRODUCER_TOPICS":         "[topic_1,topic_2,topic_3]",
+		"SCHEMA_NAMES":            "schema_1:schema_1,schema_2:schema_2",
 	}
 
 	for k, v := range env_map {
@@ -39,19 +42,24 @@ func TestEnvironment(t *testing.T) {
 	GetEnvironment()
 
 	// Check env
-	assert.Equal(Vars.Version, env_map["VERSION"])
-	assert.Equal(Vars.Port, env_map["PORT"])
-	assert.Equal(Vars.HealthPort, env_map["HEALTH_PORT"])
-	assert.Equal(Vars.MetricsPort, env_map["METRICS_PORT"])
-	assert.Equal(Vars.RestPrefix, env_map["REST_PREFIX"])
-	assert.Equal(Vars.WebsocketPrefix, env_map["WEBSOCKET_PREFIX"])
-	assert.Equal(Vars.HealthPrefix, env_map["HEALTH_PREFIX"])
-	assert.Equal(Vars.MetricsPrefix, env_map["METRICS_PREFIX"])
-	assert.Equal(Vars.HealthPollingInterval, 5)
-	assert.Equal(Vars.LogLevel, env_map["LOG_LEVEL"])
-	assert.Equal(Vars.LogToFile, true)
-	assert.Equal(Vars.NetworkName, env_map["NETWORK_NAME"])
-	assert.Equal(Vars.KafkaBrokerURL, env_map["KAFKA_BROKER_URL"])
-	assert.Equal(Vars.KafkaGroupID, env_map["KAFKA_GROUP_ID"])
-	assert.Equal(Vars.TopicNames, env_map["TOPIC_NAMES"])
+	assert.Equal(env_map["VERSION"], Vars.Version)
+	assert.Equal(env_map["NAME"], Vars.Name)
+	assert.Equal(env_map["PORT"], Vars.Port)
+	assert.Equal(env_map["HEALTH_PORT"], Vars.HealthPort)
+	assert.Equal(env_map["METRICS_PORT"], Vars.MetricsPort)
+	assert.Equal(env_map["REST_PREFIX"], Vars.RestPrefix)
+	assert.Equal(env_map["WEBSOCKET_PREFIX"], Vars.WebsocketPrefix)
+	assert.Equal(env_map["HEALTH_PREFIX"], Vars.HealthPrefix)
+	assert.Equal(env_map["METRICS_PREFIX"], Vars.MetricsPrefix)
+	assert.Equal(5, Vars.HealthPollingInterval)
+	assert.Equal(env_map["LOG_LEVEL"], Vars.LogLevel)
+	assert.Equal(true, Vars.LogToFile)
+	assert.Equal(env_map["NETWORK_NAME"], Vars.NetworkName)
+	assert.Equal(env_map["KAFKA_BROKER_URL"], Vars.KafkaBrokerURL)
+	assert.Equal(env_map["SCHEMA_REGISTRY_URL"], Vars.SchemaRegistryURL)
+	assert.Equal(env_map["KAFKA_GROUP_ID"], Vars.KafkaGroupID)
+	assert.Equal(2, len(Vars.ConsumerTopics))
+	assert.Equal(3, len(Vars.ProducerTopics))
+	assert.Equal("schema_1", Vars.SchemaNames["schema_1"])
+	assert.Equal("schema_2", Vars.SchemaNames["schema_2"])
 }

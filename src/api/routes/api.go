@@ -1,16 +1,17 @@
-package api
+package routes
 
 import (
 	"encoding/json"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geometry-labs/app/api/rest"
-	"github.com/geometry-labs/app/api/ws"
-	"github.com/geometry-labs/app/config"
-	_ "github.com/geometry-labs/app/docs"
+	"github.com/geometry-labs/go-service-template/core"
+
+	_ "github.com/geometry-labs/go-service-template/api/docs"
+	"github.com/geometry-labs/go-service-template/api/routes/rest"
+	"github.com/geometry-labs/go-service-template/api/routes/ws"
 )
 
 // @title Go api template docs
@@ -39,7 +40,7 @@ func Start() {
 	rest.BlocksAddHandlers(app)
 	ws.BlocksAddHandlers(app)
 
-	go app.Listen(":" + config.Vars.Port)
+	go app.Listen(":" + core.Vars.Port)
 }
 
 // Version
@@ -52,7 +53,7 @@ func Start() {
 // @Router /version [get]
 func handlerVersion(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version": config.Vars.Version,
+		"version": core.Vars.Version,
 	}
 
 	json_message, _ := json.Marshal(message)
@@ -70,8 +71,8 @@ func handlerVersion(c *fiber.Ctx) error {
 // @Router /metadata [get]
 func handlerMetadata(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version":     config.Vars.Version,
-		"name":        config.Vars.Name,
+		"version":     core.Vars.Version,
+		"name":        core.Vars.Name,
 		"description": "a go api template",
 	}
 

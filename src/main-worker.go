@@ -6,11 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/healthcheck"
+	"github.com/geometry-labs/app/core"
 	"github.com/geometry-labs/app/kafka"
-	"github.com/geometry-labs/app/logging"
-	"github.com/geometry-labs/app/metrics"
 	"github.com/geometry-labs/app/workers"
 
 	log "github.com/sirupsen/logrus"

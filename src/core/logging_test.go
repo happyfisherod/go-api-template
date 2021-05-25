@@ -1,55 +1,54 @@
-package logging
+package core
 
 import (
 	"os"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/geometry-labs/app/config"
 )
 
 func TestInit(t *testing.T) {
 
 	// Test file logging
+	os.Setenv("LOG_LEVEL", "Info")
 	os.Setenv("LOG_TO_FILE", "true")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Info("File log")
 
 	// Test levels
 	os.Setenv("LOG_LEVEL", "Panic")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "FATAL")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "ERROR")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "WARN")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Warn("Warning")
 
 	os.Setenv("LOG_LEVEL", "INFO")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Info("Info")
 
 	os.Setenv("LOG_LEVEL", "DEBUG")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Debug("Debug")
 
 	os.Setenv("LOG_LEVEL", "TRACE")
-	config.GetEnvironment()
-	Init()
+	GetEnvironment()
+	LoggingInit()
 	log.Trace("Trace")
 }

@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/geometry-labs/app/crud"
 	"sync"
+
+	"github.com/geometry-labs/go-service-template/crud"
 )
 
 type Global struct {

@@ -56,7 +56,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: "mongo"
       MONGO_INITDB_ROOT_PASSWORD: "changethis"
 
-   mongo-express:
+  mongo-express:
     image: mongo-express
     depends_on:
       - mongo

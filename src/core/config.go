@@ -1,15 +1,16 @@
-package config
+package core
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
 
-type Environment struct {
+type VarsStruct struct {
 
 	// Versioning
 	Version string `envconfig:"VERSION" required:"false" default:"v0.0.0"`
@@ -40,14 +41,14 @@ type Environment struct {
 	// Topics
 	ConsumerTopics []string          `envconfig:"CONSUMER_TOPICS" required:"false" default:"[blocks]"`
 	ProducerTopics []string          `envconfig:"PRODUCER_TOPICS" required:"false" default:"[blocks]"`
-	SchemaNames    map[string]string `envconfig:"SCHEMA_NAMES" required:"false" default:"{"blocks_raw": "blocks_raw"}"`
+	SchemaNames    map[string]string `envconfig:"SCHEMA_NAMES" required:"false" default:"blocks:blocks"`
 
 	// Portgress
 
 	// Mongo
 }
 
-var Vars Environment
+var Vars VarsStruct
 
 // Run once on main.go
 func GetEnvironment() {
@@ -65,5 +66,5 @@ func GetEnvironment() {
 	}
 
 	vars, _ := json.Marshal(Vars)
-	log.Info("Config Vars: " + string(vars))
+	log.Debug("Config Vars: " + string(vars))
 }

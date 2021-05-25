@@ -7,18 +7,18 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geometry-labs/app/api"
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/healthcheck"
-	"github.com/geometry-labs/app/kafka"
-	"github.com/geometry-labs/app/logging"
-	"github.com/geometry-labs/app/metrics"
+	"github.com/geometry-labs/go-service-template/core"
+	"github.com/geometry-labs/go-service-template/kafka"
+
+	"github.com/geometry-labs/go-service-template/api/healthcheck"
+	"github.com/geometry-labs/go-service-template/api/metrics"
+	"github.com/geometry-labs/go-service-template/api/routes"
 )
 
 func main() {
-	config.GetEnvironment()
+	core.GetEnvironment()
 
-	logging.Init()
+	core.LoggingInit()
 
 	// Start kafka consumers
 	// Go routines start in function
@@ -30,7 +30,7 @@ func main() {
 
 	// Start API server
 	// Go routine starts in function
-	api.Start()
+	routes.Start()
 
 	// Start Health server
 	// Go routine starts in function

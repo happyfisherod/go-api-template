@@ -1,16 +1,14 @@
-package logging
+package core
 
 import (
 	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/geometry-labs/app/config"
 )
 
-func Init() {
-	if config.Vars.LogToFile == true {
+func LoggingInit() {
+	if Vars.LogToFile == true {
 		f, err := os.OpenFile("./api.log", os.O_WRONLY|os.O_CREATE, 0755)
 		if err != nil {
 			panic("Error opening log file: " + err.Error())
@@ -18,7 +16,7 @@ func Init() {
 		log.SetOutput(f)
 	}
 
-	switch strings.ToUpper(config.Vars.LogLevel) {
+	switch strings.ToUpper(Vars.LogLevel) {
 	case "PANIC":
 		log.SetLevel(log.PanicLevel)
 		break
@@ -41,7 +39,7 @@ func Init() {
 		log.SetLevel(log.TraceLevel)
 		break
 	default:
-		panic("Error invalid log level: " + config.Vars.LogLevel)
+		panic("Error invalid log level: " + Vars.LogLevel)
 	}
 	log.Println("Log Level: " + log.GetLevel().String())
 }

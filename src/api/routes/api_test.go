@@ -6,14 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/geometry-labs/app/config"
-
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
-	config.GetEnvironment()
+	core.GetEnvironment()
 }
 
 func TestHandlerVersion(t *testing.T) {

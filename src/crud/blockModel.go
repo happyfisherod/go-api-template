@@ -1,9 +1,10 @@
 package crud
 
 import (
-	"github.com/geometry-labs/app/models"
 	"gorm.io/gorm"
 	"sync"
+
+	"github.com/geometry-labs/go-service-template/models"
 )
 
 type BlockRawModel struct {
