@@ -33,7 +33,7 @@ type VarsStruct struct {
 	LogToFile             bool   `envconfig:"LOG_TO_FILE" required:"false" default:"false"`
 	NetworkName           string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
 
-	// Kafka config
+	// Kafka
 	KafkaBrokerURL    string `envconfig:"KAFKA_BROKER_URL" required:"false" default:""`
 	SchemaRegistryURL string `envconfig:"SCHEMA_REGISTRY_URL" required:"false" default:""`
 	KafkaGroupID      string `envconfig:"KAFKA_GROUP_ID" required:"false" default:"websocket-group"`

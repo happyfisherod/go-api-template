@@ -15,7 +15,7 @@ type TopicBroadcaster struct {
 	ConsumerChan chan *sarama.ConsumerMessage
 
 	// Output
-	WorkerChans map[BroadcasterID]chan *sarama.ConsumerMessage
+	BroadcastChans map[BroadcasterID]chan *sarama.ConsumerMessage
 }
 
 var Broadcasters = map[string]*TopicBroadcaster{}
@@ -29,19 +29,19 @@ func newBroadcaster(topic_name string) {
 	go Broadcasters[topic_name].Start()
 }
 
-func (tb *TopicBroadcaster) AddWorkerChannel(topic_chan chan *sarama.ConsumerMessage) BroadcasterID {
+func (tb *TopicBroadcaster) AddBroadcastChannel(topic_chan chan *sarama.ConsumerMessage) BroadcasterID {
 	id := LAST_BROADCASTER_ID
 	LAST_BROADCASTER_ID++
 
-	tb.WorkerChans[id] = topic_chan
+	tb.BroadcastChans[id] = topic_chan
 
 	return id
 }
 
-func (tb *TopicBroadcaster) RemoveWorkerChannel(id BroadcasterID) {
-	_, ok := tb.WorkerChans[id]
+func (tb *TopicBroadcaster) RemoveBroadcastChannel(id BroadcasterID) {
+	_, ok := tb.BroadcastChans[id]
 	if ok {
-		delete(tb.WorkerChans, id)
+		delete(tb.BroadcastChans, id)
 	}
 }
 
@@ -49,7 +49,7 @@ func (tb *TopicBroadcaster) Start() {
 	for {
 		msg := <-tb.ConsumerChan
 
-		for _, channel := range tb.WorkerChans {
+		for _, channel := range tb.BroadcastChans {
 			channel <- msg
 		}
 	}

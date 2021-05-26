@@ -3,9 +3,10 @@
 package crud_test
 
 import (
-	"github.com/geometry-labs/app/crud"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/geometry-labs/go-service-template/crud"
 )
 
 var _ = Describe("Postgres", func() {

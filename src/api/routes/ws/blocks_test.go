@@ -4,32 +4,30 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Shopify/sarama"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	gorilla "github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
-	confluent "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/kafka"
-	"github.com/geometry-labs/app/metrics"
+	"github.com/geometry-labs/go-service-template/core"
+	"github.com/geometry-labs/go-service-template/kafka"
 )
 
 func init() {
-	config.GetEnvironment()
-	metrics.Start()
+	core.GetEnvironment()
 }
 
 func TestHandlerGetBlocks(t *testing.T) {
 	assert := assert.New(t)
 
 	// Create topic broadcaster
-	input_chan := make(chan *confluent.Message)
+	input_chan := make(chan *sarama.ConsumerMessage)
 	broadcaster := &kafka.TopicBroadcaster{
 		input_chan,
 		make(map[kafka.BroadcasterID]chan *confluent.Message),
 	}
-	go broadcaster.Broadcast()
+	go broadcaster.Start()
 
 	app := fiber.New()
 

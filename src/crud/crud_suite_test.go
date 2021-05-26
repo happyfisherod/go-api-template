@@ -1,12 +1,13 @@
 package crud_test
 
 import (
-	"github.com/geometry-labs/app/crud"
-	"github.com/geometry-labs/app/fixtures"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/geometry-labs/go-service-template/crud"
+	"github.com/geometry-labs/go-service-template/fixtures"
 )
 
 var (

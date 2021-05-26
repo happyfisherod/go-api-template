@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/geometry-labs/app/config"
+	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
-	config.GetEnvironment()
+	core.GetEnvironment()
 }
 
 func TestStart(t *testing.T) {
@@ -25,7 +25,7 @@ func TestStart(t *testing.T) {
 	Metrics["websockets_connected"].Inc()
 	Metrics["websockets_bytes_written"].Inc()
 
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", config.Vars.MetricsPort, config.Vars.MetricsPrefix))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", core.Vars.MetricsPort, core.Vars.MetricsPrefix))
 	assert.Equal(nil, err)
 	assert.Equal(200, resp.StatusCode)
 }

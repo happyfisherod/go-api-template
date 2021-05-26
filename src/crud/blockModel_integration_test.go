@@ -3,9 +3,10 @@
 package crud_test
 
 import (
-	"github.com/geometry-labs/app/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/geometry-labs/go-service-template/models"
 )
 
 var _ = Describe("BlockModel", func() {

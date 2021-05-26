@@ -5,14 +5,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 
-	"github.com/geometry-labs/app/config"
-	"github.com/geometry-labs/app/kafka"
-	"github.com/geometry-labs/app/metrics"
+	"github.com/geometry-labs/go-service-template/core"
+	"github.com/geometry-labs/go-service-template/kafka"
 )
 
 func BlocksAddHandlers(app *fiber.App) {
 
-	prefix := config.Vars.WebsocketPrefix + "/blocks"
+	prefix := core.Vars.WebsocketPrefix + "/blocks"
 
 	app.Use(prefix, func(c *fiber.Ctx) error {
 		// IsWebSocketUpgrade returns true if the client
@@ -30,7 +29,6 @@ func BlocksAddHandlers(app *fiber.App) {
 func handlerGetBlocks(broadcaster *kafka.TopicBroadcaster) func(c *websocket.Conn) {
 
 	return func(c *websocket.Conn) {
-		metrics.Metrics["websockets_connected"].Inc()
 
 		// Add broadcaster
 		topic_chan := make(chan *sarama.ConsumerMessage)
@@ -58,7 +56,6 @@ func handlerGetBlocks(broadcaster *kafka.TopicBroadcaster) func(c *websocket.Con
 
 			// Broadcast
 			err := c.WriteMessage(websocket.TextMessage, msg.Value)
-			metrics.Metrics["websockets_bytes_written"].Add(float64(len(msg.Value)))
 			if err != nil {
 				break
 			}

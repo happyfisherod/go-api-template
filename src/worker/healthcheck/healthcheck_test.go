@@ -4,26 +4,26 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/geometry-labs/app/api"
-	"github.com/geometry-labs/app/config"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/geometry-labs/go-service-template/api/routes"
+	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
-	config.GetEnvironment()
+	core.GetEnvironment()
 }
 
 func TestHealthCheck(t *testing.T) {
 	assert := assert.New(t)
 
 	// Start api
-	api.Start()
+	routes.Start()
 
 	// Start healthcheck
 	Start()
 
-	resp, err := http.Get("http://localhost:" + config.Vars.HealthPort + config.Vars.HealthPrefix)
+	resp, err := http.Get("http://localhost:" + core.Vars.HealthPort + core.Vars.HealthPrefix)
 	assert.Equal(nil, err)
 	assert.Equal(200, resp.StatusCode)
 }

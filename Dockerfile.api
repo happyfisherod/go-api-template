@@ -18,7 +18,7 @@ RUN go mod download
 RUN go get github.com/swaggo/swag/cmd/swag
 RUN go get github.com/alecthomas/template
 RUN go get github.com/riferrei/srclient@v0.3.0
-RUN swag init -g api/router/api.go
+RUN swag init -g api/routes/api.go
 
 # BUILD
 RUN go build -gcflags="all=-N -l" -o api main-api.go

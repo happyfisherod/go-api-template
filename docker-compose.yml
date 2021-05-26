@@ -192,18 +192,6 @@ services:
   #######
   # Admin
   #######
-  # TODO: Fix later -> Might be related to https://github.com/stefanprodan/dockprom/issues/205
-  # Broken caddy with how it works with 20.04
-#  connect-ui:
-#    image: landoop/kafka-connect-ui
-#    container_name: connect-ui
-#    depends_on:
-#      - connect
-#    ports:
-#      - "8000:8000"
-#    environment:
-#      - "CONNECT_URL=http://connect:8083"
-#
 #  schema-registry-ui:
 #    image: landoop/schema-registry-ui
 #    hostname: schema-registry-ui

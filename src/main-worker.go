@@ -1,26 +1,27 @@
 package main
 
 import (
-	"github.com/geometry-labs/app/api"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/app/core"
-	"github.com/geometry-labs/app/kafka"
-	"github.com/geometry-labs/app/workers"
-
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geometry-labs/go-service-template/core"
+	"github.com/geometry-labs/go-service-template/kafka"
+
+	"github.com/geometry-labs/go-service-template/worker/healthcheck"
+	"github.com/geometry-labs/go-service-template/worker/transformers"
 )
 
 func main() {
-	config.GetEnvironment()
+	core.GetEnvironment()
 
-	logging.Init()
-	log.Debug("Main: Starting logging with level ", config.Vars.LogLevel)
+	core.LoggingInit()
+	log.Debug("Main: Starting logging with level ", core.Vars.LogLevel)
 
 	// Start Prometheus client
-	metrics.Start()
+	// metrics.Start()
 
 	// Start Health server
 	healthcheck.Start()
@@ -31,8 +32,8 @@ func main() {
 	//// Start kafka consumer
 	kafka.StartProducers()
 
-	//// Start workers
-	workers.StartBlocksWorker()
+	//// Start transformers
+	transformers.StartBlocksTransformer()
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)

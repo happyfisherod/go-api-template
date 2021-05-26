@@ -3,11 +3,13 @@ package fixtures
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/geometry-labs/app/models"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/geometry-labs/go-service-template/models"
 )
 
 const (

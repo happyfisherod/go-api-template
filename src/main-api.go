@@ -11,7 +11,6 @@ import (
 	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/api/healthcheck"
-	"github.com/geometry-labs/go-service-template/api/metrics"
 	"github.com/geometry-labs/go-service-template/api/routes"
 )
 
@@ -26,7 +25,7 @@ func main() {
 
 	// Start Prometheus client
 	// Go routine starts in function
-	metrics.Start()
+	// metrics.Start()
 
 	// Start API server
 	// Go routine starts in function
