@@ -32,10 +32,10 @@ func handlerGetBlocks(broadcaster *kafka.TopicBroadcaster) func(c *websocket.Con
 
 		// Add broadcaster
 		topic_chan := make(chan *sarama.ConsumerMessage)
-		id := broadcaster.AddWorkerChannel(topic_chan)
+		id := broadcaster.AddBroadcastChannel(topic_chan)
 		defer func() {
 			// Remove broadcaster
-			broadcaster.RemoveWorkerChannel(id)
+			broadcaster.RemoveBroadcastChannel(id)
 		}()
 
 		// Read for close
