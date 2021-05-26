@@ -25,7 +25,7 @@ func main() {
 
 	// Start Prometheus client
 	// Go routine starts in function
-	// metrics.Start()
+	core.MetricsApiStart()
 
 	// Start API server
 	// Go routine starts in function

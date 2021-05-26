@@ -21,7 +21,7 @@ func main() {
 	log.Debug("Main: Starting logging with level ", core.Vars.LogLevel)
 
 	// Start Prometheus client
-	// metrics.Start()
+	core.MetricsWorkerStart()
 
 	// Start Health server
 	healthcheck.Start()
