@@ -7,7 +7,39 @@ import (
 	"github.com/geometry-labs/go-service-template/core"
 )
 
-func StartConsumers() {
+func StartApiConsumers() {
+	kafka_broker := core.Vars.KafkaBrokerURL
+	consumer_topics := core.Vars.ConsumerTopics
+
+	log.Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
+
+	BroadcastFunc := func(channel chan *sarama.ConsumerMessage, message *sarama.ConsumerMessage) {
+		select {
+		case channel <- message:
+			return
+		default:
+			return
+		}
+	}
+
+	for _, t := range consumer_topics {
+		// Broadcaster indexed in Broadcasters map
+		// Starts go routine
+		newBroadcaster(t, BroadcastFunc)
+
+		topic_consumer := &KafkaTopicConsumer{
+			kafka_broker,
+			t,
+			Broadcasters[t],
+		}
+
+		// One routine per topic
+		log.Debug("Start Consumers: Starting ", t, " consumer...")
+		go topic_consumer.consumeTopic()
+	}
+}
+
+func StartWorkerConsumers() {
 	kafka_broker := core.Vars.KafkaBrokerURL
 	consumer_topics := core.Vars.ConsumerTopics
 
@@ -16,7 +48,7 @@ func StartConsumers() {
 	for _, t := range consumer_topics {
 		// Broadcaster indexed in Broadcasters map
 		// Starts go routine
-		newBroadcaster(t)
+		newBroadcaster(t, nil)
 
 		topic_consumer := &KafkaTopicConsumer{
 			kafka_broker,

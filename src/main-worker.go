@@ -27,7 +27,7 @@ func main() {
 	healthcheck.Start()
 
 	//// Start kafka consumer
-	kafka.StartConsumers()
+	kafka.StartWorkerConsumers()
 
 	//// Start kafka consumer
 	kafka.StartProducers()

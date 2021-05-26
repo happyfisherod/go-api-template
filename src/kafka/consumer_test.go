@@ -47,7 +47,7 @@ func TestKafkaTopicConsumer(t *testing.T) {
 	})
 
 	// Start broadcaster
-	newBroadcaster(topic_name)
+	newBroadcaster(topic_name, nil)
 	log.Info("TestKafkaTopicConsumer: Starting broadcaster...")
 	go Broadcasters[topic_name].Start()
 
@@ -62,9 +62,9 @@ func TestKafkaTopicConsumer(t *testing.T) {
 
 	// Add broadcasting channeld
 	topic_chan := make(chan *sarama.ConsumerMessage)
-	broadcaster_output_chan_id := Broadcasters[topic_name].AddWorkerChannel(topic_chan)
+	broadcaster_output_chan_id := Broadcasters[topic_name].AddBroadcastChannel(topic_chan)
 	defer func() {
-		Broadcasters[topic_name].RemoveWorkerChannel(broadcaster_output_chan_id)
+		Broadcasters[topic_name].RemoveBroadcastChannel(broadcaster_output_chan_id)
 	}()
 
 	for {

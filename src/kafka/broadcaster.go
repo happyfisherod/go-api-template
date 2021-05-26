@@ -9,6 +9,8 @@ type BroadcasterID int
 
 var LAST_BROADCASTER_ID BroadcasterID = 0
 
+type TopicBroadcastFunc func(channel chan *sarama.ConsumerMessage, message *sarama.ConsumerMessage)
+
 type TopicBroadcaster struct {
 
 	// Input
@@ -16,14 +18,23 @@ type TopicBroadcaster struct {
 
 	// Output
 	BroadcastChans map[BroadcasterID]chan *sarama.ConsumerMessage
+
+	BroadcastFunc TopicBroadcastFunc
 }
 
 var Broadcasters = map[string]*TopicBroadcaster{}
 
-func newBroadcaster(topic_name string) {
+func newBroadcaster(topic_name string, BroadcastFunc TopicBroadcastFunc) {
+	if BroadcastFunc == nil {
+		BroadcastFunc = func(channel chan *sarama.ConsumerMessage, message *sarama.ConsumerMessage) {
+			channel <- message
+		}
+	}
+
 	Broadcasters[topic_name] = &TopicBroadcaster{
 		make(chan *sarama.ConsumerMessage),
 		make(map[BroadcasterID]chan *sarama.ConsumerMessage),
+		BroadcastFunc,
 	}
 
 	go Broadcasters[topic_name].Start()
@@ -50,7 +61,7 @@ func (tb *TopicBroadcaster) Start() {
 		msg := <-tb.ConsumerChan
 
 		for _, channel := range tb.BroadcastChans {
-			channel <- msg
+			tb.BroadcastFunc(channel, msg)
 		}
 	}
 }
