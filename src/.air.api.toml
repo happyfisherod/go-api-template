@@ -5,7 +5,7 @@ tmp_dir = "bin"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./bin/api api.go"
+cmd = "go build -o ./bin/api main-api.go"
 # Binary file yields from `cmd`.
 bin = "bin/api"
 # Customize binary.
