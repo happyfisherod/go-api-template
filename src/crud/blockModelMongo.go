@@ -7,10 +7,10 @@ import (
 )
 
 type BlockRawModelMongo struct {
-	mongoConn *MongoConn
-	model     *models.BlockRaw
-	//databaseHandle *mongo.Database
-	//collectionHandle *mongo.Collection
+	mongoConn        *MongoConn
+	model            *models.BlockRaw
+	databaseHandle   *mongo.Database
+	collectionHandle *mongo.Collection
 }
 
 var blockRawModelMongoInstance *BlockRawModelMongo
@@ -34,6 +34,23 @@ func NewBlockRawModelMongo(conn *MongoConn) *BlockRawModelMongo {
 	return blockRawModelMongoInstance
 }
 
-func (b *BlockRawModelMongo) CollectionHandle(database string, collection string) *mongo.Collection {
-	return b.mongoConn.DatabaseHandle(database).Collection(collection)
+//func (b *BlockRawModelMongo) SetCollectionHandle(collection *mongo.Collection) {
+//	b.collectionHandle = collection
+//}
+
+func (b *BlockRawModelMongo) GetMongoConn() *MongoConn {
+	return b.mongoConn
+}
+
+func (b *BlockRawModelMongo) GetModel() *models.BlockRaw {
+	return b.model
+}
+
+func (b *BlockRawModelMongo) SetCollectionHandle(database string, collection string) *mongo.Collection {
+	b.collectionHandle = b.mongoConn.DatabaseHandle(database).Collection(collection)
+	return b.collectionHandle
+}
+
+func (b *BlockRawModelMongo) GetCollectionHandle() *mongo.Collection {
+	return b.collectionHandle
 }

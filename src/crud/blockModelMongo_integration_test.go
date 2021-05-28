@@ -4,7 +4,6 @@ package crud_test
 
 import (
 	"fmt"
-	"github.com/geometry-labs/go-service-template/crud"
 	"github.com/geometry-labs/go-service-template/fixtures"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -20,18 +19,18 @@ var _ = Describe("Mongo Integration test", func() {
 			for _, fixture := range testFixtures {
 				block := fixture.GetBlock(fixture.Input)
 				It("insert in mongodb", func() {
-					nm := crud.NewMongoConn("mongodb://127.0.0.1:27017")
+					//nm := crud.NewMongoConn("mongodb://127.0.0.1:27017")
 
-					x := nm.ListAllDatabases()
+					x := blockRawModelMongo.GetMongoConn().ListAllDatabases()
 					fmt.Println(x)
 
-					brmm := crud.NewBlockRawModelMongo(nm)
-					coll := brmm.CollectionHandle("icon_test", "contracts")
+					//brmm := crud.NewBlockRawModelMongo(nm)
+					//coll := brmm.SetCollectionHandle("icon_test", "contracts")
 					//coll.InsertOne(nm.GetCtx(), bson.D{
 					//	{Key: "title", Value: "The Polyglot Developer Podcast"},
 					//	{Key: "author", Value: "Nic Raboy"},
 					//})
-					one, err := coll.InsertOne(nm.GetCtx(), block)
+					one, err := blockRawModelMongo.GetCollectionHandle().InsertOne(blockRawModelMongo.GetMongoConn().GetCtx(), block)
 
 					if err != nil {
 						Expect(1).To(Equal(0))
