@@ -3,13 +3,14 @@
 package crud_test
 
 import (
+	"github.com/geometry-labs/go-service-template/fixtures"
+	"github.com/geometry-labs/go-service-template/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/geometry-labs/go-service-template/models"
 )
 
 var _ = Describe("BlockModel", func() {
+	testFixtures, _ := fixtures.LoadTestFixtures(fixtures.Block_raws_fixture)
 
 	Describe("blockModel with postgres", func() {
 
@@ -23,9 +24,9 @@ var _ = Describe("BlockModel", func() {
 					blockRawModel.Create(block)
 					found, _ := blockRawModel.FindOne("Signature = ?", block.Signature)
 					Expect(found.Hash).To(Equal(block.Hash))
-				})
-			}
-		})
+				}) // It
+			} // For
+		}) // context
 
 		Context("update in block table", func() {
 			for _, fixture := range testFixtures {
@@ -38,9 +39,9 @@ var _ = Describe("BlockModel", func() {
 					blockRawModel.Update(block, &models.BlockRaw{Type: "blockRaw"}, "Signature = ?", block.Signature)
 					found, _ := blockRawModel.FindOne("Signature = ?", block.Signature)
 					Expect(found.Type).To(Equal("blockRaw"))
-				})
-			}
-		})
+				}) // It
+			} // For
+		}) // context
 
 		Context("delete in block table", func() {
 			for _, fixture := range testFixtures {
@@ -53,9 +54,9 @@ var _ = Describe("BlockModel", func() {
 					blockRawModel.Delete("Signature = ?", block.Signature)
 					found, _ := blockRawModel.FindOne("Signature = ?", block.Signature)
 					Expect(found.Hash).To(Equal(""))
-				})
-			}
-		})
-	})
+				}) // It
+			} // For
+		}) // context
 
-})
+	}) // Describe
+}) // Describe
