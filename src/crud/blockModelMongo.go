@@ -3,6 +3,7 @@ package crud
 import (
 	"github.com/geometry-labs/go-service-template/models"
 	"go.mongodb.org/mongo-driver/mongo"
+	"sync"
 )
 
 type BlockRawModelMongo struct {
@@ -10,6 +11,19 @@ type BlockRawModelMongo struct {
 	model     *models.BlockRaw
 	//databaseHandle *mongo.Database
 	//collectionHandle *mongo.Collection
+}
+
+var blockRawModelMongoInstance *BlockRawModelMongo
+var blockRawModelMongoOnce sync.Once
+
+func GetBlockRawModelMongo() *BlockRawModelMongo {
+	blockRawModelMongoOnce.Do(func() {
+		blockRawModelMongoInstance = &BlockRawModelMongo{
+			mongoConn: GetMongoConn(),
+			model:     &models.BlockRaw{},
+		}
+	})
+	return blockRawModelMongoInstance
 }
 
 func NewBlockRawModelMongo(conn *MongoConn) *BlockRawModelMongo {

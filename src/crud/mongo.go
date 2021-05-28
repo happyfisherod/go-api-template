@@ -22,8 +22,15 @@ var mongoConnOnce sync.Once
 func GetMongoConn() *MongoConn {
 	mongoConnOnce.Do(func() {
 		// TODO: create uri string from env variables
-		uri := "mongodb://127.0.0.1:27017"
-		client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+		uri := "mongodb://mongo:27017"
+		client, err := mongo.NewClient(options.Client().ApplyURI(uri).SetAuth(options.Credential{
+			AuthMechanism:           "",
+			AuthMechanismProperties: nil,
+			AuthSource:              "",
+			Username:                "mongo",
+			Password:                "changethis",
+			PasswordSet:             true,
+		}))
 		if err != nil {
 			log.Fatal("Cannot create a connection to mongodb", err)
 		}
