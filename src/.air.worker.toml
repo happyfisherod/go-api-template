@@ -5,7 +5,7 @@ tmp_dir = "bin"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./bin/worker worker.go"
+cmd = "go build -o ./bin/worker main-worker.go"
 # Binary file yields from `cmd`.
 bin = "bin/worker"
 # Customize binary.
