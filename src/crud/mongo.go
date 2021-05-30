@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"sync"
-	"time"
 )
 
 type MongoConn struct {
@@ -36,7 +35,7 @@ func GetMongoConn() *MongoConn {
 		}
 		//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		//defer cancel()
-		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, _ := context.WithCancel(context.Background())
 		err = client.Connect(ctx)
 		if err != nil {
 			log.Fatal("Cannot connect to context for mongodb", err)
@@ -71,7 +70,7 @@ func NewMongoConn(uri string) *MongoConn {
 	}
 	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	//defer cancel()
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithCancel(context.Background())
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal("Cannot connect to context for mongodb", err)
