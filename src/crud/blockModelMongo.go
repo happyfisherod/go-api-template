@@ -2,15 +2,22 @@ package crud
 
 import (
 	"github.com/geometry-labs/go-service-template/models"
+	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"sync"
 )
 
 type BlockRawModelMongo struct {
-	mongoConn        *MongoConn
-	model            *models.BlockRaw
-	databaseHandle   *mongo.Database
+	mongoConn *MongoConn
+	model     *models.BlockRaw
+	//databaseHandle   *mongo.Database
 	collectionHandle *mongo.Collection
+}
+
+type KeyValue struct {
+	Key   string
+	Value interface{}
 }
 
 var blockRawModelMongoInstance *BlockRawModelMongo
@@ -53,4 +60,32 @@ func (b *BlockRawModelMongo) SetCollectionHandle(database string, collection str
 
 func (b *BlockRawModelMongo) GetCollectionHandle() *mongo.Collection {
 	return b.collectionHandle
+}
+
+func (b *BlockRawModelMongo) InsertOne(block *models.BlockRaw) (*mongo.InsertOneResult, error) {
+	one, err := b.collectionHandle.InsertOne(b.mongoConn.ctx, block)
+	return one, err
+}
+
+func (b *BlockRawModelMongo) DeleteMany(kv *KeyValue) (*mongo.DeleteResult, error) {
+	delR, err := b.collectionHandle.DeleteMany(b.mongoConn.ctx, bson.D{{kv.Key, kv.Value}})
+	return delR, err
+}
+
+func (b *BlockRawModelMongo) find(kv *KeyValue) (*mongo.Cursor, error) {
+	cursor, err := b.collectionHandle.Find(b.mongoConn.ctx, bson.D{{kv.Key, kv.Value}})
+	return cursor, err
+}
+
+func (b *BlockRawModelMongo) FindAll(kv *KeyValue) []bson.M {
+	cursor, err := b.find(kv)
+	if err != nil {
+		log.Fatal("Exception in getting a curser to a find in mongodb: ", err)
+	}
+	var results []bson.M
+	if err = cursor.All(b.mongoConn.ctx, &results); err != nil {
+		log.Fatal("Exception in find all: ", err)
+	}
+	return results
+
 }
