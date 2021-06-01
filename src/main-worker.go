@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -15,6 +16,9 @@ import (
 )
 
 func main() {
+	os.Setenv("CONSUMER_TOPICS", "blocks")
+	os.Setenv("PRODUCER_TOPICS", "blocks-ws")
+
 	core.GetEnvironment()
 
 	core.LoggingInit()
@@ -31,6 +35,8 @@ func main() {
 
 	//// Start kafka consumer
 	kafka.StartProducers()
+
+	time.Sleep(1 * time.Second)
 
 	//// Start transformers
 	transformers.StartBlocksTransformer()

@@ -6,7 +6,6 @@ import (
 
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
-
 	"github.com/geometry-labs/go-service-template/worker/utils"
 )
 
