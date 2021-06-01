@@ -16,8 +16,6 @@ import (
 )
 
 func main() {
-	os.Setenv("CONSUMER_TOPICS", "blocks")
-	os.Setenv("PRODUCER_TOPICS", "blocks-ws")
 
 	core.GetEnvironment()
 
