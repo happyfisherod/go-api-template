@@ -19,7 +19,7 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      - ./envfiles/.env.api.test
+      - ./envfiles/env.api.test
     volumes:
       - ./src:/app
       - ./schemas:/app/schemas
@@ -41,7 +41,7 @@ services:
       - kafka
       - schemaregistry
     env_file:
-      -  ./envfiles/.env.worker.test
+      -  ./envfiles/env.worker.test
     volumes:
       - ./src:/app
       - ./schemas:/app/schemas
