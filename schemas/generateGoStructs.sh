@@ -2,9 +2,9 @@
 
 echo "Starting proto to struct..."
 
-protoc -I=. --go_out=../api/src *.proto
-protoc -I=. --go_out=../worker/src *.proto
+# For Grom in proto, run once
+# 1. Run this cd $GOPATH/src/github.com/infobloxopen/protoc-gen-gorm && make vendor && make install
 
-protoc -I=. --go_out=../app/src *.proto
+protoc -I=. -I=$GOPATH/src --go_out=../src --gorm_out=../src *.proto
 
 echo "Completed proto to struct..."

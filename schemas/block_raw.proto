@@ -2,7 +2,13 @@ syntax = "proto3";
 package models;
 option go_package = "./models";
 
+import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
+
 message BlockRaw {
+  option (gorm.opts) = {ormable: true};
+
+  string id = 100 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+
   string signature = 1;
   string item_id = 2;
   string next_leader = 3;
