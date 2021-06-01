@@ -1,6 +1,8 @@
 #!/bin/sh
 
 echo "Starting proto to struct..."
+#export GOPATH="$HOME/go"
+#echo "GOPATH=$GOPATH"
 
 # For Grom in proto, run once
 # 1. Run this cd $GOPATH/src/github.com/infobloxopen/protoc-gen-gorm && make vendor && make install
