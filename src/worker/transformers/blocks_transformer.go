@@ -1,8 +1,8 @@
 package transformers
 
 import (
-	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/Shopify/sarama.v1"
 
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
@@ -28,6 +28,7 @@ func blocksTransformer() {
 
 	consumer_topic_chan := make(chan *sarama.ConsumerMessage)
 	producer_topic_chan := kafka.KafkaTopicProducers[producer_topic_name].TopicChan
+	// create a channel for postgres
 
 	// Register consumer channel
 	broadcaster_output_chan_id := kafka.Broadcasters[consumer_topic_name].AddBroadcastChannel(consumer_topic_chan)
