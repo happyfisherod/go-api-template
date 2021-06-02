@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/Shopify/sarama.v1"
 
 	"github.com/geometry-labs/go-service-template/core"
 )

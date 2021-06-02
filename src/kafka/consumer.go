@@ -1,10 +1,10 @@
 package kafka
 
 import (
-	"github.com/Shopify/sarama"
-	log "github.com/sirupsen/logrus"
-
 	"github.com/geometry-labs/go-service-template/core"
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/Shopify/sarama.v1"
+	"time"
 )
 
 func StartApiConsumers() {
@@ -69,7 +69,10 @@ type KafkaTopicConsumer struct {
 }
 
 func (k *KafkaTopicConsumer) consumeTopic() {
-	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, nil)
+	config := sarama.NewConfig()
+	config.Consumer.Return.Errors = true
+
+	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, config)
 	if err != nil {
 		log.Panic("KAFKA CONSUMER NEWCONSUMER PANIC: ", err.Error())
 	}
@@ -106,7 +109,18 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 		// One routine per partition
 		go func(pc sarama.PartitionConsumer) {
 			for {
-				topic_msg := <-pc.Messages()
+				var topic_msg *sarama.ConsumerMessage
+				select {
+				case msg := <-pc.Messages():
+					topic_msg = msg
+				case consumerErr := <-pc.Errors():
+					log.Warn("KAFKA PARTITION CONSUMER ERROR:", consumerErr.Err)
+					continue
+				case <-time.After(5 * time.Second):
+					log.Debug("Consumer ", k.TopicName, ": No new kafka messages, waited 5 secs")
+					continue
+				}
+				//topic_msg := <-pc.Messages()
 				log.Debug("Consumer ", k.TopicName, ": Consumed message key=", string(topic_msg.Key))
 
 				// Broadcast
@@ -116,4 +130,7 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 			}
 		}(pc)
 	}
+	// Waiting, so that client remains alive
+	ch := make(chan int, 1)
+	<-ch
 }
