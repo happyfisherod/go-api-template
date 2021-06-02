@@ -1,8 +1,8 @@
 package kafka
 
 import (
-	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/Shopify/sarama.v1"
 
 	"github.com/geometry-labs/go-service-template/core"
 )
