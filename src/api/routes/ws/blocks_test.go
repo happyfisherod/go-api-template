@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Shopify/sarama"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	gorilla "github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/Shopify/sarama.v1"
 
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
@@ -24,8 +24,8 @@ func TestHandlerGetBlocks(t *testing.T) {
 	// Create topic broadcaster
 	input_chan := make(chan *sarama.ConsumerMessage)
 	broadcaster := &kafka.TopicBroadcaster{
-		input_chan,
-		make(map[kafka.BroadcasterID]chan *confluent.Message),
+		ConsumerChan:   input_chan,
+		BroadcastChans: make(map[kafka.BroadcasterID]chan *sarama.ConsumerMessage),
 	}
 	go broadcaster.Start()
 
@@ -47,7 +47,7 @@ func TestHandlerGetBlocks(t *testing.T) {
 	test_data := "Test Data"
 	go func() {
 		for {
-			msg := &(confluent.Message{})
+			msg := &(sarama.ConsumerMessage{})
 			msg.Value = []byte(test_data)
 
 			input_chan <- msg

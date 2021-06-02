@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	"github.com/Shopify/sarama"
+	"gopkg.in/Shopify/sarama.v1"
 )
 
 // TODO use uuid for larger ID range
