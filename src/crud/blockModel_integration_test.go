@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("BlockModel", func() {
+var _ = Describe("BlockModel", func() { // TODO: Remove dependency to Create database "test_db" manually before running the tests
 	testFixtures, _ := fixtures.LoadTestFixtures(fixtures.Block_raws_fixture)
 
 	Describe("blockModel with postgres", func() {

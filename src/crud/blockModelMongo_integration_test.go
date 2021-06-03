@@ -1,3 +1,5 @@
+//+build integration
+
 package crud_test
 
 import (
