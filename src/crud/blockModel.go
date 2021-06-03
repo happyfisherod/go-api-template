@@ -2,13 +2,15 @@ package crud
 
 import (
 	"github.com/geometry-labs/go-service-template/models"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"sync"
 )
 
 type BlockRawModel struct {
-	db    *gorm.DB
-	model *models.BlockRaw
+	db        *gorm.DB
+	model     *models.BlockRaw
+	writeChan chan *models.BlockRaw
 }
 
 var blockRawModelInstance *BlockRawModel
@@ -17,8 +19,14 @@ var blockRawModelOnce sync.Once
 func GetBlockRawModel() *BlockRawModel {
 	blockRawModelOnce.Do(func() {
 		blockRawModelInstance = &BlockRawModel{
-			db:    GetPostgresConn().conn,
-			model: &models.BlockRaw{},
+			db:        GetPostgresConn().conn,
+			model:     &models.BlockRaw{},
+			writeChan: make(chan *models.BlockRaw, 1),
+		}
+
+		err := blockRawModelInstance.Migrate()
+		if err != nil {
+			log.Error("BlockModel: Unable create postgres table BlockRaws")
 		}
 	})
 	return blockRawModelInstance
@@ -26,10 +34,15 @@ func GetBlockRawModel() *BlockRawModel {
 
 func NewBlockRawModel(conn *gorm.DB) *BlockRawModel { // Only for testing
 	blockRawModelInstance = &BlockRawModel{
-		db:    conn,
-		model: &models.BlockRaw{},
+		db:        conn,
+		model:     &models.BlockRaw{},
+		writeChan: make(chan *models.BlockRaw, 1),
 	}
 	return blockRawModelInstance
+}
+
+func (m *BlockRawModel) GetWriteChan() chan *models.BlockRaw {
+	return m.writeChan
 }
 
 func (m *BlockRawModel) Migrate() error {

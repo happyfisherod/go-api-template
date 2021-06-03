@@ -11,6 +11,7 @@ import (
 	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/worker/healthcheck"
+	"github.com/geometry-labs/go-service-template/worker/loader"
 	"github.com/geometry-labs/go-service-template/worker/transformers"
 )
 
@@ -31,6 +32,9 @@ func main() {
 
 	//// Start kafka consumer
 	kafka.StartProducers()
+
+	//// Start Postgres loader
+	loader.StartBlockRawsLoader()
 
 	//// Start transformers
 	transformers.StartBlocksTransformer()
