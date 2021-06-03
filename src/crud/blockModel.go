@@ -1,10 +1,9 @@
 package crud
 
 import (
+	"github.com/geometry-labs/go-service-template/models"
 	"gorm.io/gorm"
 	"sync"
-
-	"github.com/geometry-labs/go-service-template/models"
 )
 
 type BlockRawModel struct {
@@ -34,7 +33,8 @@ func NewBlockRawModel(conn *gorm.DB) *BlockRawModel { // Only for testing
 }
 
 func (m *BlockRawModel) Migrate() error {
-	err := m.db.AutoMigrate(m.model)
+	// Using ORM version of the proto generated struct to create the table only
+	err := m.db.AutoMigrate(models.BlockRawORM{})
 	return err
 }
 

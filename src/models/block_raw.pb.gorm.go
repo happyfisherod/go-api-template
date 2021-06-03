@@ -34,7 +34,7 @@ type BlockRawORM struct {
 	ItemTimestamp    string
 	MerkleRootHash   string
 	NextLeader       string
-	Number           uint32 `gorm:"type:uint32;primary_key"`
+	Number           uint32 `gorm:"primary_key"`
 	ParentHash       string
 	PeerId           string
 	Signature        string
