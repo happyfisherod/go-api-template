@@ -4,10 +4,9 @@ import (
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/models"
-  "github.com/geometry-labs/go-service-template/worker/utils"
+	"github.com/geometry-labs/go-service-template/worker/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/Shopify/sarama.v1"
-
 )
 
 func StartBlocksTransformer() {

@@ -71,7 +71,6 @@ services:
       "--period-seconds", "1",
       "--provider-uri", "http://134.122.40.114:9000/api/v3",
       "-b", "100",
-      "-B", "100"
     ]
     depends_on:
       - kafka

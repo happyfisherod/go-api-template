@@ -40,7 +40,7 @@ type VarsStruct struct {
 
 	// Topics
 	ConsumerTopics []string          `envconfig:"CONSUMER_TOPICS" required:"false" default:"blocks"`
-	ProducerTopics []string          `envconfig:"PRODUCER_TOPICS" required:"false" default:"blocks"`
+	ProducerTopics []string          `envconfig:"PRODUCER_TOPICS" required:"false" default:"blocks-ws"`
 	SchemaNames    map[string]string `envconfig:"SCHEMA_NAMES" required:"false" default:"blocks:blocks"`
 
 	// Portgress
