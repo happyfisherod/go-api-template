@@ -29,6 +29,7 @@ func blocksTransformer() {
 
 	consumer_topic_chan := make(chan *sarama.ConsumerMessage)
 	producer_topic_chan := kafka.KafkaTopicProducers[producer_topic_name].TopicChan
+	postgresLoaderChan := core.GetGlobal().Blocks.GetWriteChan()
 
 	// Register consumer channel
 	broadcaster_output_chan_id := kafka.Broadcasters[consumer_topic_name].AddBroadcastChannel(consumer_topic_chan)
@@ -59,7 +60,7 @@ func blocksTransformer() {
 		producer_topic_chan <- producer_topic_msg
 
 		// Load to Postgres
-		core.GetGlobal().Blocks.GetWriteChan() <- transformedBlock
+		postgresLoaderChan <- transformedBlock
 
 		log.Debug("Blocks worker: last seen block #", string(consumer_topic_msg.Key))
 	}
