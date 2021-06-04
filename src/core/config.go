@@ -39,8 +39,8 @@ type VarsStruct struct {
 	KafkaGroupID      string `envconfig:"KAFKA_GROUP_ID" required:"false" default:"websocket-group"`
 
 	// Topics
-	ConsumerTopics []string          `envconfig:"CONSUMER_TOPICS" required:"false" default:"[blocks]"`
-	ProducerTopics []string          `envconfig:"PRODUCER_TOPICS" required:"false" default:"[blocks]"`
+	ConsumerTopics []string          `envconfig:"CONSUMER_TOPICS" required:"false" default:"blocks"`
+	ProducerTopics []string          `envconfig:"PRODUCER_TOPICS" required:"false" default:"blocks"`
 	SchemaNames    map[string]string `envconfig:"SCHEMA_NAMES" required:"false" default:"blocks:blocks"`
 
 	// Portgress

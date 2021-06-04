@@ -4,10 +4,10 @@ import (
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/models"
+  "github.com/geometry-labs/go-service-template/worker/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/Shopify/sarama.v1"
 
-	"github.com/geometry-labs/go-service-template/worker/utils"
 )
 
 func StartBlocksTransformer() {
@@ -21,10 +21,10 @@ func blocksTransformer() {
 	// TODO: Need to move all of the config validations to config.go
 	// Check topic names
 	if utils.StringInSlice(consumer_topic_name, core.Vars.ConsumerTopics) == false {
-		log.Panic("Blocks Worker: invalid BLOCKS_WORKER_CONSUMER_TOPIC value. MUST be a topic in CONSUMER_TOPICS")
+		log.Panic("Blocks Worker: no ", consumer_topic_name, " topic found in CONSUMER_TOPICS=", core.Vars.ConsumerTopics)
 	}
 	if utils.StringInSlice(producer_topic_name, core.Vars.ProducerTopics) == false {
-		log.Panic("Blocks Worker: invalid BLOCKS_WORKER_PRODUCER_TOPIC value. MUST be a topic in PRODUCER_TOPICS")
+		log.Panic("Blocks Worker: no ", producer_topic_name, " topic found in PRODUCER_TOPICS=", core.Vars.ProducerTopics)
 	}
 
 	consumer_topic_chan := make(chan *sarama.ConsumerMessage)

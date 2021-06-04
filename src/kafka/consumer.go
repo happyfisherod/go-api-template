@@ -85,7 +85,7 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 	offset := sarama.OffsetOldest
 	partitions, err := consumer.Partitions(k.TopicName)
 	if err != nil {
-		log.Panic("KAFKA CONSUMER PARTITIONS PANIC: ", err.Error())
+		log.Panic("KAFKA CONSUMER PARTITIONS PANIC: ", err.Error(), " Topic: ", k.TopicName)
 	}
 
 	log.Debug("Consumer ", k.TopicName, ": Started consuming")

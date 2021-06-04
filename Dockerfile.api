@@ -10,6 +10,8 @@ ENV GO111MODULE=on \
 WORKDIR /build
 COPY ./src .
 
+FROM ubuntu as prod
+
 # DOWNLOAND DEPS
 RUN go mod tidy
 RUN go mod download
@@ -22,8 +24,6 @@ RUN swag init -g api/routes/api.go
 
 # BUILD
 RUN go build -gcflags="all=-N -l" -o api main-api.go
-
-FROM ubuntu as prod
 
 # Uncomment for SSL certs
 # COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
