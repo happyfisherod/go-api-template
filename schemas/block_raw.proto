@@ -14,7 +14,7 @@ message BlockRaw {
   string type = 5;
   string version = 6;
   string peer_id = 7;
-  uint32 number = 8 [(gorm.field).tag = {primary_key: true}];
+  uint32 number = 8;
   string merkle_root_hash = 9;
   string item_timestamp = 10;
   string hash = 11 [(gorm.field).tag = {primary_key: true}];;
