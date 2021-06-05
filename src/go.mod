@@ -3,8 +3,9 @@ module github.com/geometry-labs/go-service-template
 go 1.15
 
 require (
+	github.com/DataDog/zstd v1.4.8 // indirect
 	github.com/InVisionApp/go-health/v2 v2.1.2
-	github.com/Shopify/sarama v1.29.0
+	//github.com/Shopify/sarama v1.29.0
 	github.com/arsmn/fiber-swagger/v2 v2.6.0
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/gofiber/fiber/v2 v2.10.0
@@ -24,6 +25,7 @@ require (
 	go.mongodb.org/mongo-driver v1.5.2
 	google.golang.org/genproto v0.0.0-20200527145253-8367513e4ece
 	google.golang.org/protobuf v1.26.0
+	gopkg.in/Shopify/sarama.v1 v1.20.1
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.10
 )

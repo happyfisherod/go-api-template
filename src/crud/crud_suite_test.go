@@ -11,18 +11,18 @@ import (
 var (
 	blockRawModel      *crud.BlockRawModel
 	blockRawModelMongo *crud.BlockRawModelMongo
-	//testFixtures fixtures.Fixtures
 )
 
 func TestCrud(t *testing.T) {
 	RegisterFailHandler(Fail)
-	//
-	blockRawModel = NewBlockModel()
-	blockRawModelMongo = NewBlockModelMongo()
-	//testFixtures, _ = fixtures.LoadTestFixtures(fixtures.Block_raws_fixture)
-	//
 	RunSpecs(t, "Crud Suite")
 }
+
+var _ = BeforeSuite(func() {
+	blockRawModel = NewBlockModel()
+	_ = blockRawModel.Migrate() // Have to create table before running tests
+	blockRawModelMongo = NewBlockModelMongo()
+})
 
 func NewBlockModel() *crud.BlockRawModel {
 	dsn := crud.NewDsn("localhost", "5432", "postgres", "changeme", "test_db", "disable", "UTC")
