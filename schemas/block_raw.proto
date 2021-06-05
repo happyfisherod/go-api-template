@@ -7,8 +7,6 @@ import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 message BlockRaw {
   option (gorm.opts) = {ormable: true};
 
-  string id = 100 [(gorm.field).tag = {type: "uuid" primary_key: true}];
-
   string signature = 1;
   string item_id = 2;
   string next_leader = 3;
@@ -19,7 +17,7 @@ message BlockRaw {
   uint32 number = 8;
   string merkle_root_hash = 9;
   string item_timestamp = 10;
-  string hash = 11;
+  string hash = 11 [(gorm.field).tag = {primary_key: true}];;
   string parent_hash = 12;
   uint64 timestamp = 13;
 }

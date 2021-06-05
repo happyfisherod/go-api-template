@@ -15,13 +15,13 @@ It has these top-level messages:
 package models
 
 import context "context"
-import fmt "fmt"
 
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 
+import fmt "fmt"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -29,8 +29,7 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type BlockRawORM struct {
-	Hash             string
-	Id               string `gorm:"type:uuid;primary_key"`
+	Hash             string `gorm:"primary_key"`
 	ItemId           string
 	ItemTimestamp    string
 	MerkleRootHash   string
@@ -60,7 +59,6 @@ func (m *BlockRaw) ToORM(ctx context.Context) (BlockRawORM, error) {
 			return to, err
 		}
 	}
-	to.Id = m.Id
 	to.Signature = m.Signature
 	to.ItemId = m.ItemId
 	to.NextLeader = m.NextLeader
@@ -90,7 +88,6 @@ func (m *BlockRawORM) ToPB(ctx context.Context) (BlockRaw, error) {
 			return to, err
 		}
 	}
-	to.Id = m.Id
 	to.Signature = m.Signature
 	to.ItemId = m.ItemId
 	to.NextLeader = m.NextLeader
@@ -166,245 +163,6 @@ type BlockRawORMWithAfterCreate_ interface {
 	AfterCreate_(context.Context, *gorm1.DB) error
 }
 
-// DefaultReadBlockRaw executes a basic gorm read call
-func DefaultReadBlockRaw(ctx context.Context, in *BlockRaw, db *gorm1.DB) (*BlockRaw, error) {
-	if in == nil {
-		return nil, errors1.NilArgumentError
-	}
-	ormObj, err := in.ToORM(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if ormObj.Id == "" {
-		return nil, errors1.EmptyIdError
-	}
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithBeforeReadApplyQuery); ok {
-		if db, err = hook.BeforeReadApplyQuery(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	if db, err = gorm2.ApplyFieldSelection(ctx, db, nil, &BlockRawORM{}); err != nil {
-		return nil, err
-	}
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithBeforeReadFind); ok {
-		if db, err = hook.BeforeReadFind(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	ormResponse := BlockRawORM{}
-	if err = db.Where(&ormObj).First(&ormResponse).Error; err != nil {
-		return nil, err
-	}
-	if hook, ok := interface{}(&ormResponse).(BlockRawORMWithAfterReadFind); ok {
-		if err = hook.AfterReadFind(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	pbResponse, err := ormResponse.ToPB(ctx)
-	return &pbResponse, err
-}
-
-type BlockRawORMWithBeforeReadApplyQuery interface {
-	BeforeReadApplyQuery(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawORMWithBeforeReadFind interface {
-	BeforeReadFind(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawORMWithAfterReadFind interface {
-	AfterReadFind(context.Context, *gorm1.DB) error
-}
-
-func DefaultDeleteBlockRaw(ctx context.Context, in *BlockRaw, db *gorm1.DB) error {
-	if in == nil {
-		return errors1.NilArgumentError
-	}
-	ormObj, err := in.ToORM(ctx)
-	if err != nil {
-		return err
-	}
-	if ormObj.Id == "" {
-		return errors1.EmptyIdError
-	}
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithBeforeDelete_); ok {
-		if db, err = hook.BeforeDelete_(ctx, db); err != nil {
-			return err
-		}
-	}
-	err = db.Where(&ormObj).Delete(&BlockRawORM{}).Error
-	if err != nil {
-		return err
-	}
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithAfterDelete_); ok {
-		err = hook.AfterDelete_(ctx, db)
-	}
-	return err
-}
-
-type BlockRawORMWithBeforeDelete_ interface {
-	BeforeDelete_(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawORMWithAfterDelete_ interface {
-	AfterDelete_(context.Context, *gorm1.DB) error
-}
-
-func DefaultDeleteBlockRawSet(ctx context.Context, in []*BlockRaw, db *gorm1.DB) error {
-	if in == nil {
-		return errors1.NilArgumentError
-	}
-	var err error
-	keys := []string{}
-	for _, obj := range in {
-		ormObj, err := obj.ToORM(ctx)
-		if err != nil {
-			return err
-		}
-		if ormObj.Id == "" {
-			return errors1.EmptyIdError
-		}
-		keys = append(keys, ormObj.Id)
-	}
-	if hook, ok := (interface{}(&BlockRawORM{})).(BlockRawORMWithBeforeDeleteSet); ok {
-		if db, err = hook.BeforeDeleteSet(ctx, in, db); err != nil {
-			return err
-		}
-	}
-	err = db.Where("id in (?)", keys).Delete(&BlockRawORM{}).Error
-	if err != nil {
-		return err
-	}
-	if hook, ok := (interface{}(&BlockRawORM{})).(BlockRawORMWithAfterDeleteSet); ok {
-		err = hook.AfterDeleteSet(ctx, in, db)
-	}
-	return err
-}
-
-type BlockRawORMWithBeforeDeleteSet interface {
-	BeforeDeleteSet(context.Context, []*BlockRaw, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawORMWithAfterDeleteSet interface {
-	AfterDeleteSet(context.Context, []*BlockRaw, *gorm1.DB) error
-}
-
-// DefaultStrictUpdateBlockRaw clears / replaces / appends first level 1:many children and then executes a gorm update call
-func DefaultStrictUpdateBlockRaw(ctx context.Context, in *BlockRaw, db *gorm1.DB) (*BlockRaw, error) {
-	if in == nil {
-		return nil, fmt.Errorf("Nil argument to DefaultStrictUpdateBlockRaw")
-	}
-	ormObj, err := in.ToORM(ctx)
-	if err != nil {
-		return nil, err
-	}
-	lockedRow := &BlockRawORM{}
-	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithBeforeStrictUpdateCleanup); ok {
-		if db, err = hook.BeforeStrictUpdateCleanup(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithBeforeStrictUpdateSave); ok {
-		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	if err = db.Save(&ormObj).Error; err != nil {
-		return nil, err
-	}
-	if hook, ok := interface{}(&ormObj).(BlockRawORMWithAfterStrictUpdateSave); ok {
-		if err = hook.AfterStrictUpdateSave(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	pbResponse, err := ormObj.ToPB(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return &pbResponse, err
-}
-
-type BlockRawORMWithBeforeStrictUpdateCleanup interface {
-	BeforeStrictUpdateCleanup(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawORMWithBeforeStrictUpdateSave interface {
-	BeforeStrictUpdateSave(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawORMWithAfterStrictUpdateSave interface {
-	AfterStrictUpdateSave(context.Context, *gorm1.DB) error
-}
-
-// DefaultPatchBlockRaw executes a basic gorm update call with patch behavior
-func DefaultPatchBlockRaw(ctx context.Context, in *BlockRaw, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*BlockRaw, error) {
-	if in == nil {
-		return nil, errors1.NilArgumentError
-	}
-	var pbObj BlockRaw
-	var err error
-	if hook, ok := interface{}(&pbObj).(BlockRawWithBeforePatchRead); ok {
-		if db, err = hook.BeforePatchRead(ctx, in, updateMask, db); err != nil {
-			return nil, err
-		}
-	}
-	pbReadRes, err := DefaultReadBlockRaw(ctx, &BlockRaw{Id: in.GetId()}, db)
-	if err != nil {
-		return nil, err
-	}
-	pbObj = *pbReadRes
-	if hook, ok := interface{}(&pbObj).(BlockRawWithBeforePatchApplyFieldMask); ok {
-		if db, err = hook.BeforePatchApplyFieldMask(ctx, in, updateMask, db); err != nil {
-			return nil, err
-		}
-	}
-	if _, err := DefaultApplyFieldMaskBlockRaw(ctx, &pbObj, in, updateMask, "", db); err != nil {
-		return nil, err
-	}
-	if hook, ok := interface{}(&pbObj).(BlockRawWithBeforePatchSave); ok {
-		if db, err = hook.BeforePatchSave(ctx, in, updateMask, db); err != nil {
-			return nil, err
-		}
-	}
-	pbResponse, err := DefaultStrictUpdateBlockRaw(ctx, &pbObj, db)
-	if err != nil {
-		return nil, err
-	}
-	if hook, ok := interface{}(pbResponse).(BlockRawWithAfterPatchSave); ok {
-		if err = hook.AfterPatchSave(ctx, in, updateMask, db); err != nil {
-			return nil, err
-		}
-	}
-	return pbResponse, nil
-}
-
-type BlockRawWithBeforePatchRead interface {
-	BeforePatchRead(context.Context, *BlockRaw, *field_mask1.FieldMask, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawWithBeforePatchApplyFieldMask interface {
-	BeforePatchApplyFieldMask(context.Context, *BlockRaw, *field_mask1.FieldMask, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawWithBeforePatchSave interface {
-	BeforePatchSave(context.Context, *BlockRaw, *field_mask1.FieldMask, *gorm1.DB) (*gorm1.DB, error)
-}
-type BlockRawWithAfterPatchSave interface {
-	AfterPatchSave(context.Context, *BlockRaw, *field_mask1.FieldMask, *gorm1.DB) error
-}
-
-// DefaultPatchSetBlockRaw executes a bulk gorm update call with patch behavior
-func DefaultPatchSetBlockRaw(ctx context.Context, objects []*BlockRaw, updateMasks []*field_mask1.FieldMask, db *gorm1.DB) ([]*BlockRaw, error) {
-	if len(objects) != len(updateMasks) {
-		return nil, fmt.Errorf(errors1.BadRepeatedFieldMaskTpl, len(updateMasks), len(objects))
-	}
-
-	results := make([]*BlockRaw, 0, len(objects))
-	for i, patcher := range objects {
-		pbResponse, err := DefaultPatchBlockRaw(ctx, patcher, updateMasks[i], db)
-		if err != nil {
-			return nil, err
-		}
-
-		results = append(results, pbResponse)
-	}
-
-	return results, nil
-}
-
 // DefaultApplyFieldMaskBlockRaw patches an pbObject with patcher according to a field mask.
 func DefaultApplyFieldMaskBlockRaw(ctx context.Context, patchee *BlockRaw, patcher *BlockRaw, updateMask *field_mask1.FieldMask, prefix string, db *gorm1.DB) (*BlockRaw, error) {
 	if patcher == nil {
@@ -414,10 +172,6 @@ func DefaultApplyFieldMaskBlockRaw(ctx context.Context, patchee *BlockRaw, patch
 	}
 	var err error
 	for _, f := range updateMask.Paths {
-		if f == prefix+"Id" {
-			patchee.Id = patcher.Id
-			continue
-		}
 		if f == prefix+"Signature" {
 			patchee.Signature = patcher.Signature
 			continue
@@ -499,7 +253,7 @@ func DefaultListBlockRaw(ctx context.Context, db *gorm1.DB) ([]*BlockRaw, error)
 		}
 	}
 	db = db.Where(&ormObj)
-	db = db.Order("id")
+	db = db.Order("hash")
 	ormResponse := []BlockRawORM{}
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
