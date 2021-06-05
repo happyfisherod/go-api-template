@@ -29,12 +29,12 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type BlockRawORM struct {
-	Hash             string
+	Hash             string `gorm:"primary_key"`
 	ItemId           string
 	ItemTimestamp    string
 	MerkleRootHash   string
 	NextLeader       string
-	Number           uint32 `gorm:"primary_key"`
+	Number           uint32
 	ParentHash       string
 	PeerId           string
 	Signature        string
@@ -253,7 +253,7 @@ func DefaultListBlockRaw(ctx context.Context, db *gorm1.DB) ([]*BlockRaw, error)
 		}
 	}
 	db = db.Where(&ormObj)
-	db = db.Order("number")
+	db = db.Order("hash")
 	ormResponse := []BlockRawORM{}
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
