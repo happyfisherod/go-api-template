@@ -2,9 +2,9 @@ package crud
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 	"sync"
 )
 
@@ -18,7 +18,7 @@ var postgresConnOnce sync.Once
 func NewPostgresConn(dsn string) (*PostgresConn, error) { // Only for testing
 	session, err := createSession(dsn)
 	if err != nil {
-		log.Println("Cannot create a connection to postgres", err)
+		zap.S().Info("Cannot create a connection to postgres", err)
 	}
 	postgresInstance = &PostgresConn{
 		conn: session,
@@ -32,7 +32,7 @@ func GetPostgresConn() *PostgresConn {
 		dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
 		session, err := createSession(dsn)
 		if err != nil {
-			log.Fatal("Cannot create a connection to postgres", err)
+			zap.S().Fatal("Cannot create a connection to postgres", err)
 		}
 		postgresInstance = &PostgresConn{
 			conn: session,
@@ -48,7 +48,7 @@ func (p *PostgresConn) GetConn() *gorm.DB {
 func createSession(dsn string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println("err:", err)
+		zap.S().Info("err:", err)
 	}
 	return db, err
 }

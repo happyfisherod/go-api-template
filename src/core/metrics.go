@@ -1,7 +1,7 @@
 package core
 
 import (
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"net/http"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -19,7 +19,7 @@ func MetricsApiStart() {
 	// Start server
 	http.Handle(Vars.MetricsPrefix, promhttp.Handler())
 	go http.ListenAndServe(":"+Vars.MetricsPort, nil)
-	log.Println("Started Metrics:", Vars.MetricsPort)
+	zap.S().Info("Started Metrics:", Vars.MetricsPort)
 }
 
 func MetricsWorkerStart() {
@@ -31,7 +31,7 @@ func MetricsWorkerStart() {
 	// Start server
 	http.Handle(Vars.MetricsPrefix, promhttp.Handler())
 	go http.ListenAndServe(":"+Vars.MetricsPort, nil)
-	log.Println("Started Metrics:", Vars.MetricsPort)
+	zap.S().Info("Started Metrics:", Vars.MetricsPort)
 }
 
 func createApiGauges() {

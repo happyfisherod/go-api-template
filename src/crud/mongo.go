@@ -2,11 +2,11 @@ package crud
 
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.uber.org/zap"
 	"sync"
 )
 
@@ -31,14 +31,14 @@ func GetMongoConn() *MongoConn {
 			PasswordSet:             true,
 		}))
 		if err != nil {
-			log.Fatal("Cannot create a connection to mongodb", err)
+			zap.S().Fatal("Cannot create a connection to mongodb", err)
 		}
 		//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		//defer cancel()
 		ctx, _ := context.WithCancel(context.Background())
 		err = client.Connect(ctx)
 		if err != nil {
-			log.Fatal("Cannot connect to context for mongodb", err)
+			zap.S().Fatal("Cannot connect to context for mongodb", err)
 		}
 		mongoInstance = &MongoConn{
 			client: client,
@@ -66,14 +66,14 @@ func NewMongoConn(uri string) *MongoConn {
 		PasswordSet:             true,
 	}))
 	if err != nil {
-		log.Fatal("Cannot create a connection to mongodb", err)
+		zap.S().Fatal("Cannot create a connection to mongodb", err)
 	}
 	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	//defer cancel()
 	ctx, _ := context.WithCancel(context.Background())
 	err = client.Connect(ctx)
 	if err != nil {
-		log.Fatal("Cannot connect to context for mongodb", err)
+		zap.S().Fatal("Cannot connect to context for mongodb", err)
 	}
 	mongoInstance = &MongoConn{
 		client: client,
@@ -85,7 +85,7 @@ func NewMongoConn(uri string) *MongoConn {
 func (m *MongoConn) Close() error {
 	err := m.client.Disconnect(m.ctx)
 	if err != nil {
-		log.Fatal("Cannot disconnect from mongodb", err)
+		zap.S().Fatal("Cannot disconnect from mongodb", err)
 	}
 	return err
 }
@@ -93,7 +93,7 @@ func (m *MongoConn) Close() error {
 func (m *MongoConn) Ping() error {
 	err := m.client.Ping(m.ctx, readpref.Primary())
 	if err != nil {
-		log.Fatal("Cannot ping mongodb", err)
+		zap.S().Fatal("Cannot ping mongodb", err)
 	}
 	return err
 }
@@ -101,7 +101,7 @@ func (m *MongoConn) Ping() error {
 func (m *MongoConn) ListAllDatabases() []string {
 	databases, err := m.client.ListDatabaseNames(m.ctx, bson.M{})
 	if err != nil {
-		log.Fatal("Cannot List databases", err)
+		zap.S().Fatal("Cannot List databases", err)
 	}
 	return databases
 }

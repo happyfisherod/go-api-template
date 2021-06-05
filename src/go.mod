@@ -23,6 +23,8 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.5.2
+	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.17.0 // indirect
 	google.golang.org/genproto v0.0.0-20200527145253-8367513e4ece
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/Shopify/sarama.v1 v1.20.1

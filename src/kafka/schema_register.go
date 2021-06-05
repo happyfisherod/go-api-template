@@ -2,12 +2,12 @@ package kafka
 
 import (
 	"encoding/binary"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/riferrei/srclient"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/go-service-template/core"
 )
@@ -15,7 +15,7 @@ import (
 type RegisterSchemaFunc func(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error)
 
 func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
-	log.Printf("RegisterSchema() \n")
+	zap.S().Info("RegisterSchema() \n")
 	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + core.Vars.SchemaRegistryURL)
 	schema, err := schemaRegistryClient.GetLatestSchema(topic, false)
 	if schema == nil {
@@ -34,12 +34,12 @@ func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate 
 
 func registerSchema(schemaRegistryClient *srclient.SchemaRegistryClient, topic string, isKey bool, srcSchemaFile string) (*srclient.Schema, error) {
 	filePath := "schemas/" + srcSchemaFile + ".proto"
-	log.Printf("Adding/Updating Schema from: %s\n", filePath)
+	zap.S().Info("Adding/Updating Schema from: %s\n", filePath)
 	schemaBytes, _ := ioutil.ReadFile(filePath)
 	schema, err := schemaRegistryClient.CreateSchema(topic, string(schemaBytes), srclient.Protobuf, isKey)
 	if err != nil {
 		//panic(fmt.Sprintf("Error creating the schema %s", err))
-		log.Printf("Error creating the schema %s\n", err)
+		zap.S().Info("Error creating the schema %s\n", err)
 		return nil, err
 	}
 	return schema, nil
@@ -50,7 +50,7 @@ func RetriableRegisterSchema(fn RegisterSchemaFunc, topic string, isKey bool, sr
 	operation := func() error {
 		val, err := fn(topic, isKey, srcSchemaFile, forceUpdate)
 		if err != nil {
-			log.Println("RegisterSchema unsuccessful")
+			zap.S().Info("RegisterSchema unsuccessful")
 		} else {
 			x = val
 		}
@@ -60,9 +60,9 @@ func RetriableRegisterSchema(fn RegisterSchemaFunc, topic string, isKey bool, sr
 	neb.MaxElapsedTime = time.Minute
 	err := backoff.Retry(operation, neb)
 	if err != nil {
-		log.Println("Finally also RegisterSchema Unsuccessful")
+		zap.S().Info("Finally also RegisterSchema Unsuccessful")
 	} else {
-		log.Println("Finally RegisterSchema Successful")
+		zap.S().Info("Finally RegisterSchema Successful")
 	}
 	return x, err
 }

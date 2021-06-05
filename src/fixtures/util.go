@@ -2,12 +2,10 @@ package fixtures
 
 import (
 	"encoding/json"
-	"fmt"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/go-service-template/models"
 )
@@ -49,20 +47,20 @@ func getFixtureDir() string {
 	callDirSplit = append(callDirSplit, "fixtures")
 	fixtureDir := strings.Join(callDirSplit, "/")
 	fixtureDir = fixtureDir + "/"
-	fmt.Println(fixtureDir)
+	zap.S().Info(fixtureDir)
 	return fixtureDir
 }
 
 func ReadCurrentDir() {
 	file, err := os.Open(".")
 	if err != nil {
-		log.Fatalf("failed opening directory: %s", err)
+		zap.S().Fatalf("failed opening directory: %s", err)
 	}
 	defer file.Close()
 
 	list, _ := file.Readdirnames(0) // 0 to read all files and folders
 	for _, name := range list {
-		fmt.Println(name)
+		zap.S().Info(name)
 	}
 }
 

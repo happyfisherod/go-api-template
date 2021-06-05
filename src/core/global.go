@@ -7,6 +7,8 @@ import (
 )
 
 type Global struct {
+	ShutdownChan chan int
+
 	Blocks *crud.BlockRawModel
 }
 

@@ -5,7 +5,7 @@ import (
 	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/models"
 	"github.com/geometry-labs/go-service-template/worker/utils"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"gopkg.in/Shopify/sarama.v1"
 )
 
@@ -20,10 +20,10 @@ func blocksTransformer() {
 	// TODO: Need to move all of the config validations to config.go
 	// Check topic names
 	if utils.StringInSlice(consumer_topic_name, core.Vars.ConsumerTopics) == false {
-		log.Panic("Blocks Worker: no ", consumer_topic_name, " topic found in CONSUMER_TOPICS=", core.Vars.ConsumerTopics)
+		zap.S().Panic("Blocks Worker: no ", consumer_topic_name, " topic found in CONSUMER_TOPICS=", core.Vars.ConsumerTopics)
 	}
 	if utils.StringInSlice(producer_topic_name, core.Vars.ProducerTopics) == false {
-		log.Panic("Blocks Worker: no ", producer_topic_name, " topic found in PRODUCER_TOPICS=", core.Vars.ProducerTopics)
+		zap.S().Panic("Blocks Worker: no ", producer_topic_name, " topic found in PRODUCER_TOPICS=", core.Vars.ProducerTopics)
 	}
 
 	consumer_topic_chan := make(chan *sarama.ConsumerMessage)
@@ -37,13 +37,13 @@ func blocksTransformer() {
 	}()
 
 	// TODO: Take advantage of concurrency
-	log.Debug("Blocks Worker: started working")
+	zap.S().Debug("Blocks Worker: started working")
 	for {
 		// Read from kafka
 		consumer_topic_msg := <-consumer_topic_chan
 		blockRaw, err := models.ConvertToBlockRaw(consumer_topic_msg.Value)
 		if err != nil {
-			log.Error("Blocks Worker: Unable to proceed cannot convert kafka msg value to Block")
+			zap.S().Error("Blocks Worker: Unable to proceed cannot convert kafka msg value to Block")
 		}
 
 		// Transform logic
@@ -61,7 +61,7 @@ func blocksTransformer() {
 		// Load to Postgres
 		postgresLoaderChan <- transformedBlock
 
-		log.Debug("Blocks worker: last seen block #", string(consumer_topic_msg.Key))
+		zap.S().Debug("Blocks worker: last seen block #", string(consumer_topic_msg.Key))
 	}
 }
 

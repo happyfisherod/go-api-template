@@ -1,11 +1,10 @@
 package main
 
 import (
+	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
@@ -14,10 +13,12 @@ import (
 	"github.com/geometry-labs/go-service-template/api/routes"
 )
 
+const VersionApi = "v0.1.0"
+
 func main() {
 	core.GetEnvironment()
 
-	core.LoggingInit()
+	core.StartLoggingInit()
 
 	// Start kafka consumers
 	// Go routines start in function
@@ -45,9 +46,11 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-sigChan
-		log.Info("Shutting down...")
+		zap.S().Info("Shutting down...")
 		shutdown <- 1
+		core.GetGlobal().ShutdownChan <- 1
 	}()
 
 	<-shutdown
+	<-core.GetGlobal().ShutdownChan
 }
