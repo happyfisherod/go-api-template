@@ -1,12 +1,11 @@
 package main
 
 import (
+	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
@@ -16,12 +15,15 @@ import (
 	"github.com/geometry-labs/go-service-template/worker/transformers"
 )
 
+const VersionWorker = "v0.1.0"
+
 func main() {
 
 	core.GetEnvironment()
+	// TODO: refactor such that GetGlobal has have all information to get initialized, si it can be called
 
-	core.LoggingInit()
-	log.Debug("Main: Starting logging with level ", core.Vars.LogLevel)
+	core.StartLoggingInit()
+	zap.S().Debug("Main: Starting logging with level ", core.Vars.LogLevel)
 
 	// Start Prometheus client
 	core.MetricsWorkerStart()
@@ -34,9 +36,9 @@ func main() {
 
 	// Start kafka Producer
 	kafka.StartProducers()
-  // Wait for Kafka
-  time.Sleep(1 * time.Second)
-  
+	// Wait for Kafka
+	time.Sleep(1 * time.Second)
+
 	// Start Postgres loader
 	loader.StartBlockRawsLoader()
 
@@ -53,9 +55,11 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-sigChan
-		log.Info("Shutting down...")
+		zap.S().Info("Shutting down...")
 		shutdown <- 1
+		core.GetGlobal().ShutdownChan <- 1
 	}()
 
 	<-shutdown
+	<-core.GetGlobal().ShutdownChan
 }

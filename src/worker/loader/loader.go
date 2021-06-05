@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/models"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 func StartBlockRawsLoader() {
@@ -17,6 +17,8 @@ func BlockRawsLoader() {
 	for {
 		block = <-postgresLoaderChan
 		core.GetGlobal().Blocks.Create(block)
-		log.Debug(fmt.Sprintf("Loader BlockRaws: Loaded in postgres table BlockRaws, Block Number %d", block.Number))
+		zap.S().Debug(fmt.Sprintf(
+			"Loader BlockRaws: Loaded in postgres table BlockRaws, Block Number %d", block.Number),
+		)
 	}
 }

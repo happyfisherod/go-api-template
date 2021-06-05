@@ -2,9 +2,9 @@ package crud
 
 import (
 	"github.com/geometry-labs/go-service-template/models"
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
 	"sync"
 )
 
@@ -80,11 +80,11 @@ func (b *BlockRawModelMongo) find(kv *KeyValue) (*mongo.Cursor, error) {
 func (b *BlockRawModelMongo) FindAll(kv *KeyValue) []bson.M {
 	cursor, err := b.find(kv)
 	if err != nil {
-		log.Fatal("Exception in getting a curser to a find in mongodb: ", err)
+		zap.S().Info("Exception in getting a curser to a find in mongodb: ", err)
 	}
 	var results []bson.M
 	if err = cursor.All(b.mongoConn.ctx, &results); err != nil {
-		log.Fatal("Exception in find all: ", err)
+		zap.S().Info("Exception in find all: ", err)
 	}
 	return results
 

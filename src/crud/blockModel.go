@@ -2,7 +2,8 @@ package crud
 
 import (
 	"github.com/geometry-labs/go-service-template/models"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+
 	"gorm.io/gorm"
 	"sync"
 )
@@ -26,7 +27,7 @@ func GetBlockRawModel() *BlockRawModel {
 
 		err := blockRawModelInstance.Migrate()
 		if err != nil {
-			log.Error("BlockModel: Unable create postgres table BlockRaws")
+			zap.S().Error("BlockModel: Unable create postgres table BlockRaws")
 		}
 	})
 	return blockRawModelInstance

@@ -1,7 +1,7 @@
 package metrics
 
 import (
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"net/http"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -42,5 +42,5 @@ func Start() {
 	// Start server
 	http.Handle(core.Vars.MetricsPrefix, promhttp.Handler())
 	go http.ListenAndServe(":"+core.Vars.MetricsPort, nil)
-	log.Println("Started Metrics:", core.Vars.MetricsPort)
+	zap.S().Info("Started Metrics:", core.Vars.MetricsPort)
 }

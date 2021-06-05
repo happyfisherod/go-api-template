@@ -1,45 +1,109 @@
 package core
 
 import (
-	"os"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"log"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
-func LoggingInit() {
-	if Vars.LogToFile == true {
-		f, err := os.OpenFile("./api.log", os.O_WRONLY|os.O_CREATE, 0755)
-		if err != nil {
-			panic("Error opening log file: " + err.Error())
-		}
-		log.SetOutput(f)
+func StartLoggingInit() {
+	go loggingInit()
+}
+
+func loggingInit() {
+	cfg := newLoggerConfig()
+
+	logger := newLogger(cfg)
+	defer logger.Sync()
+
+	undo := zap.ReplaceGlobals(logger)
+	defer undo()
+
+	<-GetGlobal().ShutdownChan
+}
+
+func newLogger(cfg zap.Config) *zap.Logger {
+	logger, err := cfg.Build()
+	if err != nil {
+		log.Fatal("Cannot Initialize logger")
 	}
+	return logger
+}
+
+func newLoggerConfig() zap.Config {
+	cfg := zap.Config{
+		Level:       setLoggerConfigLogLevel(), //zap.NewAtomicLevelAt(zap.InfoLevel),
+		Development: true,                      //false,
+		//Sampling: &zap.SamplingConfig{
+		//	Initial:    100,
+		//	Thereafter: 100,
+		//},
+		Encoding:         "console", //"json",
+		EncoderConfig:    newLoggerEncoderConfig(),
+		OutputPaths:      setLoggerConfigOutputPaths(),
+		ErrorOutputPaths: setLoggerConfigErrorOutputPaths(),
+	}
+	return cfg
+}
+
+func newLoggerEncoderConfig() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:        "ts",
+		LevelKey:       "level",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		FunctionKey:    zapcore.OmitKey,
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.CapitalLevelEncoder,   //zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.ISO8601TimeEncoder,    //zapcore.EpochTimeEncoder,
+		EncodeDuration: zapcore.StringDurationEncoder, //zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+	}
+}
+
+func setLoggerConfigLogLevel() zap.AtomicLevel {
+	var atomicLevel zap.AtomicLevel
 
 	switch strings.ToUpper(Vars.LogLevel) {
 	case "PANIC":
-		log.SetLevel(log.PanicLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.PanicLevel)
 		break
 	case "FATAL":
-		log.SetLevel(log.FatalLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.FatalLevel)
 		break
 	case "ERROR":
-		log.SetLevel(log.ErrorLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.ErrorLevel)
 		break
 	case "WARN":
-		log.SetLevel(log.WarnLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.WarnLevel)
 		break
 	case "INFO":
-		log.SetLevel(log.InfoLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.InfoLevel)
 		break
 	case "DEBUG":
-		log.SetLevel(log.DebugLevel)
-		break
-	case "TRACE":
-		log.SetLevel(log.TraceLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.DebugLevel)
 		break
 	default:
-		panic("Error invalid log level: " + Vars.LogLevel)
+		atomicLevel = zap.NewAtomicLevelAt(zap.DebugLevel)
 	}
-	log.Println("Log Level: " + log.GetLevel().String())
+	return atomicLevel
+}
+
+func setLoggerConfigOutputPaths() []string {
+	outputPaths := []string{"stderr"}
+	if Vars.LogToFile == true {
+		outputPaths = append(outputPaths, "./api.log")
+	}
+	return outputPaths
+}
+
+func setLoggerConfigErrorOutputPaths() []string {
+	errorOutputPaths := []string{"stderr"}
+	if Vars.LogToFile == true {
+		errorOutputPaths = append(errorOutputPaths, "./api.log")
+	}
+	return errorOutputPaths
 }

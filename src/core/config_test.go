@@ -30,7 +30,7 @@ func TestEnvironment(t *testing.T) {
 		"SCHEMA_REGISTRY_URL":     "schema_registry_url",
 		"KAFKA_GROUP_ID":          "kafka_group_id",
 		"CONSUMER_TOPICS":         "topic_1,topic_2",
-		"PRODUCER_TOPICS":         "[topic_1,topic_2,topic_3]",
+		"PRODUCER_TOPICS":         "topic_1,topic_2,topic_3",
 		"SCHEMA_NAMES":            "schema_1:schema_1,schema_2:schema_2",
 	}
 

@@ -1,6 +1,7 @@
 package healthcheck
 
 import (
+	"go.uber.org/zap"
 	"net/http"
 	"net/url"
 	"time"
@@ -8,8 +9,6 @@ import (
 	"github.com/InVisionApp/go-health/v2"
 	"github.com/InVisionApp/go-health/v2/checkers"
 	"github.com/InVisionApp/go-health/v2/handlers"
-	log "github.com/sirupsen/logrus"
-
 	"github.com/geometry-labs/go-service-template/core"
 )
 
@@ -36,11 +35,11 @@ func Start() {
 
 	//  Start the healthcheck process
 	if err := h.Start(); err != nil {
-		log.Fatalf("Unable to start healthcheck: %v", err)
+		zap.S().Fatalf("Unable to start healthcheck: %v", err)
 	}
 
 	// Define a healthcheck endpoint and use the built-in JSON handler
 	http.HandleFunc(core.Vars.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
 	go http.ListenAndServe(":"+core.Vars.HealthPort, nil)
-	log.Println("Started Healthcheck:", core.Vars.HealthPort)
+	zap.S().Info("Started Healthcheck:", core.Vars.HealthPort)
 }

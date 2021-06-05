@@ -2,9 +2,8 @@ package core
 
 import (
 	"encoding/json"
+	"log"
 	"os"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -66,5 +65,5 @@ func GetEnvironment() {
 	}
 
 	vars, _ := json.Marshal(Vars)
-	log.Debug("Config Vars: " + string(vars))
+	log.Println("Config Vars: " + string(vars))
 }

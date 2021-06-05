@@ -2,12 +2,11 @@ package routes
 
 import (
 	"encoding/json"
+	"go.uber.org/zap"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
-	fiber "github.com/gofiber/fiber/v2"
-	log "github.com/sirupsen/logrus"
-
 	"github.com/geometry-labs/go-service-template/core"
+	fiber "github.com/gofiber/fiber/v2"
 
 	_ "github.com/geometry-labs/go-service-template/api/docs"
 	"github.com/geometry-labs/go-service-template/api/routes/rest"
@@ -23,7 +22,7 @@ func Start() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		// logging
-		log.Info(c.Method(), " ", c.Path())
+		zap.S().Info(c.Method(), " ", c.Path())
 
 		// Go to next middleware:
 		return c.Next()
