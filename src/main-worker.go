@@ -3,15 +3,13 @@ package main
 import (
 	"github.com/geometry-labs/go-service-template/config"
 	"github.com/geometry-labs/go-service-template/global"
+	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/logging"
 	"github.com/geometry-labs/go-service-template/metrics"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
-
-	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/worker/healthcheck"
 	"github.com/geometry-labs/go-service-template/worker/loader"
@@ -39,7 +37,7 @@ func main() {
 	// Start kafka Producer
 	kafka.StartProducers()
 	// Wait for Kafka
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 
 	// Start Postgres loader
 	loader.StartBlockRawsLoader()

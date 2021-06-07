@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"github.com/cenkalti/backoff/v4"
 	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 	"gopkg.in/Shopify/sarama.v1"
@@ -72,9 +73,11 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
-	consumer, err := sarama.NewConsumer([]string{k.BrokerURL}, config)
+	consumer, err := getConsumer(k, config)
 	if err != nil {
-		zap.S().Panic("KAFKA CONSUMER NEWCONSUMER PANIC: ", err.Error())
+		zap.S().Info("KAFKA CONSUMER NEWCONSUMER: Finally Connection cannot be established")
+	} else {
+		zap.S().Info("KAFKA CONSUMER NEWCONSUMER: Finally Connection established")
 	}
 	defer func() {
 		if err := consumer.Close(); err != nil {
@@ -115,6 +118,7 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 					topic_msg = msg
 				case consumerErr := <-pc.Errors():
 					zap.S().Warn("KAFKA PARTITION CONSUMER ERROR:", consumerErr.Err)
+					//consumerErr.Err
 					continue
 				case <-time.After(5 * time.Second):
 					zap.S().Debug("Consumer ", k.TopicName, ": No new kafka messages, waited 5 secs")
@@ -133,4 +137,21 @@ func (k *KafkaTopicConsumer) consumeTopic() {
 	// Waiting, so that client remains alive
 	ch := make(chan int, 1)
 	<-ch
+}
+
+func getConsumer(k *KafkaTopicConsumer, config *sarama.Config) (sarama.Consumer, error) {
+	var consumer sarama.Consumer
+	operation := func() error {
+		con, err := sarama.NewConsumer([]string{k.BrokerURL}, config)
+		if err != nil {
+			zap.S().Info("KAFKA CONSUMER NEWCONSUMER PANIC: ", err.Error())
+		} else {
+			consumer = con
+		}
+		return err
+	}
+	neb := backoff.NewExponentialBackOff()
+	neb.MaxElapsedTime = time.Minute
+	err := backoff.Retry(operation, neb)
+	return consumer, err
 }
