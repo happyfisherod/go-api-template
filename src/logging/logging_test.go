@@ -1,6 +1,7 @@
-package core
+package logging
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
 	"os"
 	"testing"
 
@@ -9,10 +10,10 @@ import (
 
 func init() {
 	//core.GetEnvironment()
-	Vars.ConfigFile = "config.api.test"
-	Vars.ConfigType = "yaml"
-	Vars.ConfigPath = "../../envfiles"
-	ConfigInit()
+	config.Vars.ConfigFile = "config.api.test"
+	config.Vars.ConfigType = "yaml"
+	config.Vars.ConfigPath = "../../envfiles"
+	config.ConfigInit()
 }
 
 func TestInit(t *testing.T) {
@@ -20,43 +21,43 @@ func TestInit(t *testing.T) {
 	// Test file logging
 	os.Setenv("LOG_LEVEL", "Info")
 	os.Setenv("LOG_TO_FILE", "true")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Info("File log")
 
 	// Test levels
 	os.Setenv("LOG_LEVEL", "Panic")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "FATAL")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "ERROR")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "WARN")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Warn("Warning")
 
 	os.Setenv("LOG_LEVEL", "INFO")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Info("Info")
 
 	os.Setenv("LOG_LEVEL", "DEBUG")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Debug("Debug")
 
 	os.Setenv("LOG_LEVEL", "TRACE")
-	GetEnvironment()
+	config.GetEnvironment()
 	StartLoggingInit()
 	log.Trace("Trace")
 }

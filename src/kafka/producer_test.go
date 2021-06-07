@@ -1,23 +1,22 @@
 package kafka
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
 	"testing"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/Shopify/sarama.v1"
-
-	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
 	// os.Setenv("LOG_LEVEL", "DEBUG")
 
 	//core.GetEnvironment()
-	core.Vars.ConfigFile = "config.api.test"
-	core.Vars.ConfigType = "yaml"
-	core.Vars.ConfigPath = "../../envfiles"
-	core.ConfigInit()
+	config.Vars.ConfigFile = "config.api.test"
+	config.Vars.ConfigType = "yaml"
+	config.Vars.ConfigPath = "../../envfiles"
+	config.ConfigInit()
 }
 
 func TestKafkaTopicProducer(t *testing.T) {

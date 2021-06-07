@@ -1,12 +1,15 @@
 package main
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
+	"github.com/geometry-labs/go-service-template/global"
+	"github.com/geometry-labs/go-service-template/logging"
+	"github.com/geometry-labs/go-service-template/metrics"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/api/healthcheck"
@@ -16,9 +19,9 @@ import (
 const VersionApi = "v0.1.0"
 
 func main() {
-	core.GetEnvironment()
+	config.GetEnvironment()
 
-	core.StartLoggingInit()
+	logging.StartLoggingInit()
 
 	// Start kafka consumers
 	// Go routines start in function
@@ -26,7 +29,7 @@ func main() {
 
 	// Start Prometheus client
 	// Go routine starts in function
-	core.MetricsApiStart()
+	metrics.MetricsApiStart()
 
 	// Start API server
 	// Go routine starts in function
@@ -38,7 +41,7 @@ func main() {
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)
-	shutdown := make(chan int)
+	//shutdown := make(chan int)
 
 	//create a notification channel to shutdown
 	sigChan := make(chan os.Signal, 1)
@@ -47,10 +50,10 @@ func main() {
 	go func() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
-		shutdown <- 1
-		core.GetGlobal().ShutdownChan <- 1
+		//shutdown <- 1
+		global.GetGlobal().ShutdownChan <- 1
 	}()
 
-	<-shutdown
-	<-core.GetGlobal().ShutdownChan
+	//<-shutdown
+	<-global.GetGlobal().ShutdownChan
 }

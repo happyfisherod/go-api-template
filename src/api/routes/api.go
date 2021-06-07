@@ -2,10 +2,10 @@ package routes
 
 import (
 	"encoding/json"
+	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
-	"github.com/geometry-labs/go-service-template/core"
 	fiber "github.com/gofiber/fiber/v2"
 
 	_ "github.com/geometry-labs/go-service-template/api/docs"
@@ -39,7 +39,7 @@ func Start() {
 	rest.BlocksAddHandlers(app)
 	ws.BlocksAddHandlers(app)
 
-	go app.Listen(":" + core.Config.Port)
+	go app.Listen(":" + config.Config.Port)
 }
 
 // Version
@@ -52,7 +52,7 @@ func Start() {
 // @Router /version [get]
 func handlerVersion(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version": core.Config.Version,
+		"version": config.Config.Version,
 	}
 
 	json_message, _ := json.Marshal(message)
@@ -70,8 +70,8 @@ func handlerVersion(c *fiber.Ctx) error {
 // @Router /metadata [get]
 func handlerMetadata(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version":     core.Config.Version,
-		"name":        core.Config.Name,
+		"version":     config.Config.Version,
+		"name":        config.Config.Name,
 		"description": "a go api template",
 	}
 

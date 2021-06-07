@@ -2,6 +2,7 @@ package crud
 
 import (
 	"fmt"
+	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -29,10 +30,10 @@ func NewPostgresConn(dsn string) (*PostgresConn, error) { // Only for testing
 func GetPostgresConn() *PostgresConn {
 	postgresConnOnce.Do(func() {
 		// TODO: create dsn string from env variables
-		dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
-		//dsn := NewDsn(core.Config.Postgres.Host, core.Config.Postgres.Port, core.Config.Postgres.User,
-		//	core.Config.Postgres.Password, core.Config.Postgres.Dbname, core.Config.Postgres.Sslmode,
-		//	core.Config.Postgres.Timezone)
+		//dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
+		dsn := NewDsn(config.Config.Postgres.Host, config.Config.Postgres.Port, config.Config.Postgres.User,
+			config.Config.Postgres.Password, config.Config.Postgres.Dbname, config.Config.Postgres.Sslmode,
+			config.Config.Postgres.Timezone)
 		session, err := createSession(dsn)
 		if err != nil {
 			zap.S().Fatal("Cannot create a connection to postgres", err)

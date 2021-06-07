@@ -1,14 +1,13 @@
 package rest
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
 	fiber "github.com/gofiber/fiber/v2"
-
-	"github.com/geometry-labs/go-service-template/core"
 )
 
 func BlocksAddHandlers(app *fiber.App) {
 
-	prefix := core.Config.RestPrefix + "/blocks"
+	prefix := config.Config.RestPrefix + "/blocks"
 
 	app.Get(prefix+"/", handlerGetBlock)
 }

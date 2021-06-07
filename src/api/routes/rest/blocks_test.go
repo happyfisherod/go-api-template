@@ -2,22 +2,21 @@ package rest
 
 import (
 	"encoding/json"
+	"github.com/geometry-labs/go-service-template/config"
 	"io/ioutil"
 	"net/http/httptest"
 	"testing"
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
 	//core.GetEnvironment()
-	core.Vars.ConfigFile = "config.api.test"
-	core.Vars.ConfigType = "yaml"
-	core.Vars.ConfigPath = "../../../../envfiles"
-	core.ConfigInit()
+	config.Vars.ConfigFile = "config.api.test"
+	config.Vars.ConfigType = "yaml"
+	config.Vars.ConfigPath = "../../../../envfiles"
+	config.ConfigInit()
 }
 
 func TestHandlerGetBlock(t *testing.T) {
