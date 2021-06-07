@@ -24,6 +24,7 @@ services:
     volumes:
       - ./src:/app
       - ./schemas:/app/schemas
+      - ./envfiles:/app/envfiles
 
   worker:
     build:
@@ -47,6 +48,7 @@ services:
     volumes:
       - ./src:/app
       - ./schemas:/app/schemas
+      - ./envfiles:/app/envfiles
 
   mongo:
     image: mongo:latest

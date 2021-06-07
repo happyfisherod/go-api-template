@@ -1,6 +1,7 @@
 package healthcheck
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 	"net/http"
 	"net/url"
@@ -9,7 +10,6 @@ import (
 	"github.com/InVisionApp/go-health/v2"
 	"github.com/InVisionApp/go-health/v2/checkers"
 	"github.com/InVisionApp/go-health/v2/handlers"
-	"github.com/geometry-labs/go-service-template/core"
 )
 
 // TODO split API and WORKER
@@ -18,7 +18,7 @@ func Start() {
 	h := health.New()
 
 	// Create a couple of checks
-	blocksCheckerURL, _ := url.Parse("http://localhost:" + core.Vars.Port + core.Vars.RestPrefix + "/blocks")
+	blocksCheckerURL, _ := url.Parse("http://localhost:" + config.Config.Port + config.Config.RestPrefix + "/blocks")
 	blocksChecker, _ := checkers.NewHTTP(&checkers.HTTPConfig{
 		URL: blocksCheckerURL,
 	})
@@ -28,7 +28,7 @@ func Start() {
 		{
 			Name:     "blocks-rest-check",
 			Checker:  blocksChecker,
-			Interval: time.Duration(core.Vars.HealthPollingInterval) * time.Second,
+			Interval: time.Duration(config.Config.HealthPollingInterval) * time.Second,
 			Fatal:    true,
 		},
 	})
@@ -39,7 +39,7 @@ func Start() {
 	}
 
 	// Define a healthcheck endpoint and use the built-in JSON handler
-	http.HandleFunc(core.Vars.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
-	go http.ListenAndServe(":"+core.Vars.HealthPort, nil)
-	zap.S().Info("Started Healthcheck:", core.Vars.HealthPort)
+	http.HandleFunc(config.Config.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
+	go http.ListenAndServe(":"+config.Config.HealthPort, nil)
+	zap.S().Info("Started Healthcheck:", config.Config.HealthPort)
 }

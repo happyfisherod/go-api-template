@@ -1,15 +1,15 @@
 package kafka
 
 import (
-	"github.com/geometry-labs/go-service-template/core"
+	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 	"gopkg.in/Shopify/sarama.v1"
 	"time"
 )
 
 func StartApiConsumers() {
-	kafka_broker := core.Vars.KafkaBrokerURL
-	consumer_topics := core.Vars.ConsumerTopics
+	kafka_broker := config.Config.KafkaBrokerURL
+	consumer_topics := config.Config.Topics.ConsumerTopics
 
 	zap.S().Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 
@@ -40,8 +40,8 @@ func StartApiConsumers() {
 }
 
 func StartWorkerConsumers() {
-	kafka_broker := core.Vars.KafkaBrokerURL
-	consumer_topics := core.Vars.ConsumerTopics
+	kafka_broker := config.Config.KafkaBrokerURL
+	consumer_topics := config.Config.Topics.ConsumerTopics
 
 	zap.S().Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 

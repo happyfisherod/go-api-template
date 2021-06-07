@@ -1,13 +1,16 @@
 package main
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
+	"github.com/geometry-labs/go-service-template/global"
+	"github.com/geometry-labs/go-service-template/logging"
+	"github.com/geometry-labs/go-service-template/metrics"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/geometry-labs/go-service-template/core"
 	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/worker/healthcheck"
@@ -19,14 +22,13 @@ const VersionWorker = "v0.1.0"
 
 func main() {
 
-	core.GetEnvironment()
-	// TODO: refactor such that GetGlobal has have all information to get initialized, si it can be called
+	config.GetEnvironment()
 
-	core.StartLoggingInit()
-	zap.S().Debug("Main: Starting logging with level ", core.Vars.LogLevel)
+	logging.StartLoggingInit()
+	zap.S().Debug("Main: Starting logging with level ", config.Config.LogLevel)
 
 	// Start Prometheus client
-	core.MetricsWorkerStart()
+	metrics.MetricsWorkerStart()
 
 	// Start Health server
 	healthcheck.Start()
@@ -57,9 +59,9 @@ func main() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
 		shutdown <- 1
-		core.GetGlobal().ShutdownChan <- 1
+		global.GetGlobal().ShutdownChan <- 1
 	}()
 
 	<-shutdown
-	<-core.GetGlobal().ShutdownChan
+	<-global.GetGlobal().ShutdownChan
 }

@@ -1,6 +1,8 @@
-package core
+package logging
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
+	"github.com/geometry-labs/go-service-template/global"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -20,7 +22,10 @@ func loggingInit() {
 	undo := zap.ReplaceGlobals(logger)
 	defer undo()
 
-	<-GetGlobal().ShutdownChan
+	<-global.GetGlobal().ShutdownChan
+	//ch := make(chan int)
+	//<-ch
+
 }
 
 func newLogger(cfg zap.Config) *zap.Logger {
@@ -67,7 +72,7 @@ func newLoggerEncoderConfig() zapcore.EncoderConfig {
 func setLoggerConfigLogLevel() zap.AtomicLevel {
 	var atomicLevel zap.AtomicLevel
 
-	switch strings.ToUpper(Vars.LogLevel) {
+	switch strings.ToUpper(config.Config.LogLevel) {
 	case "PANIC":
 		atomicLevel = zap.NewAtomicLevelAt(zap.PanicLevel)
 		break
@@ -94,7 +99,7 @@ func setLoggerConfigLogLevel() zap.AtomicLevel {
 
 func setLoggerConfigOutputPaths() []string {
 	outputPaths := []string{"stderr"}
-	if Vars.LogToFile == true {
+	if config.Config.LogToFile == true {
 		outputPaths = append(outputPaths, "./api.log")
 	}
 	return outputPaths
@@ -102,7 +107,7 @@ func setLoggerConfigOutputPaths() []string {
 
 func setLoggerConfigErrorOutputPaths() []string {
 	errorOutputPaths := []string{"stderr"}
-	if Vars.LogToFile == true {
+	if config.Config.LogToFile == true {
 		errorOutputPaths = append(errorOutputPaths, "./api.log")
 	}
 	return errorOutputPaths

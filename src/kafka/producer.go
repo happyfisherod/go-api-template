@@ -1,10 +1,9 @@
 package kafka
 
 import (
+	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 	"gopkg.in/Shopify/sarama.v1"
-
-	"github.com/geometry-labs/go-service-template/core"
 )
 
 type KafkaTopicProducer struct {
@@ -17,8 +16,8 @@ type KafkaTopicProducer struct {
 var KafkaTopicProducers = map[string]*KafkaTopicProducer{}
 
 func StartProducers() {
-	kafka_broker := core.Vars.KafkaBrokerURL
-	producer_topics := core.Vars.ProducerTopics
+	kafka_broker := config.Config.KafkaBrokerURL
+	producer_topics := config.Config.Topics.ProducerTopics
 
 	zap.S().Debug("Start Producer: kafka_broker=", kafka_broker, " producer_topics=", producer_topics)
 

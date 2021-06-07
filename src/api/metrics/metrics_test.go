@@ -2,16 +2,19 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/geometry-labs/go-service-template/config"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/geometry-labs/go-service-template/core"
 )
 
 func init() {
-	core.GetEnvironment()
+	//core.GetEnvironment()
+	config.Vars.ConfigFile = "config.api.test"
+	config.Vars.ConfigType = "yaml"
+	config.Vars.ConfigPath = "../../../envfiles"
+	config.ConfigInit()
 }
 
 func TestStart(t *testing.T) {
@@ -25,7 +28,7 @@ func TestStart(t *testing.T) {
 	Metrics["websockets_connected"].Inc()
 	Metrics["websockets_bytes_written"].Inc()
 
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", core.Vars.MetricsPort, core.Vars.MetricsPrefix))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", config.Config.MetricsPort, config.Config.MetricsPrefix))
 	assert.Equal(nil, err)
 	assert.Equal(200, resp.StatusCode)
 }
