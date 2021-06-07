@@ -8,8 +8,8 @@ import (
 )
 
 func StartApiConsumers() {
-	kafka_broker := core.Vars.KafkaBrokerURL
-	consumer_topics := core.Vars.ConsumerTopics
+	kafka_broker := core.Config.KafkaBrokerURL
+	consumer_topics := core.Config.Topics.ConsumerTopics
 
 	zap.S().Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 
@@ -40,8 +40,8 @@ func StartApiConsumers() {
 }
 
 func StartWorkerConsumers() {
-	kafka_broker := core.Vars.KafkaBrokerURL
-	consumer_topics := core.Vars.ConsumerTopics
+	kafka_broker := core.Config.KafkaBrokerURL
+	consumer_topics := core.Config.Topics.ConsumerTopics
 
 	zap.S().Debug("Start Consumer: kafka_broker=", kafka_broker, " consumer_topics=", consumer_topics)
 

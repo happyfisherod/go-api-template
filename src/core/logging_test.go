@@ -7,48 +7,56 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func init() {
+	//core.GetEnvironment()
+	Vars.ConfigFile = "config.api.test"
+	Vars.ConfigType = "yaml"
+	Vars.ConfigPath = "../../envfiles"
+	ConfigInit()
+}
+
 func TestInit(t *testing.T) {
 
 	// Test file logging
 	os.Setenv("LOG_LEVEL", "Info")
 	os.Setenv("LOG_TO_FILE", "true")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Info("File log")
 
 	// Test levels
 	os.Setenv("LOG_LEVEL", "Panic")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "FATAL")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "ERROR")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Info("Should not log")
 
 	os.Setenv("LOG_LEVEL", "WARN")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Warn("Warning")
 
 	os.Setenv("LOG_LEVEL", "INFO")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Info("Info")
 
 	os.Setenv("LOG_LEVEL", "DEBUG")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Debug("Debug")
 
 	os.Setenv("LOG_LEVEL", "TRACE")
 	GetEnvironment()
-	LoggingInit()
+	StartLoggingInit()
 	log.Trace("Trace")
 }

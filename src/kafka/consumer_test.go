@@ -14,7 +14,11 @@ import (
 func init() {
 	// os.Setenv("LOGGING_LEVEL", "DEBUG")
 
-	core.GetEnvironment()
+	//core.GetEnvironment()
+	core.Vars.ConfigFile = "config.api.test"
+	core.Vars.ConfigType = "yaml"
+	core.Vars.ConfigPath = "../../envfiles"
+	core.ConfigInit()
 }
 
 // ISSUE: only passes sometimes?

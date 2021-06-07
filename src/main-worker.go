@@ -20,10 +20,9 @@ const VersionWorker = "v0.1.0"
 func main() {
 
 	core.GetEnvironment()
-	// TODO: refactor such that GetGlobal has have all information to get initialized, si it can be called
 
 	core.StartLoggingInit()
-	zap.S().Debug("Main: Starting logging with level ", core.Vars.LogLevel)
+	zap.S().Debug("Main: Starting logging with level ", core.Config.LogLevel)
 
 	// Start Prometheus client
 	core.MetricsWorkerStart()

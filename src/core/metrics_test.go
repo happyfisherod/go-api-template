@@ -26,7 +26,7 @@ func TestMetricsApiStart(t *testing.T) {
 	Metrics["websockets_connected"].Inc()
 	Metrics["websockets_bytes_written"].Inc()
 
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", Vars.MetricsPort, Vars.MetricsPrefix))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", Config.MetricsPort, Config.MetricsPrefix))
 	assert.Equal(nil, err)
 	assert.Equal(200, resp.StatusCode)
 }
@@ -47,7 +47,7 @@ func TestMetricsApiStart(t *testing.T) {
 //	Metrics["kafka_messages_consumed"].Inc()
 //	Metrics["kafka_messages_produced"].Inc()
 //
-//	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", Vars.MetricsPort, Vars.MetricsPrefix))
+//	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", Config.MetricsPort, Config.MetricsPrefix))
 //	assert.Equal(nil, err)
 //	assert.Equal(200, resp.StatusCode)
 //}

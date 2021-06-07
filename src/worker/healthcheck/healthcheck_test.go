@@ -11,7 +11,11 @@ import (
 )
 
 func init() {
-	core.GetEnvironment()
+	//core.GetEnvironment()
+	core.Vars.ConfigFile = "config.api.test"
+	core.Vars.ConfigType = "yaml"
+	core.Vars.ConfigPath = "../../../envfiles"
+	core.ConfigInit()
 }
 
 func TestHealthCheck(t *testing.T) {
@@ -23,7 +27,7 @@ func TestHealthCheck(t *testing.T) {
 	// Start healthcheck
 	Start()
 
-	resp, err := http.Get("http://localhost:" + core.Vars.HealthPort + core.Vars.HealthPrefix)
+	resp, err := http.Get("http://localhost:" + core.Config.HealthPort + core.Config.HealthPrefix)
 	assert.Equal(nil, err)
 	assert.Equal(200, resp.StatusCode)
 }

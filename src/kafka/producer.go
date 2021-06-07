@@ -17,8 +17,8 @@ type KafkaTopicProducer struct {
 var KafkaTopicProducers = map[string]*KafkaTopicProducer{}
 
 func StartProducers() {
-	kafka_broker := core.Vars.KafkaBrokerURL
-	producer_topics := core.Vars.ProducerTopics
+	kafka_broker := core.Config.KafkaBrokerURL
+	producer_topics := core.Config.Topics.ProducerTopics
 
 	zap.S().Debug("Start Producer: kafka_broker=", kafka_broker, " producer_topics=", producer_topics)
 

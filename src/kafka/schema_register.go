@@ -16,7 +16,7 @@ type RegisterSchemaFunc func(topic string, isKey bool, srcSchemaFile string, for
 
 func RegisterSchema(topic string, isKey bool, srcSchemaFile string, forceUpdate bool) (int, error) {
 	zap.S().Info("RegisterSchema() \n")
-	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + core.Vars.SchemaRegistryURL)
+	schemaRegistryClient := srclient.CreateSchemaRegistryClient("http://" + core.Config.SchemaRegistryURL)
 	schema, err := schemaRegistryClient.GetLatestSchema(topic, false)
 	if schema == nil {
 		schema, err = registerSchema(schemaRegistryClient, topic, isKey, srcSchemaFile)

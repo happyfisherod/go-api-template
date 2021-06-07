@@ -18,7 +18,7 @@ func Start() {
 	h := health.New()
 
 	// Create a couple of checks
-	blocksCheckerURL, _ := url.Parse("http://localhost:" + core.Vars.Port + core.Vars.RestPrefix + "/blocks")
+	blocksCheckerURL, _ := url.Parse("http://localhost:" + core.Config.Port + core.Config.RestPrefix + "/blocks")
 	blocksChecker, _ := checkers.NewHTTP(&checkers.HTTPConfig{
 		URL: blocksCheckerURL,
 	})
@@ -28,7 +28,7 @@ func Start() {
 		{
 			Name:     "blocks-rest-check",
 			Checker:  blocksChecker,
-			Interval: time.Duration(core.Vars.HealthPollingInterval) * time.Second,
+			Interval: time.Duration(core.Config.HealthPollingInterval) * time.Second,
 			Fatal:    true,
 		},
 	})
@@ -39,7 +39,7 @@ func Start() {
 	}
 
 	// Define a healthcheck endpoint and use the built-in JSON handler
-	http.HandleFunc(core.Vars.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
-	go http.ListenAndServe(":"+core.Vars.HealthPort, nil)
-	zap.S().Info("Started Healthcheck:", core.Vars.HealthPort)
+	http.HandleFunc(core.Config.HealthPrefix, handlers.NewJSONHandlerFunc(h, nil))
+	go http.ListenAndServe(":"+core.Config.HealthPort, nil)
+	zap.S().Info("Started Healthcheck:", core.Config.HealthPort)
 }

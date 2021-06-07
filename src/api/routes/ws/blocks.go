@@ -11,7 +11,7 @@ import (
 
 func BlocksAddHandlers(app *fiber.App) {
 
-	prefix := core.Vars.WebsocketPrefix + "/blocks"
+	prefix := core.Config.WebsocketPrefix + "/blocks"
 
 	app.Use(prefix, func(c *fiber.Ctx) error {
 		// IsWebSocketUpgrade returns true if the client

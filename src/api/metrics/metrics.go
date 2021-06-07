@@ -21,26 +21,26 @@ func Start() {
 	Metrics["requests_amount"] = promauto.NewCounter(prometheus.CounterOpts{
 		Name:        "requests_amount",
 		Help:        "amount of requests",
-		ConstLabels: prometheus.Labels{"network_name": core.Vars.NetworkName},
+		ConstLabels: prometheus.Labels{"network_name": core.Config.NetworkName},
 	})
 	Metrics["kafka_messages_consumed"] = promauto.NewCounter(prometheus.CounterOpts{
 		Name:        "kafka_messages_consumed",
 		Help:        "amount of messageds from kafka consumed",
-		ConstLabels: prometheus.Labels{"network_name": core.Vars.NetworkName},
+		ConstLabels: prometheus.Labels{"network_name": core.Config.NetworkName},
 	})
 	Metrics["websockets_connected"] = promauto.NewCounter(prometheus.CounterOpts{
 		Name:        "websockets_connected",
 		Help:        "amount of websockets that have connected to the server",
-		ConstLabels: prometheus.Labels{"network_name": core.Vars.NetworkName},
+		ConstLabels: prometheus.Labels{"network_name": core.Config.NetworkName},
 	})
 	Metrics["websockets_bytes_written"] = promauto.NewCounter(prometheus.CounterOpts{
 		Name:        "websockets_bytes_written",
 		Help:        "amount of bytes written through websockets",
-		ConstLabels: prometheus.Labels{"network_name": core.Vars.NetworkName},
+		ConstLabels: prometheus.Labels{"network_name": core.Config.NetworkName},
 	})
 
 	// Start server
-	http.Handle(core.Vars.MetricsPrefix, promhttp.Handler())
-	go http.ListenAndServe(":"+core.Vars.MetricsPort, nil)
-	zap.S().Info("Started Metrics:", core.Vars.MetricsPort)
+	http.Handle(core.Config.MetricsPrefix, promhttp.Handler())
+	go http.ListenAndServe(":"+core.Config.MetricsPort, nil)
+	zap.S().Info("Started Metrics:", core.Config.MetricsPort)
 }

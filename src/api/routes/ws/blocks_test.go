@@ -15,7 +15,11 @@ import (
 )
 
 func init() {
-	core.GetEnvironment()
+	//core.GetEnvironment()
+	core.Vars.ConfigFile = "config.api.test"
+	core.Vars.ConfigType = "yaml"
+	core.Vars.ConfigPath = "../../../../envfiles"
+	core.ConfigInit()
 }
 
 func TestHandlerGetBlocks(t *testing.T) {

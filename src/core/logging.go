@@ -67,7 +67,7 @@ func newLoggerEncoderConfig() zapcore.EncoderConfig {
 func setLoggerConfigLogLevel() zap.AtomicLevel {
 	var atomicLevel zap.AtomicLevel
 
-	switch strings.ToUpper(Vars.LogLevel) {
+	switch strings.ToUpper(Config.LogLevel) {
 	case "PANIC":
 		atomicLevel = zap.NewAtomicLevelAt(zap.PanicLevel)
 		break
@@ -94,7 +94,7 @@ func setLoggerConfigLogLevel() zap.AtomicLevel {
 
 func setLoggerConfigOutputPaths() []string {
 	outputPaths := []string{"stderr"}
-	if Vars.LogToFile == true {
+	if Config.LogToFile == true {
 		outputPaths = append(outputPaths, "./api.log")
 	}
 	return outputPaths
@@ -102,7 +102,7 @@ func setLoggerConfigOutputPaths() []string {
 
 func setLoggerConfigErrorOutputPaths() []string {
 	errorOutputPaths := []string{"stderr"}
-	if Vars.LogToFile == true {
+	if Config.LogToFile == true {
 		errorOutputPaths = append(errorOutputPaths, "./api.log")
 	}
 	return errorOutputPaths

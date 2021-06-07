@@ -11,7 +11,11 @@ import (
 )
 
 func init() {
-	core.GetEnvironment()
+	//core.GetEnvironment()
+	core.Vars.ConfigFile = "config.worker.test"
+	core.Vars.ConfigType = "yaml"
+	core.Vars.ConfigPath = "../../../envfiles"
+	core.ConfigInit()
 }
 
 func TestStart(t *testing.T) {
@@ -25,7 +29,7 @@ func TestStart(t *testing.T) {
 	Metrics["websockets_connected"].Inc()
 	Metrics["websockets_bytes_written"].Inc()
 
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", core.Vars.MetricsPort, core.Vars.MetricsPrefix))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%s%s", core.Config.MetricsPort, core.Config.MetricsPrefix))
 	assert.Equal(nil, err)
 	assert.Equal(200, resp.StatusCode)
 }

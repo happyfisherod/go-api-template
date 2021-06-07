@@ -39,7 +39,7 @@ func Start() {
 	rest.BlocksAddHandlers(app)
 	ws.BlocksAddHandlers(app)
 
-	go app.Listen(":" + core.Vars.Port)
+	go app.Listen(":" + core.Config.Port)
 }
 
 // Version
@@ -52,7 +52,7 @@ func Start() {
 // @Router /version [get]
 func handlerVersion(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version": core.Vars.Version,
+		"version": core.Config.Version,
 	}
 
 	json_message, _ := json.Marshal(message)
@@ -70,8 +70,8 @@ func handlerVersion(c *fiber.Ctx) error {
 // @Router /metadata [get]
 func handlerMetadata(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version":     core.Vars.Version,
-		"name":        core.Vars.Name,
+		"version":     core.Config.Version,
+		"name":        core.Config.Name,
 		"description": "a go api template",
 	}
 

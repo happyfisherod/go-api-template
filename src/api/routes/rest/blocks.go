@@ -8,7 +8,7 @@ import (
 
 func BlocksAddHandlers(app *fiber.App) {
 
-	prefix := core.Vars.RestPrefix + "/blocks"
+	prefix := core.Config.RestPrefix + "/blocks"
 
 	app.Get(prefix+"/", handlerGetBlock)
 }

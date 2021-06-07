@@ -13,7 +13,11 @@ import (
 func init() {
 	// os.Setenv("LOG_LEVEL", "DEBUG")
 
-	core.GetEnvironment()
+	//core.GetEnvironment()
+	core.Vars.ConfigFile = "config.api.test"
+	core.Vars.ConfigType = "yaml"
+	core.Vars.ConfigPath = "../../envfiles"
+	core.ConfigInit()
 }
 
 func TestKafkaTopicProducer(t *testing.T) {

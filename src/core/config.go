@@ -1,7 +1,8 @@
 package core
 
 import (
-	"encoding/json"
+	"fmt"
+	"github.com/spf13/viper"
 	"log"
 	"os"
 
@@ -9,47 +10,82 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-type VarsStruct struct {
+type EnvStruct struct {
 
-	// Versioning
-	Version string `envconfig:"VERSION" required:"false" default:"v0.0.0"`
-	Name    string `envconfig:"NAME" required:"false" default:"api"`
-
-	// Ports
-	Port        string `envconfig:"PORT" required:"false" default:"8000"`
-	HealthPort  string `envconfig:"HEALTH_PORT" required:"false" default:"8080"`
-	MetricsPort string `envconfig:"METRICS_PORT" required:"false" default:"9400"`
-
-	// Prefix
-	RestPrefix      string `envconfig:"REST_PREFIX" required:"false" default:"/rest"`
-	WebsocketPrefix string `envconfig:"WEBSOCKET_PREFIX" required:"false" default:"/ws"`
-	HealthPrefix    string `envconfig:"HEALTH_PREFIX" required:"false" default:"/healthcheck"`
-	MetricsPrefix   string `envconfig:"METRICS_PREFIX" required:"false" default:"/metrics"`
-
-	// Monitoring
-	HealthPollingInterval int    `envconfig:"HEALTH_POLLING_INTERVAL" required:"false" default:"10"`
-	LogLevel              string `envconfig:"LOG_LEVEL" required:"false" default:"INFO"`
-	LogToFile             bool   `envconfig:"LOG_TO_FILE" required:"false" default:"false"`
-	NetworkName           string `envconfig:"NETWORK_NAME" required:"false" default:"mainnet"`
-
-	// Kafka
-	KafkaBrokerURL    string `envconfig:"KAFKA_BROKER_URL" required:"false" default:""`
-	SchemaRegistryURL string `envconfig:"SCHEMA_REGISTRY_URL" required:"false" default:""`
-	KafkaGroupID      string `envconfig:"KAFKA_GROUP_ID" required:"false" default:"websocket-group"`
-
-	// Topics
-	ConsumerTopics []string          `envconfig:"CONSUMER_TOPICS" required:"false" default:"blocks"`
-	ProducerTopics []string          `envconfig:"PRODUCER_TOPICS" required:"false" default:"blocks-ws"`
-	SchemaNames    map[string]string `envconfig:"SCHEMA_NAMES" required:"false" default:"blocks:blocks"`
-
-	// Portgress
-
-	// Mongo
+	// Config_file
+	ConfigFile string `envconfig:"CONFIG_FILE" required:"false" default:"config.api.test"`
+	ConfigType string `envconfig:"CONFIG_TYPE" required:"false" default:"yaml"`
+	ConfigPath string `envconfig:"CONFIG_PATH" required:"false" default:"../envfiles"`
 }
 
-var Vars VarsStruct
+type ConfigStruct struct {
 
-// Run once on main.go
+	// Versioning
+	Version string
+	Name    string
+
+	// Ports
+	Port        string
+	HealthPort  string
+	MetricsPort string
+
+	// Prefix
+	RestPrefix      string
+	WebsocketPrefix string
+	HealthPrefix    string
+	MetricsPrefix   string
+
+	// Monitoring
+	HealthPollingInterval int
+	LogLevel              string
+	LogToFile             bool
+	NetworkName           string
+
+	// Kafka
+	KafkaBrokerURL    string
+	SchemaRegistryURL string
+	KafkaGroupID      string
+
+	// Topics
+	//ConsumerTopics []string
+	//ProducerTopics []string
+	//SchemaNames    map[string]string
+
+	// Kafka topics
+	Topics TopicsStruct `mapstructure:"Topics"`
+
+	// Postgres
+	Postgres PostgresConfigStruct `mapstructure:"Postgres"`
+
+	// Mongo
+	Mongo MongoStruct `mapstructure:"Mongo"`
+}
+
+type TopicsStruct struct {
+	ConsumerTopics []string          `json:"consumer_topics,omitempty"`
+	ProducerTopics []string          `json:"producer_topics,omitempty"`
+	SchemaNames    map[string]string `json:"schema_names,omitempty"`
+}
+
+type PostgresConfigStruct struct {
+	Host     string `json:"host,omitempty"`
+	Port     string `json:"port,omitempty"`
+	User     string `json:"user,omitempty"`
+	Password string `json:"password,omitempty"`
+	Dbname   string `json:"dbname,omitempty"`
+	Sslmode  string `json:"sslmode,omitempty"`
+	Timezone string `json:"timezone,omitempty"`
+}
+
+type MongoStruct struct {
+	Host string `json:"host,omitempty"`
+	Port string `json:"port,omitempty"`
+}
+
+var Vars EnvStruct
+var Config ConfigStruct
+
+// GetEnvironment Run once on main.go
 func GetEnvironment() {
 	//Get environment variable file
 	env_file := os.Getenv("ENV_FILE")
@@ -64,6 +100,69 @@ func GetEnvironment() {
 		log.Fatalf("ERROR: envconfig - %s\n", err.Error())
 	}
 
-	vars, _ := json.Marshal(Vars)
-	log.Println("Config Vars: " + string(vars))
+	// Fill Config struct
+	ConfigInit()
+}
+
+func ConfigInit() ConfigStruct {
+	viper.SetConfigName(Vars.ConfigFile)
+	viper.SetConfigType(Vars.ConfigType)
+	viper.AddConfigPath(Vars.ConfigPath)
+
+	// Set Defaults
+	setDefaults()
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	err = viper.Unmarshal(&Config)
+	if err != nil {
+		panic(fmt.Errorf("unable to decode into struct, %v\n", err))
+	}
+
+	return Config
+}
+
+func setDefaults() {
+	viper.SetDefault("Version", "v0.0.0")
+	viper.SetDefault("Name", "blocks service")
+
+	viper.SetDefault("Port", "8000")
+	viper.SetDefault("HealthPort", "8080")
+	viper.SetDefault("MetricsPort", "9400")
+
+	viper.SetDefault("RestPrefix", "/rest")
+	viper.SetDefault("WebsocketPrefix", "/ws")
+	viper.SetDefault("HealthPrefix", "/healthcheck")
+	viper.SetDefault("MetricsPrefix", "/metrics")
+
+	viper.SetDefault("HealthPollingInterval", 10)
+	viper.SetDefault("LogLevel", "INFO")
+	viper.SetDefault("LogToFile", false)
+	viper.SetDefault("NetworkName", "mainnet")
+
+	viper.SetDefault("KafkaBrokerURL", "")
+	viper.SetDefault("SchemaRegistryURL", "")
+	viper.SetDefault("KafkaGroupID", "websocket-group")
+
+	//viper.SetDefault("ConsumerTopics", "blocks")
+	//viper.SetDefault("ProducerTopics", "blocks-ws")
+	//viper.SetDefault("SchemaNames", "blocks:block_raw")
+
+	viper.SetDefault("Topics.ConsumerTopics", "blocks")
+	viper.SetDefault("Topics.ProducerTopics", "blocks-ws")
+	viper.SetDefault("Topics.SchemaNames", map[string]string{"blocks": "block_raw", "blocks-ws": "block_raw"})
+
+	viper.SetDefault("Postgres.Host", "localhost")
+	viper.SetDefault("Postgres.Port", "5432")
+	viper.SetDefault("Postgres.User", "postgres")
+	viper.SetDefault("Postgres.Password", "changeme")
+	viper.SetDefault("Postgres.Dbname", "test_db")
+	viper.SetDefault("Postgres.Sslmode", "disable")
+	viper.SetDefault("Postgres.Timezone", "UTC")
+
+	viper.SetDefault("Mongo.Host", "localhost")
+	viper.SetDefault("Mongo.Port", "27017")
 }
