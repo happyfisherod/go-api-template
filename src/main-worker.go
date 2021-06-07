@@ -49,7 +49,6 @@ func main() {
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)
-	shutdown := make(chan int)
 
 	//create a notification channel to shutdown
 	sigChan := make(chan os.Signal, 1)
@@ -58,10 +57,8 @@ func main() {
 	go func() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
-		shutdown <- 1
 		global.GetGlobal().ShutdownChan <- 1
 	}()
 
-	<-shutdown
 	<-global.GetGlobal().ShutdownChan
 }
