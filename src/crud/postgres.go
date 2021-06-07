@@ -2,11 +2,13 @@ package crud
 
 import (
 	"fmt"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/geometry-labs/go-service-template/config"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"sync"
+	"time"
 )
 
 type PostgresConn struct {
@@ -34,9 +36,12 @@ func GetPostgresConn() *PostgresConn {
 		dsn := NewDsn(config.Config.Postgres.Host, config.Config.Postgres.Port, config.Config.Postgres.User,
 			config.Config.Postgres.Password, config.Config.Postgres.Dbname, config.Config.Postgres.Sslmode,
 			config.Config.Postgres.Timezone)
-		session, err := createSession(dsn)
+		//session, err := createSession(dsn)
+		session, err := retryGetPostgresSession(dsn)
 		if err != nil {
-			zap.S().Fatal("Cannot create a connection to postgres", err)
+			zap.S().Fatal("Finally Cannot create a connection to postgres", err)
+		} else {
+			zap.S().Info("Finally successful connection to postgres")
 		}
 		postgresInstance = &PostgresConn{
 			conn: session,
@@ -54,10 +59,28 @@ func createSession(dsn string) (*gorm.DB, error) {
 	if err != nil {
 		zap.S().Info("err:", err)
 	}
+
 	return db, err
 }
 
 func NewDsn(host string, port string, user string, password string, dbname string, sslmode string, timezone string) string {
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		host, user, password, dbname, port, sslmode, timezone)
+}
+
+func retryGetPostgresSession(dsn string) (*gorm.DB, error) {
+	var session *gorm.DB
+	operation := func() error {
+		sess, err := createSession(dsn)
+		if err != nil {
+			zap.S().Info("POSTGRES SESSION Error : ", err.Error())
+		} else {
+			session = sess
+		}
+		return err
+	}
+	neb := backoff.NewExponentialBackOff()
+	neb.MaxElapsedTime = time.Minute
+	err := backoff.Retry(operation, neb)
+	return session, err
 }
