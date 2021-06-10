@@ -55,8 +55,8 @@ func main() {
 	go func() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
-		global.GetGlobal().ShutdownChan <- 1
+		global.ShutdownChan <- 1
 	}()
 
-	<-global.GetGlobal().ShutdownChan
+	<-global.ShutdownChan
 }

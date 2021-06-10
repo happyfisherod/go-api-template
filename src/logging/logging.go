@@ -22,10 +22,7 @@ func loggingInit() {
 	undo := zap.ReplaceGlobals(logger)
 	defer undo()
 
-	<-global.GetGlobal().ShutdownChan
-	//ch := make(chan int)
-	//<-ch
-
+	<-global.ShutdownChan
 }
 
 func newLogger(cfg zap.Config) *zap.Logger {

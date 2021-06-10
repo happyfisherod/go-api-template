@@ -3,14 +3,13 @@ package main
 import (
 	"github.com/geometry-labs/go-service-template/config"
 	"github.com/geometry-labs/go-service-template/global"
+	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/logging"
 	"github.com/geometry-labs/go-service-template/metrics"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/api/healthcheck"
 	"github.com/geometry-labs/go-service-template/api/routes"
@@ -24,6 +23,7 @@ func main() {
 	logging.StartLoggingInit()
 	zap.S().Debug("Main: Starting logging with level ", config.Config.LogLevel)
 
+	global.GetGlobal()
 	// Start kafka consumers
 	// Go routines start in function
 	kafka.StartApiConsumers()
@@ -50,8 +50,8 @@ func main() {
 	go func() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
-		global.GetGlobal().ShutdownChan <- 1
+		global.ShutdownChan <- 1
 	}()
 
-	<-global.GetGlobal().ShutdownChan
+	<-global.ShutdownChan
 }

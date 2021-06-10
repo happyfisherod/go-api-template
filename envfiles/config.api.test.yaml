@@ -31,6 +31,7 @@ KafkaGroupID: "api-group"
 #  blocks : "block_raw"
 #  blocks-ws : "block_raw"
 
+#Todo: put it in const.go
 Topics:
   ConsumerTopics:
     - "blocks"
