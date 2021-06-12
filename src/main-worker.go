@@ -16,8 +16,6 @@ import (
 	"github.com/geometry-labs/go-service-template/worker/transformers"
 )
 
-const VersionWorker = "v0.1.0"
-
 func main() {
 
 	config.GetEnvironment()

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/geometry-labs/go-service-template/config"
 	"github.com/geometry-labs/go-service-template/global"
-	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/logging"
 	"github.com/geometry-labs/go-service-template/metrics"
 	"go.uber.org/zap"
@@ -15,8 +14,6 @@ import (
 	"github.com/geometry-labs/go-service-template/api/routes"
 )
 
-const VersionApi = "v0.1.0"
-
 func main() {
 	config.GetEnvironment()
 
@@ -26,7 +23,7 @@ func main() {
 	global.GetGlobal()
 	// Start kafka consumers
 	// Go routines start in function
-	kafka.StartApiConsumers()
+	//kafka.StartApiConsumers()
 
 	// Start Prometheus client
 	// Go routine starts in function
