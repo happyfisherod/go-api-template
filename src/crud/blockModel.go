@@ -3,7 +3,6 @@ package crud
 import (
 	"github.com/geometry-labs/go-service-template/models"
 	"go.uber.org/zap"
-
 	"gorm.io/gorm"
 	"sync"
 )
@@ -42,13 +41,21 @@ func NewBlockRawModel(conn *gorm.DB) *BlockRawModel { // Only for testing
 	return blockRawModelInstance
 }
 
+func (m *BlockRawModel) GetDB() *gorm.DB {
+	return m.db
+}
+
+func (m *BlockRawModel) GetModel() *models.BlockRaw {
+	return m.model
+}
+
 func (m *BlockRawModel) GetWriteChan() chan *models.BlockRaw {
 	return m.writeChan
 }
 
 func (m *BlockRawModel) Migrate() error {
-	// Using ORM version of the proto generated struct to create the table only
-	err := m.db.AutoMigrate(models.BlockRawORM{})
+	// Only using BlockRawORM (ORM version of the proto generated struct) to create the TABLE
+	err := m.db.AutoMigrate(models.BlockRawORM{}) // Migration and Index creation
 	return err
 }
 
@@ -75,6 +82,6 @@ func (m *BlockRawModel) FindOne(conds ...interface{}) (*models.BlockRaw, *gorm.D
 
 func (m *BlockRawModel) FindAll(conds ...interface{}) (*[]models.BlockRaw, *gorm.DB) {
 	blocks := &[]models.BlockRaw{}
-	tx := m.db.Find(blocks, conds...)
+	tx := m.db.Scopes().Find(blocks, conds...)
 	return blocks, tx
 }

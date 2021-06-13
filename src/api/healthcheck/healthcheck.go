@@ -18,7 +18,7 @@ func Start() {
 	h := health.New()
 
 	// Create a couple of checks
-	blocksCheckerURL, _ := url.Parse("http://localhost:" + config.Config.Port + config.Config.RestPrefix + "/blocks")
+	blocksCheckerURL, _ := url.Parse("http://localhost:" + config.Config.Port + "/version")
 	blocksChecker, _ := checkers.NewHTTP(&checkers.HTTPConfig{
 		URL: blocksCheckerURL,
 	})

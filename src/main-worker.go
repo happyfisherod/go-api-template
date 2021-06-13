@@ -3,22 +3,18 @@ package main
 import (
 	"github.com/geometry-labs/go-service-template/config"
 	"github.com/geometry-labs/go-service-template/global"
+	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/logging"
 	"github.com/geometry-labs/go-service-template/metrics"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
-
-	"github.com/geometry-labs/go-service-template/kafka"
 
 	"github.com/geometry-labs/go-service-template/worker/healthcheck"
 	"github.com/geometry-labs/go-service-template/worker/loader"
 	"github.com/geometry-labs/go-service-template/worker/transformers"
 )
-
-const VersionWorker = "v0.1.0"
 
 func main() {
 
@@ -39,7 +35,7 @@ func main() {
 	// Start kafka Producer
 	kafka.StartProducers()
 	// Wait for Kafka
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 
 	// Start Postgres loader
 	loader.StartBlockRawsLoader()
@@ -49,7 +45,6 @@ func main() {
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)
-	shutdown := make(chan int)
 
 	//create a notification channel to shutdown
 	sigChan := make(chan os.Signal, 1)
@@ -58,10 +53,8 @@ func main() {
 	go func() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
-		shutdown <- 1
-		global.GetGlobal().ShutdownChan <- 1
+		global.ShutdownChan <- 1
 	}()
 
-	<-shutdown
-	<-global.GetGlobal().ShutdownChan
+	<-global.ShutdownChan
 }

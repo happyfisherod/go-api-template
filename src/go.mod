@@ -6,7 +6,7 @@ require (
 	github.com/DataDog/zstd v1.4.8 // indirect
 	github.com/InVisionApp/go-health/v2 v2.1.2
 	github.com/arsmn/fiber-swagger/v2 v2.6.0
-	github.com/cenkalti/backoff/v4 v4.1.0
+	github.com/cenkalti/backoff/v4 v4.1.1
 	github.com/gofiber/fiber/v2 v2.10.0
 	github.com/gofiber/websocket/v2 v2.0.3
 	github.com/gorilla/websocket v1.4.2

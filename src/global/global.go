@@ -6,9 +6,9 @@ import (
 	"github.com/geometry-labs/go-service-template/crud"
 )
 
-type Global struct {
-	ShutdownChan chan int
+const Version = "v0.1.0"
 
+type Global struct {
 	Blocks *crud.BlockRawModel
 }
 
@@ -23,3 +23,5 @@ func GetGlobal() *Global {
 	})
 	return globalInstance
 }
+
+var ShutdownChan = make(chan int)

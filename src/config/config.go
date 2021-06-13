@@ -101,7 +101,8 @@ func GetEnvironment() {
 	}
 
 	// Fill Config struct
-	ConfigInit()
+	config := ConfigInit()
+	log.Println("config:", config)
 }
 
 func ConfigInit() ConfigStruct {

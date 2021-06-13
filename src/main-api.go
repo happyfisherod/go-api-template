@@ -10,22 +10,20 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/go-service-template/kafka"
-
 	"github.com/geometry-labs/go-service-template/api/healthcheck"
 	"github.com/geometry-labs/go-service-template/api/routes"
 )
-
-const VersionApi = "v0.1.0"
 
 func main() {
 	config.GetEnvironment()
 
 	logging.StartLoggingInit()
+	zap.S().Debug("Main: Starting logging with level ", config.Config.LogLevel)
 
+	global.GetGlobal()
 	// Start kafka consumers
 	// Go routines start in function
-	kafka.StartApiConsumers()
+	//kafka.StartApiConsumers()
 
 	// Start Prometheus client
 	// Go routine starts in function
@@ -41,7 +39,6 @@ func main() {
 
 	// Listen for close sig
 	// Register for interupt (Ctrl+C) and SIGTERM (docker)
-	//shutdown := make(chan int)
 
 	//create a notification channel to shutdown
 	sigChan := make(chan os.Signal, 1)
@@ -50,10 +47,8 @@ func main() {
 	go func() {
 		<-sigChan
 		zap.S().Info("Shutting down...")
-		//shutdown <- 1
-		global.GetGlobal().ShutdownChan <- 1
+		global.ShutdownChan <- 1
 	}()
 
-	//<-shutdown
-	<-global.GetGlobal().ShutdownChan
+	<-global.ShutdownChan
 }

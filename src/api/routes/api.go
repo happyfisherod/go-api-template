@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"github.com/geometry-labs/go-service-template/config"
+	"github.com/geometry-labs/go-service-template/global"
 	"go.uber.org/zap"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
@@ -52,7 +53,7 @@ func Start() {
 // @Router /version [get]
 func handlerVersion(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version": config.Config.Version,
+		"version": global.Version,
 	}
 
 	json_message, _ := json.Marshal(message)
