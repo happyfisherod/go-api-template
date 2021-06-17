@@ -37,7 +37,6 @@ func blocksTransformer() {
 		kafka.Broadcasters[consumer_topic_name].RemoveBroadcastChannel(broadcaster_output_chan_id)
 	}()
 
-	// TODO: Take advantage of concurrency
 	zap.S().Debug("Blocks Worker: started working")
 	for {
 		// Read from kafka
