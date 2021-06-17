@@ -6,13 +6,12 @@ import (
 	"github.com/geometry-labs/go-service-template/kafka"
 	"github.com/geometry-labs/go-service-template/logging"
 	"github.com/geometry-labs/go-service-template/metrics"
+	"github.com/geometry-labs/go-service-template/worker/loader"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/geometry-labs/go-service-template/worker/healthcheck"
-	"github.com/geometry-labs/go-service-template/worker/loader"
 	"github.com/geometry-labs/go-service-template/worker/transformers"
 )
 
@@ -27,7 +26,7 @@ func main() {
 	metrics.MetricsWorkerStart()
 
 	// Start Health server
-	healthcheck.Start()
+	//healthcheck.Start()
 
 	// Start kafka consumer
 	kafka.StartWorkerConsumers()
