@@ -8,7 +8,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"sync"
-	"time"
 )
 
 type PostgresConn struct {
@@ -80,7 +79,7 @@ func retryGetPostgresSession(dsn string) (*gorm.DB, error) {
 		return err
 	}
 	neb := backoff.NewExponentialBackOff()
-	neb.MaxElapsedTime = time.Minute
+	//neb.MaxElapsedTime = time.Minute
 	err := backoff.Retry(operation, neb)
 	return session, err
 }

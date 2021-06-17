@@ -16,7 +16,7 @@ func BlockRawsLoader() {
 	postgresLoaderChan := global.GetGlobal().Blocks.GetWriteChan()
 	for {
 		block = <-postgresLoaderChan
-		global.GetGlobal().Blocks.Create(block)
+		global.GetGlobal().Blocks.RetryCreate(block) // inserted here !!
 		zap.S().Debug(fmt.Sprintf(
 			"Loader BlockRaws: Loaded in postgres table BlockRaws, Block Number %d", block.Number),
 		)

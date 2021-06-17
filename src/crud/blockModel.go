@@ -1,9 +1,11 @@
 package crud
 
 import (
+	"github.com/cenkalti/backoff/v4"
 	"github.com/geometry-labs/go-service-template/models"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strings"
 	"sync"
 )
 
@@ -59,9 +61,26 @@ func (m *BlockRawModel) Migrate() error {
 	return err
 }
 
-func (m *BlockRawModel) Create(block *models.BlockRaw) *gorm.DB {
+func (m *BlockRawModel) Create(block *models.BlockRaw) (*gorm.DB, error) {
 	tx := m.db.Create(block)
-	return tx
+	return tx, tx.Error
+}
+
+func (m *BlockRawModel) RetryCreate(block *models.BlockRaw) (*gorm.DB, error) {
+	var transaction *gorm.DB
+	operation := func() error {
+		tx, err := m.Create(block)
+		if err != nil && !strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			zap.S().Info("POSTGRES RetryCreate Error : ", err.Error())
+		} else {
+			transaction = tx
+			return nil
+		}
+		return err
+	}
+	neb := backoff.NewExponentialBackOff()
+	err := backoff.Retry(operation, neb)
+	return transaction, err
 }
 
 func (m *BlockRawModel) Update(oldBlock *models.BlockRaw, newBlock *models.BlockRaw, whereClause ...interface{}) *gorm.DB {
