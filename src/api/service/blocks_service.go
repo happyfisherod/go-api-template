@@ -4,7 +4,9 @@ import (
 	"github.com/geometry-labs/go-service-template/global"
 	"github.com/geometry-labs/go-service-template/models"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"reflect"
 	"strconv"
 )
 
@@ -23,10 +25,13 @@ func (service *BlocksQueryService) RunQuery(c *fiber.Ctx) *[]models.BlockRaw {
 	db := blocksModel.GetDB()
 
 	whereClauseStrings := service.buildWhereClauseStrings()
+	orderClauseStrings := service.buildOrderClauseStrings()
 	blocks := &[]models.BlockRaw{}
-	_ = db.Scopes(Paginate(service)).Find(blocks, whereClauseStrings...)
+	_ = db.Scopes(Paginate(service)).
+		Order(orderClauseStrings).
+		Find(blocks, whereClauseStrings...)
 
-	//blocks, _ := blocksModel.FindAll(whereClauseStrings...)
+	zap.S().Info("Blocks: ", blocks)
 	return blocks
 }
 
@@ -48,6 +53,30 @@ func (service *BlocksQueryService) buildWhereClauseStrings() []interface{} {
 	return strArr
 }
 
+func (service *BlocksQueryService) buildOrderClauseStrings() interface{} {
+	var strArr string
+	strArr = "number desc" //number desc, item_timestamp"
+	return strArr
+}
+
+func (service *BlocksQueryService) buildLimitClause() int {
+	empty := BlocksQueryService{}
+
+	pageSize := 1
+	if isEmpty := reflect.DeepEqual(empty, *service); isEmpty {
+		return pageSize
+	}
+
+	pageSize = service.PageSize
+	switch {
+	case pageSize > 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
+	}
+	return pageSize
+}
+
 func Paginate(service *BlocksQueryService) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		page := service.Page
@@ -55,13 +84,7 @@ func Paginate(service *BlocksQueryService) func(db *gorm.DB) *gorm.DB {
 			page = 1
 		}
 
-		pageSize := service.PageSize
-		switch {
-		case pageSize > 100:
-			pageSize = 100
-		case pageSize <= 0:
-			pageSize = 10
-		}
+		pageSize := service.buildLimitClause()
 
 		offset := (page - 1) * pageSize
 		return db.Offset(offset).Limit(pageSize)
