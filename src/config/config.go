@@ -4,101 +4,69 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
-	"os"
-
-	"github.com/joho/godotenv"
-	"github.com/kelseyhightower/envconfig"
 )
 
-type EnvStruct struct {
-
-	// Config_file
-	ConfigFile string `envconfig:"CONFIG_FILE" required:"false" default:"config.api.test"`
-	ConfigType string `envconfig:"CONFIG_TYPE" required:"false" default:"yaml"`
-	ConfigPath string `envconfig:"CONFIG_PATH" required:"false" default:"../envfiles"`
-}
-
 type ConfigStruct struct {
-
-	// Versioning
-	Version string
-	Name    string
+	Name string `mapstructure:"NAME"`
 
 	// Ports
-	Port        string
-	HealthPort  string
-	MetricsPort string
+	Port        string `mapstructure:"PORT"`
+	HealthPort  string `mapstructure:"HEALTH_PORT"`
+	MetricsPort string `mapstructure:"METRICS_PORT"`
 
 	// Prefix
-	RestPrefix      string
-	WebsocketPrefix string
-	HealthPrefix    string
-	MetricsPrefix   string
+	RestPrefix      string `mapstructure:"REST_PREFIX"`
+	WebsocketPrefix string `mapstructure:"WEBSOCKET_PREFIX"`
+	HealthPrefix    string `mapstructure:"HEALTH_PREFIX"`
+	MetricsPrefix   string `mapstructure:"METRICS_PREFIX"`
 
 	// Monitoring
-	HealthPollingInterval int
-	LogLevel              string
-	LogToFile             bool
-	NetworkName           string
+	HealthPollingInterval int    `mapstructure:"HEALTH_POLLING_INTERVAL"`
+	LogLevel              string `mapstructure:"LOG_LEVEL"`
+	LogToFile             bool   `mapstructure:"LOG_TO_FILE"`
+	NetworkName           string `mapstructure:"NETWORK_NAME"`
 
 	// Kafka
-	KafkaBrokerURL    string
-	SchemaRegistryURL string
-	KafkaGroupID      string
+	KafkaBrokerURL    string `mapstructure:"KAFKA_BROKER_URL"`
+	SchemaRegistryURL string `mapstructure:"SCHEMA_REGISTRY_URL"`
+	KafkaGroupID      string `mapstructure:"KAFKA_GROUP_ID"`
 
 	// Topics
-	//ConsumerTopics []string
-	//ProducerTopics []string
-	//SchemaNames    map[string]string
+	ConsumerTopics   []string          `mapstructure:"CONSUMER_TOPICS"`
+	ProducerTopics   []string          `mapstructure:"PRODUCER_TOPICS"`
+	SchemaNameTopics map[string]string `mapstructure:"SCHEMA_NAME_TOPICS"`
 
-	// Kafka topics
-	Topics TopicsStruct `mapstructure:"Topics"`
-
-	// Postgres
-	Postgres PostgresConfigStruct `mapstructure:"Postgres"`
+	// DB
+	DbDriver   string `mapstructure:"DB_DRIVER"`
+	DbHost     string `mapstructure:"DB_HOST"`
+	DbPort     string `mapstructure:"DB_PORT"`
+	DbUser     string `mapstructure:"DB_USER"`
+	DbPassword string `mapstructure:"DB_PASSWORD"`
+	DbName     string `mapstructure:"DB_DBNAME"`
+	DbSslmode  string `mapstructure:"DB_SSLMODE"`
+	DbTimezone string `mapstructure:"DB_TIMEZONE"`
 
 	// Mongo
-	Mongo MongoStruct `mapstructure:"Mongo"`
+	MongoHost string `mapstructure:"MONGO_HOST"`
+	MongoPort string `mapstructure:"MONGO_PORT"`
 }
 
-type TopicsStruct struct {
-	ConsumerTopics []string          `json:"consumer_topics,omitempty"`
-	ProducerTopics []string          `json:"producer_topics,omitempty"`
-	SchemaNames    map[string]string `json:"schema_names,omitempty"`
-}
-
-type PostgresConfigStruct struct {
-	Host     string `json:"host,omitempty"`
-	Port     string `json:"port,omitempty"`
-	User     string `json:"user,omitempty"`
-	Password string `json:"password,omitempty"`
-	Dbname   string `json:"dbname,omitempty"`
-	Sslmode  string `json:"sslmode,omitempty"`
-	Timezone string `json:"timezone,omitempty"`
-}
-
-type MongoStruct struct {
-	Host string `json:"host,omitempty"`
-	Port string `json:"port,omitempty"`
-}
-
-var Vars EnvStruct
 var Config ConfigStruct
 
 // GetEnvironment Run once on main.go
 func GetEnvironment() {
-	//Get environment variable file
-	env_file := os.Getenv("ENV_FILE")
-	if env_file != "" {
-		_ = godotenv.Load(env_file)
-	} else {
-		_ = godotenv.Load()
-	}
-
-	err := envconfig.Process("", &Vars)
-	if err != nil {
-		log.Fatalf("ERROR: envconfig - %s\n", err.Error())
-	}
+	////Get environment variable file
+	//env_file := os.Getenv("ENV_FILE")
+	//if env_file != "" {
+	//	_ = godotenv.Load(env_file)
+	//} else {
+	//	_ = godotenv.Load()
+	//}
+	//
+	//err := envconfig.Process("", &Vars)
+	//if err != nil {
+	//	log.Fatalf("ERROR: envconfig - %s\n", err.Error())
+	//}
 
 	// Fill Config struct
 	config := ConfigInit()
@@ -106,16 +74,18 @@ func GetEnvironment() {
 }
 
 func ConfigInit() ConfigStruct {
-	viper.SetConfigName(Vars.ConfigFile)
-	viper.SetConfigType(Vars.ConfigType)
-	viper.AddConfigPath(Vars.ConfigPath)
+	//filename := os.Getenv("ENV_FILE")
+	filename := "env.worker.test"
+	viper.SetConfigName(filename)
+	viper.SetConfigType("env")
+	viper.AddConfigPath("./envfiles")
 
 	// Set Defaults
 	setDefaults()
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal error config file: %s, Error: %s \n", filename, err))
 	}
 
 	err = viper.Unmarshal(&Config)
@@ -127,7 +97,6 @@ func ConfigInit() ConfigStruct {
 }
 
 func setDefaults() {
-	viper.SetDefault("Version", "v0.0.0")
 	viper.SetDefault("Name", "blocks service")
 
 	viper.SetDefault("Port", "8000")
@@ -152,18 +121,19 @@ func setDefaults() {
 	//viper.SetDefault("ProducerTopics", "blocks-ws")
 	//viper.SetDefault("SchemaNames", "blocks:block_raw")
 
-	viper.SetDefault("Topics.ConsumerTopics", "blocks")
-	viper.SetDefault("Topics.ProducerTopics", "blocks-ws")
-	viper.SetDefault("Topics.SchemaNames", map[string]string{"blocks": "block_raw", "blocks-ws": "block_raw"})
+	viper.SetDefault("ConsumerTopics", "[blocks]")
+	viper.SetDefault("ProducerTopics", "[blocks-ws]")
+	viper.SetDefault("SchemaNameTopics", map[string]string{"blocks": "block_raw", "blocks-ws": "block_raw"})
 
-	viper.SetDefault("Postgres.Host", "localhost")
-	viper.SetDefault("Postgres.Port", "5432")
-	viper.SetDefault("Postgres.User", "postgres")
-	viper.SetDefault("Postgres.Password", "changeme")
-	viper.SetDefault("Postgres.Dbname", "test_db")
-	viper.SetDefault("Postgres.Sslmode", "disable")
-	viper.SetDefault("Postgres.Timezone", "UTC")
+	viper.SetDefault("DbDriver", "postgres")
+	viper.SetDefault("DbHost", "localhost")
+	viper.SetDefault("DbPort", "5432")
+	viper.SetDefault("DbUser", "postgres")
+	viper.SetDefault("DbPassword", "changeme")
+	viper.SetDefault("DbName", "test_db")
+	viper.SetDefault("DbSslmode", "disable")
+	viper.SetDefault("DbTimezone", "UTC")
 
-	viper.SetDefault("Mongo.Host", "localhost")
-	viper.SetDefault("Mongo.Port", "27017")
+	viper.SetDefault("MongoHost", "localhost")
+	viper.SetDefault("MongoPort", "27017")
 }

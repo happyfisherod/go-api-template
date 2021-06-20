@@ -20,11 +20,11 @@ func blocksTransformer() {
 
 	// TODO: Need to move all of the config validations to config.go
 	// Check topic names
-	if utils.StringInSlice(consumer_topic_name, config.Config.Topics.ConsumerTopics) == false {
-		zap.S().Panic("Blocks Worker: no ", consumer_topic_name, " topic found in CONSUMER_TOPICS=", config.Config.Topics.ConsumerTopics)
+	if utils.StringInSlice(consumer_topic_name, config.Config.ConsumerTopics) == false {
+		zap.S().Panic("Blocks Worker: no ", consumer_topic_name, " topic found in CONSUMER_TOPICS=", config.Config.ConsumerTopics)
 	}
-	if utils.StringInSlice(producer_topic_name, config.Config.Topics.ProducerTopics) == false {
-		zap.S().Panic("Blocks Worker: no ", producer_topic_name, " topic found in PRODUCER_TOPICS=", config.Config.Topics.ProducerTopics)
+	if utils.StringInSlice(producer_topic_name, config.Config.ProducerTopics) == false {
+		zap.S().Panic("Blocks Worker: no ", producer_topic_name, " topic found in PRODUCER_TOPICS=", config.Config.ConsumerTopics)
 	}
 
 	consumer_topic_chan := make(chan *sarama.ConsumerMessage)
