@@ -19,11 +19,13 @@ var KafkaTopicProducers = map[string]*KafkaTopicProducer{}
 
 func StartProducers() {
 	kafka_broker := config.Config.KafkaBrokerURL
-	producer_topics := config.Config.Topics.ProducerTopics
+	producer_topics := config.Config.ProducerTopics
 
 	zap.S().Info("Start Producer: kafka_broker=", kafka_broker, " producer_topics=", producer_topics)
 
 	for _, t := range producer_topics {
+		// Todo: Register schema
+
 		KafkaTopicProducers[t] = &KafkaTopicProducer{
 			kafka_broker,
 			t,

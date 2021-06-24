@@ -71,7 +71,7 @@ func handlerVersion(c *fiber.Ctx) error {
 // @Router /metadata [get]
 func handlerMetadata(c *fiber.Ctx) error {
 	message := map[string]string{
-		"version":     config.Config.Version,
+		"version":     global.Version,
 		"name":        config.Config.Name,
 		"description": "a go api template",
 	}

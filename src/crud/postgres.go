@@ -32,9 +32,9 @@ func GetPostgresConn() *PostgresConn {
 	postgresConnOnce.Do(func() {
 		// TODO: create dsn string from env variables
 		//dsn := NewDsn("postgres", "5432", "postgres", "changeme", "postgres", "disable", "UTC")
-		dsn := NewDsn(config.Config.Postgres.Host, config.Config.Postgres.Port, config.Config.Postgres.User,
-			config.Config.Postgres.Password, config.Config.Postgres.Dbname, config.Config.Postgres.Sslmode,
-			config.Config.Postgres.Timezone)
+		dsn := NewDsn(config.Config.DbHost, config.Config.DbPort, config.Config.DbUser,
+			config.Config.DbPassword, config.Config.DbName, config.Config.DbSslmode,
+			config.Config.DbTimezone)
 		//session, err := createSession(dsn)
 		session, err := retryGetPostgresSession(dsn)
 		if err != nil {
