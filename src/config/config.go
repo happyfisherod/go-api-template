@@ -117,14 +117,9 @@ func setDefaults() {
 	viper.SetDefault("SchemaRegistryURL", "")
 	viper.SetDefault("KafkaGroupID", "websocket-group")
 
-	//viper.SetDefault("ConsumerTopics", "blocks")
-	//viper.SetDefault("ProducerTopics", "blocks-ws")
-	//viper.SetDefault("SchemaNames", "blocks:block_raw")
-
 	viper.SetDefault("ConsumerTopics", "[blocks]")
 	viper.SetDefault("ProducerTopics", "[blocks-ws]")
-	viper.SetDefault("SchemaNameTopics", map[string]string{"blocks": "block_raw", "blocks-ws": "block_raw"})
-
+	viper.SetDefault("SchemaNameTopics", "blocks:block_raw, blocks-ws:block_raw")
 	viper.SetDefault("DbDriver", "postgres")
 	viper.SetDefault("DbHost", "localhost")
 	viper.SetDefault("DbPort", "5432")
