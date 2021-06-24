@@ -31,7 +31,7 @@ func (service *BlocksQueryService) RunQuery(c *fiber.Ctx) *[]models.BlockRaw {
 		Order(orderClauseStrings).
 		Find(blocks, whereClauseStrings...)
 
-	zap.S().Info("Blocks: ", blocks)
+	zap.S().Debug("Blocks: ", blocks)
 	return blocks
 }
 

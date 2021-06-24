@@ -4,11 +4,11 @@ option go_package = "./models";
 
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 
-message BlocksRaw {
-  repeated BlockRaw blocks = 1;
+message Blocks {
+  repeated Blocks blocks = 1;
 }
 
-message BlockRaw {
+message Block {
   option (gorm.opts) = {ormable: true};
 
   string signature = 1;
